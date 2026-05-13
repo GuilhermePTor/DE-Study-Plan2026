@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Mastery — Data Engineer Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2333;
+  --surface3: #21262d;
+  --border: #30363d;
+  --border2: #21262d;
+  --accent: #58a6ff;
+  --accent-g: #3fb950;
+  --accent-o: #f0883e;
+  --accent-r: #ff7b72;
+  --accent-p: #bc8cff;
+  --accent-y: #e3b341;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --correct: #3fb950;
+  --wrong: #f85149;
+  --tip: #f0883e;
+  --mono: 'JetBrains Mono', monospace;
+  --display: 'Syne', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;font-size:14px;line-height:1.6;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(88,166,255,0.06),transparent);pointer-events:none;z-index:0;}
+
+/* ── LAYOUT ── */
+.page{max-width:860px;margin:0 auto;padding:0 20px 60px;position:relative;z-index:1;}
+
+/* ── HEADER ── */
+header{padding:28px 0 0;border-bottom:1px solid var(--border);}
+.hd{display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;flex-wrap:wrap;gap:12px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:38px;height:38px;background:linear-gradient(135deg,#58a6ff,#3fb950);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.brand-name{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(90deg,#58a6ff,#3fb950);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.brand-sub{font-size:10px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;display:block;}
+nav{display:flex;gap:4px;}
+.nb{padding:8px 18px;background:transparent;border:1px solid var(--border);border-bottom:none;color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer;border-radius:6px 6px 0 0;transition:all .2s;text-transform:uppercase;}
+.nb:hover,.nb.on{background:var(--surface);color:var(--accent);border-color:var(--accent);}
+
+/* ── SCORE BAR ── */
+.sbar{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 20px;margin:24px 0 20px;flex-wrap:wrap;}
+.si{text-align:center;min-width:44px;}
+.sv{font-size:22px;font-weight:700;color:var(--accent);}
+.sl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;}
+.pc{flex:1;min-width:160px;}
+.pl{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}
+.pb{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.pf{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-g));border-radius:3px;transition:width .5s ease;width:0%;}
+
+/* ── CATEGORY BADGE ── */
+.cbadge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border:1px solid;border-radius:20px;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600;}
+.cat-join{color:#58a6ff;border-color:rgba(88,166,255,.3);background:rgba(88,166,255,.07);}
+.cat-group{color:#3fb950;border-color:rgba(63,185,80,.3);background:rgba(63,185,80,.07);}
+.cat-agg{color:#bc8cff;border-color:rgba(188,140,255,.3);background:rgba(188,140,255,.07);}
+.cat-sub{color:#f0883e;border-color:rgba(240,136,62,.3);background:rgba(240,136,62,.07);}
+.cat-cte{color:#e3b341;border-color:rgba(227,179,65,.3);background:rgba(227,179,65,.07);}
+.cat-win{color:#58a6ff;border-color:rgba(88,166,255,.3);background:rgba(88,166,255,.07);}
+.cat-rank{color:#bc8cff;border-color:rgba(188,140,255,.3);background:rgba(188,140,255,.07);}
+.cat-case{color:#f0883e;border-color:rgba(240,136,62,.3);background:rgba(240,136,62,.07);}
+.cat-str{color:#3fb950;border-color:rgba(63,185,80,.3);background:rgba(63,185,80,.07);}
+.cat-date{color:#e3b341;border-color:rgba(227,179,65,.3);background:rgba(227,179,65,.07);}
+.cat-roll{color:#58a6ff;border-color:rgba(88,166,255,.3);background:rgba(88,166,255,.07);}
+.cat-ntile{color:#bc8cff;border-color:rgba(188,140,255,.3);background:rgba(188,140,255,.07);}
+
+/* ── QUESTION CARD ── */
+.qcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:14px;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.qnum{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;}
+.qtxt{font-size:15px;font-weight:500;color:var(--text);line-height:1.65;margin-bottom:16px;}
+
+/* ── CODE BLOCK ── */
+pre.cb{background:#010409;border:1px solid var(--border2);border-left:3px solid var(--accent);border-radius:8px;padding:14px 16px;font-size:12px;line-height:1.75;overflow-x:auto;margin:10px 0 18px;font-family:var(--mono);white-space:pre;}
+.kw{color:#ff7b72;}.fn{color:#d2a8ff;}.kw2{color:#79c0ff;}.str{color:#a5d6ff;}.cmt{color:#8b949e;font-style:italic;}.tbl{color:#7ee787;}.num{color:#f2cc60;}.op{color:#ff7b72;}
+
+/* ── OPTIONS ── */
+.opts{display:grid;gap:8px;}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;cursor:pointer;text-align:left;font-family:var(--mono);font-size:13px;color:var(--text2);transition:all .18s;line-height:1.5;width:100%;}
+.opt:hover:not(:disabled){border-color:var(--accent);color:var(--text);background:rgba(88,166,255,.05);}
+.opt:disabled{cursor:not-allowed;}
+.ol{min-width:22px;height:22px;background:var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text3);flex-shrink:0;margin-top:1px;}
+.opt.correct{border-color:var(--correct);background:rgba(63,185,80,.08);color:var(--correct);}
+.opt.correct .ol{background:var(--correct);color:#000;}
+.opt.wrong{border-color:var(--wrong);background:rgba(248,81,73,.08);color:var(--wrong);}
+.opt.wrong .ol{background:var(--wrong);color:#fff;}
+.opt.revealed{border-color:rgba(63,185,80,.4);background:rgba(63,185,80,.05);color:var(--correct);}
+.opt.revealed .ol{background:rgba(63,185,80,.2);color:var(--correct);}
+
+/* ── FEEDBACK ── */
+.fb{margin-top:14px;padding:12px 16px;border-radius:9px;font-size:12.5px;line-height:1.65;display:none;animation:slideIn .28s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:translateY(0);}}
+.fb.ok{background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.3);color:#7ee787;}
+.fb.bad{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);color:#ffa198;}
+
+/* ── TIP ── */
+.tip{margin-top:10px;padding:12px 16px;background:rgba(240,136,62,.06);border:1px solid rgba(240,136,62,.25);border-radius:9px;font-size:12px;color:#e8a87c;line-height:1.7;display:none;}
+.tiplabel{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--tip);font-weight:700;margin-bottom:5px;}
+
+/* ── NEXT BUTTON ── */
+.nxtbtn{margin-top:18px;padding:10px 24px;background:linear-gradient(135deg,var(--accent),var(--accent-g));border:none;border-radius:7px;color:#000;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;display:none;transition:opacity .2s,transform .2s;}
+.nxtbtn:hover{opacity:.85;transform:translateY(-1px);}
+
+/* ── RESULTS ── */
+#results{display:none;text-align:center;padding:48px 24px;background:var(--surface);border:1px solid var(--border);border-radius:14px;}
+.rscore{font-size:70px;font-weight:800;font-family:var(--display);background:linear-gradient(135deg,var(--accent),var(--accent-g));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.rlabel{font-size:12px;color:var(--text3);margin-top:6px;text-transform:uppercase;letter-spacing:2px;}
+.rgrade{font-size:26px;font-family:var(--display);font-weight:700;color:var(--accent-g);margin:20px 0 6px;}
+.rmsg{color:var(--text2);font-size:13px;margin-bottom:28px;line-height:1.65;}
+.rbr{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin:20px 0;text-align:left;}
+.rbi{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;}
+.rbn{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+.rbs{font-size:17px;font-weight:700;color:var(--accent);}
+.rbtn{padding:12px 32px;background:linear-gradient(135deg,var(--accent),var(--accent-g));border:none;border-radius:7px;color:#000;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;}
+
+/* ── DOCS ── */
+#docs{display:none;padding-top:8px;}
+.dcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;}
+.dh{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid transparent;cursor:pointer;user-select:none;transition:background .2s;}
+.dh:hover{background:var(--surface2);}
+.dh.open{border-bottom-color:var(--border);}
+.di{font-size:18px;flex-shrink:0;}
+.dt{font-family:var(--display);font-size:15px;font-weight:700;color:var(--text);flex:1;}
+.dtag{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;padding:3px 10px;border-radius:12px;font-weight:700;}
+.tog{color:var(--text3);font-size:11px;transition:transform .3s;}
+.tog.open{transform:rotate(180deg);}
+.db{display:none;padding:18px 20px;}
+.db.open{display:block;}
+.db p{color:var(--text2);font-size:13px;line-height:1.8;margin-bottom:12px;}
+.db h4{font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 6px;font-weight:600;}
+.db ul{padding-left:18px;color:var(--text2);font-size:13px;line-height:1.8;margin-bottom:12px;}
+.db li{margin-bottom:2px;}
+.db pre.cb{margin:10px 0;}
+
+/* ── FILTER BAR ── */
+.fbar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px;}
+.fc{padding:5px 13px;background:var(--surface);border:1px solid var(--border);border-radius:20px;font-size:10px;color:var(--text3);cursor:pointer;font-family:var(--mono);transition:all .2s;text-transform:uppercase;letter-spacing:1px;}
+.fc:hover,.fc.on{background:rgba(88,166,255,.1);border-color:var(--accent);color:var(--accent);}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <div class="hd">
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <div class="brand-name">SQL Mastery</div>
+        <span class="brand-sub">Data Engineer Quiz</span>
+      </div>
+    </div>
+    <nav>
+      <button class="nb on" onclick="showSection('quiz')">🎯 Quiz</button>
+      <button class="nb" onclick="showSection('docs')">📚 Concepts</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ── QUIZ ── -->
+<div id="quiz">
+  <div class="sbar">
+    <div class="si"><div class="sv" id="scoreVal">0</div><div class="sl">Score</div></div>
+    <div class="si"><div class="sv" id="correctVal">0</div><div class="sl">Correct</div></div>
+    <div class="pc">
+      <div class="pl"><span>Progress</span><span id="progTxt">0 / 35</span></div>
+      <div class="pb"><div class="pf" id="progFill"></div></div>
+    </div>
+    <div class="si"><div class="sv" id="streakVal">0</div><div class="sl">Streak 🔥</div></div>
+  </div>
+
+  <div id="qarea">
+    <div class="qcard" id="qcard">
+      <div class="qnum" id="qnum">Question 1 of 35</div>
+      <div class="cbadge" id="qbadge"></div>
+      <div class="qtxt" id="qtxt"></div>
+      <pre class="cb" id="qcode" style="display:none"></pre>
+      <div class="opts" id="opts"></div>
+      <div class="fb" id="fb"></div>
+      <div class="tip" id="tip"><div class="tiplabel">💡 Pro Tip</div><div id="tipTxt"></div></div>
+      <button class="nxtbtn" id="nxtbtn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </div>
+
+  <div id="results">
+    <div class="rscore" id="rScore"></div>
+    <div class="rlabel">Final Score</div>
+    <div class="rgrade" id="rGrade"></div>
+    <div class="rmsg" id="rMsg"></div>
+    <div class="rbr" id="rBreak"></div>
+    <button class="rbtn" onclick="restartQuiz()">↺ Restart Quiz</button>
+  </div>
+</div>
+
+<!-- ── DOCS ── -->
+<div id="docs">
+  <div id="docContent"></div>
+</div>
+</main>
+</div>
+
+<script>
+const QUESTIONS = [
+  /* ── JOINs ── */
+  {cat:"JOIN",q:"What does an INNER JOIN return?",code:null,opts:["All rows from the left table, with NULLs for non-matching right rows","Only rows where there is a matching value in BOTH tables","All rows from both tables, with NULLs where there is no match","A Cartesian product of both tables"],ans:1,exp:"INNER JOIN returns only rows where the join condition is satisfied in both tables. Non-matching rows are excluded entirely from the result.",tip:"Think of INNER JOIN as the intersection of two sets — only rows that exist in both tables survive."},
+  {cat:"JOIN",q:"What is returned by a LEFT JOIN when there's no matching row in the right table?",code:"SELECT c.name, o.order_id\nFROM customers c\nLEFT JOIN orders o ON c.id = o.customer_id",opts:["The row is excluded from the result","An error is thrown","The left-table row is returned with NULL values for all right-table columns","The row is duplicated for every row in the right table"],ans:2,exp:"LEFT JOIN preserves ALL rows from the left table. When no matching row exists in the right table, those columns are filled with NULL.",tip:"LEFT JOIN = 'keep all left rows no matter what'. Perfect for finding customers with no orders: WHERE o.order_id IS NULL after a LEFT JOIN."},
+  {cat:"JOIN",q:"Which JOIN type returns all rows from both tables, filling NULLs where there is no match on either side?",code:null,opts:["LEFT JOIN","RIGHT JOIN","CROSS JOIN","FULL OUTER JOIN"],ans:3,exp:"FULL OUTER JOIN returns every row from both tables. Where there is no match, the missing side is NULL. It equals LEFT JOIN ∪ RIGHT JOIN.",tip:"FULL OUTER JOIN is useful for finding unmatched rows on either side. Filter WHERE left.id IS NULL OR right.id IS NULL to find rows with no counterpart."},
+  {cat:"JOIN",q:"What does a CROSS JOIN produce?",code:"SELECT s.size, c.color\nFROM sizes s\nCROSS JOIN colors c",opts:["Only matching rows from both tables","All rows from the left table only","The Cartesian product — every row from A paired with every row from B","Rows that exist in one table but not the other"],ans:2,exp:"A CROSS JOIN produces the Cartesian product. 5 sizes × 4 colors = 20 rows. There is no ON condition — every combination is returned.",tip:"Rare in production but useful for generating combinations (e.g., a calendar of all dates × all stores). Watch out — 1000 × 1000 = 1,000,000 rows!"},
+  {cat:"JOIN",q:"What does this self-join accomplish?",code:"SELECT e.name AS employee, m.name AS manager\nFROM employees e\nLEFT JOIN employees m ON e.manager_id = m.id",opts:["Joins a table to itself to express within-table relationships","Creates a backup copy of the table","Returns only employees without a manager","Generates a Cartesian product of the employees table"],ans:0,exp:"A self-join references the same table twice using aliases. Here it links each employee to their manager, where both are stored in the same table.",tip:"Self-joins are ideal for hierarchical data (employee→manager, category→parent). Always use aliases (e and m here) to distinguish the two roles of the same table."},
+  /* ── GROUP BY ── */
+  {cat:"GROUP BY",q:"Which query correctly counts the number of orders per customer?",code:null,opts:["SELECT customer_id, COUNT(*) FROM orders","SELECT customer_id, COUNT(*) FROM orders GROUP BY customer_id","SELECT customer_id, COUNT(*) FROM orders WHERE customer_id > 0","SELECT COUNT(*) FROM orders GROUP BY customer_id"],ans:1,exp:"Every non-aggregated column in SELECT must appear in GROUP BY. Option B groups by customer_id and counts rows per group — the others are invalid or missing the select column.",tip:"The rule: any column in SELECT not wrapped in an aggregate function (SUM, COUNT, AVG…) MUST be in GROUP BY. This is enforced strictly in most databases."},
+  {cat:"GROUP BY",q:"What is the fundamental difference between WHERE and HAVING?",code:"SELECT department, AVG(salary) AS avg_sal\nFROM employees\nWHERE status = 'active'\nGROUP BY department\nHAVING AVG(salary) > 60000",opts:["WHERE filters after aggregation; HAVING filters before","WHERE filters rows before aggregation; HAVING filters groups after aggregation","They are interchangeable — use either one","HAVING can only be used without GROUP BY"],ans:1,exp:"WHERE filters individual rows BEFORE grouping. HAVING filters the resulting groups AFTER GROUP BY and aggregation. You cannot use aggregate functions in WHERE.",tip:"Execution order: WHERE → GROUP BY → aggregation → HAVING → SELECT → ORDER BY → LIMIT. Understanding this order prevents many bugs."},
+  {cat:"GROUP BY",q:"What does GROUP BY ROLLUP(department, job_title) produce?",code:"SELECT department, job_title, SUM(salary)\nFROM employees\nGROUP BY ROLLUP(department, job_title)",opts:["Only the grand total salary across all rows","Only totals per department","Subtotals per (dept, job_title), subtotals per dept only, and a grand total","An error — ROLLUP is not valid SQL"],ans:2,exp:"ROLLUP generates a hierarchy of aggregations: the full group (dept+job), the subtotal at the first column (dept only), and the grand total (no grouping). NULLs mark the rolled-up rows.",tip:"ROLLUP(a,b,c) produces N+1 levels. CUBE produces all 2^N combinations. GROUPING SETS lets you specify exactly which combinations you want."},
+  /* ── AGGREGATION ── */
+  {cat:"Aggregation",q:"What is the difference between COUNT(*) and COUNT(column_name)?",code:null,opts:["COUNT(*) counts only distinct values; COUNT(col) counts all rows","COUNT(*) counts all rows including NULLs; COUNT(col) ignores NULL values","They are identical in all cases","COUNT(col) is always faster than COUNT(*)"],ans:1,exp:"COUNT(*) counts every row, including rows where columns are NULL. COUNT(column_name) counts only rows where that specific column is NOT NULL.",tip:"Use COUNT(*) for total row count. Use COUNT(col) to count non-null values in a specific column. Add DISTINCT inside: COUNT(DISTINCT customer_id) for unique counts."},
+  {cat:"Aggregation",q:"Given salaries: 50000, 60000, NULL, 80000 — what does AVG(salary) return?",code:"SELECT AVG(salary) FROM employees\n-- Salaries: 50000, 60000, NULL, 80000",opts:["47500 (treats NULL as 0, divides by 4)","63333 (ignores NULL, divides by 3 non-NULL rows)","NULL (NULL propagates through AVG)","Error: cannot compute AVG with NULLs"],ans:1,exp:"AVG ignores NULL values completely. It computes (50000 + 60000 + 80000) / 3 = 63333. NULLs are excluded from both the sum and the denominator count.",tip:"All aggregate functions (SUM, AVG, MIN, MAX, COUNT(col)) silently ignore NULLs. Only COUNT(*) is immune — it counts rows regardless. Use COALESCE before aggregating if you want NULLs treated as 0."},
+  {cat:"Aggregation",q:"What does this conditional aggregation query compute?",code:"SELECT department,\n  SUM(CASE WHEN gender = 'F' THEN salary ELSE 0 END) AS female_total,\n  SUM(CASE WHEN gender = 'M' THEN salary ELSE 0 END) AS male_total\nFROM employees\nGROUP BY department",opts:["Count of employees by gender per department","Total salary paid to female vs male employees, per department","Average salary by gender","Whether gender pay gaps exist"],ans:1,exp:"CASE inside an aggregate conditionally includes values. The first SUM adds salary only when gender='F', the second only when gender='M'. This is the conditional aggregation pattern.",tip:"Conditional aggregation (CASE inside SUM/COUNT) is how you pivot data in SQL without PIVOT syntax. It's a core data engineering pattern — compute multiple metrics in a single table scan."},
+  /* ── SUBQUERIES ── */
+  {cat:"Subqueries",q:"What does this query return?",code:"SELECT name, salary\nFROM employees\nWHERE salary > (\n  SELECT AVG(salary)\n  FROM employees\n)",opts:["Employees with salary exactly equal to the average","All employees and their salaries","Employees whose salary is above the overall company average","A syntax error — subqueries cannot appear in WHERE"],ans:2,exp:"The subquery computes one value: the overall average salary. The outer query filters to employees with salary greater than that average. This is a scalar subquery.",tip:"Scalar subqueries (returning exactly one row and one column) can appear anywhere a single value is expected: WHERE, SELECT, HAVING, even JOIN ON clauses."},
+  {cat:"Subqueries",q:"What makes a subquery 'correlated'?",code:"SELECT e.name FROM employees e\nWHERE salary > (\n  SELECT AVG(salary) FROM employees\n  WHERE department_id = e.department_id\n)",opts:["It returns multiple columns","It references a column from the outer query, re-executing for each outer row","It is placed in the FROM clause as a derived table","It uses a JOIN internally"],ans:1,exp:"A correlated subquery references a column from the outer query (e.department_id). It is re-evaluated for every row of the outer query, which can be slow on large datasets.",tip:"Correlated subqueries are powerful but O(n) expensive. They're often replaceable with a window function (AVG(salary) OVER (PARTITION BY department_id)) for far better performance."},
+  {cat:"Subqueries",q:"When should you prefer EXISTS over IN with a subquery?",code:"-- EXISTS version\nSELECT * FROM orders o\nWHERE EXISTS (\n  SELECT 1 FROM returns r WHERE r.order_id = o.id\n)\n\n-- IN version\nSELECT * FROM orders\nWHERE order_id IN (SELECT order_id FROM returns)",opts:["Always use IN — it is always faster","EXISTS is better for large subquery results and avoids NULL traps in NOT IN","They always produce identical results — prefer whichever reads better","EXISTS is only valid for numeric comparisons"],ans:1,exp:"EXISTS short-circuits on the first match (faster for large sets). More importantly: NOT IN returns no rows if the subquery returns ANY NULL value, which is a notorious bug source. NOT EXISTS handles NULLs correctly.",tip:"Critical rule: NEVER use NOT IN when the subquery column can contain NULLs — it returns zero rows silently. Always use NOT EXISTS or NOT IN with a WHERE col IS NOT NULL filter."},
+  /* ── CTEs ── */
+  {cat:"CTEs",q:"Which syntax correctly defines a CTE?",code:null,opts:["SELECT * INTO cte_name FROM orders","WITH cte_name AS (SELECT * FROM orders) SELECT * FROM cte_name","CREATE TEMP TABLE cte_name AS SELECT * FROM orders","DEFINE cte_name AS SELECT * FROM orders"],ans:1,exp:"CTEs use the WITH...AS syntax and are defined inline before the main SELECT. They exist only for the duration of that single query — unlike temp tables.",tip:"CTEs shine for readability: break a complex query into named steps. They can also be referenced multiple times in the same query, unlike derived tables in the FROM clause."},
+  {cat:"CTEs",q:"What is the purpose of a recursive CTE?",code:"WITH RECURSIVE org AS (\n  -- Anchor: top-level managers\n  SELECT id, name, manager_id, 1 AS lvl\n  FROM employees WHERE manager_id IS NULL\n  UNION ALL\n  -- Recursive: each employee's reports\n  SELECT e.id, e.name, e.manager_id, o.lvl + 1\n  FROM employees e\n  JOIN org o ON e.manager_id = o.id\n)\nSELECT * FROM org",opts:["Running the same query multiple times for caching","Traversing hierarchical or graph-like data such as org charts or trees","Defining CTEs with more than 5 columns","Replacing subqueries in the SELECT clause"],ans:1,exp:"Recursive CTEs reference themselves to traverse hierarchical structures. The anchor provides the starting rows; the recursive part joins back to the CTE to reach the next level.",tip:"Recursive CTEs need: (1) an anchor (base case), (2) UNION ALL, (3) a recursive step that joins to the CTE itself. Add a depth limit or cycle guard on real data to avoid infinite loops."},
+  {cat:"CTEs",q:"Can one query contain multiple CTEs referencing each other?",code:"WITH\n  monthly_rev AS (\n    SELECT DATE_TRUNC('month', order_date) AS month,\n           SUM(amount) AS revenue\n    FROM orders GROUP BY 1\n  ),\n  ranked AS (\n    SELECT *, RANK() OVER (ORDER BY revenue DESC) AS rk\n    FROM monthly_rev\n  )\nSELECT * FROM ranked WHERE rk <= 3",opts:["No — only one CTE per query is allowed","Yes — multiple CTEs are separated by commas under a single WITH keyword","Yes — each CTE requires its own WITH keyword","Only in stored procedures, not regular queries"],ans:1,exp:"Multiple CTEs share a single WITH clause, separated by commas. Each CTE can reference any CTE defined before it in the list. This creates a clean step-by-step transformation pipeline.",tip:"Think of multiple CTEs as a linear pipeline: CTE1 → CTE2 → CTE3 → final SELECT. This is the backbone of readable, maintainable SQL in data engineering."},
+  /* ── WINDOW FUNCTIONS ── */
+  {cat:"Window Functions",q:"What does PARTITION BY do inside a window function?",code:"SELECT name, department, salary,\n  AVG(salary) OVER (PARTITION BY department) AS dept_avg\nFROM employees",opts:["Filters rows like WHERE — removes rows from the result","Divides rows into independent groups; the function computes separately within each","Sorts the result set by department","Limits the number of rows per department"],ans:1,exp:"PARTITION BY divides the result set into independent windows. The window function computes separately within each partition. All rows are preserved — unlike GROUP BY which collapses them.",tip:"KEY difference: GROUP BY collapses N rows → 1 row per group. PARTITION BY keeps all N rows but adds a per-group calculation beside each row. You get the detail AND the aggregate."},
+  {cat:"Window Functions",q:"What is the key difference between ROW_NUMBER(), RANK(), and DENSE_RANK() when scores are tied?",code:"-- scores: 100, 90, 90, 80\n-- ROW_NUMBER:  1,  2,  3,  4  (always unique)\n-- RANK:        1,  2,  2,  4  (skips 3 after tie)\n-- DENSE_RANK:  1,  2,  2,  3  (no gap after tie)",opts:["ROW_NUMBER gives unique sequential numbers; RANK skips after ties; DENSE_RANK never skips","RANK gives unique numbers; ROW_NUMBER skips after ties; DENSE_RANK is the same as RANK","All three produce the same results","DENSE_RANK skips numbers; RANK does not"],ans:0,exp:"ROW_NUMBER: always unique, arbitrary tiebreaker. RANK: ties share a rank, the next rank jumps (1,2,2,4 — rank 3 is skipped). DENSE_RANK: ties share a rank, next rank is consecutive (1,2,2,3 — no gap).",tip:"Mnemonic: RANK = sports podium (two silver medalists means no bronze). DENSE_RANK = no gaps ever. ROW_NUMBER = arbitrarily breaks all ties. Use ROW_NUMBER for 'top-1 per group' to get exactly one row."},
+  {cat:"Window Functions",q:"What do LAG() and LEAD() functions provide?",code:"SELECT date, revenue,\n  LAG(revenue, 1)  OVER (ORDER BY date) AS prev_day,\n  LEAD(revenue, 1) OVER (ORDER BY date) AS next_day\nFROM daily_sales",opts:["LAG returns the minimum value; LEAD returns the maximum","LAG accesses a value from N rows before current; LEAD accesses N rows after","LAG and LEAD calculate running totals across all rows","They require PARTITION BY and cannot work with ORDER BY alone"],ans:1,exp:"LAG(col, n) returns the value from the row n positions before the current row. LEAD(col, n) returns the value from n rows after. Both require ORDER BY to define 'before' and 'after'.",tip:"LAG/LEAD eliminate self-joins for period-over-period analysis. revenue - LAG(revenue) OVER (ORDER BY date) gives day-over-day delta in one line. Add a default as the 3rd arg for the first/last row."},
+  {cat:"Window Functions",q:"What does OVER() with no arguments compute?",code:"SELECT name, salary,\n  SUM(salary) OVER ()     AS company_total,\n  SUM(salary) OVER (PARTITION BY dept) AS dept_total\nFROM employees",opts:["OVER() with no arguments is invalid syntax","OVER() treats the entire result set as one single partition","PARTITION BY is required; OVER() alone returns NULL","Both expressions above produce identical results"],ans:1,exp:"OVER() with no arguments treats all rows as a single partition. Every row gets the grand total. OVER(PARTITION BY dept) resets the window per department.",tip:"OVER() = grand total beside every row. OVER(PARTITION BY x) = group total beside every row. OVER(ORDER BY date) = running total. Combine them: OVER(PARTITION BY dept ORDER BY date) = running total per department."},
+  {cat:"Window Functions",q:"What does PERCENT_RANK() return for a row?",code:"SELECT name, score,\n  PERCENT_RANK() OVER (ORDER BY score) AS pct_rank\nFROM results\n-- Possible output: 0.0, 0.25, 0.5, 0.75, 1.0",opts:["The percentage of the max score this row achieves","The relative rank as a fraction between 0 and 1 (0 = lowest, 1 = highest)","The percentile bucket (like NTILE(100))","The cumulative fraction of rows seen so far"],ans:1,exp:"PERCENT_RANK = (rank - 1) / (total_rows - 1). The lowest-ranked row = 0.0, the highest = 1.0. It shows each row's relative standing in the ordered set.",tip:"PERCENT_RANK vs CUME_DIST: PERCENT_RANK = (rank-1)/(n-1) — excludes current row from denominator. CUME_DIST = rows_≤_current/n — the fraction of rows at or below this value. Both range [0,1]."},
+  /* ── ROW_NUMBER / RANK ── */
+  {cat:"ROW_NUMBER / RANK",q:"How do you get exactly the top-1 highest-paid employee per department?",code:"SELECT * FROM (\n  SELECT name, department, salary,\n    ROW_NUMBER() OVER (\n      PARTITION BY department\n      ORDER BY salary DESC\n    ) AS rn\n  FROM employees\n) t\nWHERE rn = 1",opts:["GROUP BY department and MAX(salary) — simpler and equivalent","Wrap ROW_NUMBER() in a subquery and filter WHERE rn = 1","Use RANK() instead — it's identical for this use case","Use DENSE_RANK() ≤ 1 for exactly the same result"],ans:1,exp:"ROW_NUMBER() assigns unique numbers per partition, so rn=1 always returns exactly one row per department. RANK() could return multiple rows if there's a salary tie at the top.",tip:"This is the 'top-N per group' pattern — essential in data engineering. Use ROW_NUMBER for strict N=1. Use RANK or DENSE_RANK when ties should be included. Use QUALIFY in Snowflake/BigQuery to skip the subquery."},
+  /* ── CASE ── */
+  {cat:"CASE",q:"What does this CASE expression return for salary = 45000?",code:"CASE\n  WHEN salary < 40000  THEN 'Junior'\n  WHEN salary BETWEEN 40000 AND 70000 THEN 'Mid'\n  WHEN salary > 70000  THEN 'Senior'\n  ELSE 'Unknown'\nEND AS level",opts:["'Junior'","'Mid'","'Senior'","'Unknown'"],ans:1,exp:"45000 fails the first condition (< 40000). It satisfies BETWEEN 40000 AND 70000, so 'Mid' is returned. CASE evaluates top-to-bottom and stops at the first TRUE condition.",tip:"CASE is short-circuit: once a condition matches, no further conditions are evaluated. Always include ELSE — without it, unmatched rows return NULL, which causes silent data quality bugs."},
+  {cat:"CASE",q:"What is the difference between a Simple CASE and a Searched CASE?",code:"-- Simple CASE: tests equality against one expression\nCASE status\n  WHEN 'A' THEN 'Active'\n  WHEN 'I' THEN 'Inactive'\nEND\n\n-- Searched CASE: each WHEN has its own condition\nCASE\n  WHEN age < 18  THEN 'Minor'\n  WHEN age >= 65 THEN 'Senior'\n  ELSE 'Adult'\nEND",opts:["Simple CASE uses =; Searched CASE can use any comparison operator or expression","They produce different SQL and one is faster than the other","Simple CASE is for numbers only; Searched CASE is for strings only","They are identical — just alternative syntax"],ans:0,exp:"Simple CASE compares one expression against literal values (equality only). Searched CASE evaluates arbitrary boolean expressions in each WHEN, allowing ranges, IS NULL, LIKE, and compound conditions.",tip:"Searched CASE is far more flexible — use it when you need anything beyond equality. But be careful about overlapping conditions: CASE picks the FIRST matching WHEN, so order matters."},
+  /* ── STRING FUNCTIONS ── */
+  {cat:"String Functions",q:"What does SUBSTRING('DataEngineer', 5, 8) return?",code:null,opts:["'Data'","'Engineer'","'Engi'","'tEngineer'"],ans:1,exp:"SUBSTRING(string, start, length) — starting at position 5 (which is 'E' — SQL strings are 1-indexed) and taking 8 characters gives 'Engineer'.",tip:"String positions in SQL are 1-indexed (position 1 = first character). SUBSTRING(str, 1, 4) = first 4 characters. PostgreSQL also supports Python-style slice: str[1:4]."},
+  {cat:"String Functions",q:"What does TRIM('  Hello World  ') return?",code:null,opts:["'  Hello World  ' (no change)","'Hello World' (leading and trailing spaces removed)","'HelloWorld' (all spaces removed)","Error — TRIM needs two arguments"],ans:1,exp:"TRIM() removes leading and trailing whitespace. It does NOT touch spaces inside the string. The middle space in 'Hello World' is preserved.",tip:"LTRIM removes only leading spaces. RTRIM only trailing. TRIM removes both. You can also TRIM specific characters: TRIM('_' FROM '__hello__') = 'hello'. Very useful for cleaning messy imported data."},
+  {cat:"String Functions",q:"Which expression correctly concatenates first_name, a space, and last_name in ANSI SQL?",code:null,opts:["first_name + ' ' + last_name","CONCAT(first_name, last_name)","first_name || ' ' || last_name","MERGE(first_name, ' ', last_name)"],ans:2,exp:"In ANSI SQL, || is the string concatenation operator. CONCAT() also works in most databases but requires the space as a separate argument: CONCAT(first_name, ' ', last_name).",tip:"Concatenation by dialect: PostgreSQL/Oracle/SQLite = ||. MySQL/SQL Server = CONCAT(). SQL Server also supports +. CONCAT() treats NULLs as empty strings in MySQL — behavior varies, so check your dialect."},
+  /* ── DATE FUNCTIONS ── */
+  {cat:"Date Functions",q:"What does DATE_TRUNC('month', '2024-07-15') return?",code:null,opts:["'2024-07-15' (no change)","'2024-07-01 00:00:00' (first day of the month)","'2024-07-31' (last day of the month)","'07' (just the month number)"],ans:1,exp:"DATE_TRUNC truncates a timestamp to the specified precision. 'month' truncates to the first moment of that month: 2024-07-01 00:00:00.",tip:"DATE_TRUNC is the workhorse of time-series aggregation. GROUP BY DATE_TRUNC('month', created_at) gives monthly buckets without separately extracting year and month."},
+  {cat:"Date Functions",q:"What does EXTRACT(DOW FROM '2024-07-15') return in PostgreSQL?",code:"-- DOW = Day Of Week\n-- PostgreSQL: 0 = Sunday, 6 = Saturday\nSELECT EXTRACT(DOW FROM DATE '2024-07-15')",opts:["15 (day of month)","7 (day of year)","1 (Monday — 2024-07-15 was a Monday)","7 (the week number)"],ans:2,exp:"2024-07-15 was a Monday. EXTRACT(DOW ...) returns the day of week as a number. In PostgreSQL: 0=Sunday, 1=Monday, …, 6=Saturday. So Monday = 1.",tip:"EXTRACT/DATE_PART supports: YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, DOW (day of week), DOY (day of year), QUARTER, EPOCH (Unix timestamp). In SQL Server use DATEPART(). In BigQuery use EXTRACT()."},
+  {cat:"Date Functions",q:"In PostgreSQL, how do you calculate the number of days between two date columns?",code:"SELECT order_date, ship_date,\n  ship_date - order_date AS days_to_ship\nFROM orders",opts:["DATEDIFF(ship_date, order_date)","ship_date - order_date returns an integer number of days","DATE_DIFF(ship_date, order_date)","DAYS_BETWEEN(order_date, ship_date)"],ans:1,exp:"In PostgreSQL, subtracting two date values directly returns an integer (number of days). DATEDIFF() is SQL Server / MySQL syntax and does not exist natively in PostgreSQL.",tip:"Date arithmetic by dialect: PostgreSQL = date2 - date1 (integer). SQL Server = DATEDIFF(day, d1, d2). MySQL = DATEDIFF(d2, d1). BigQuery = DATE_DIFF(d2, d1, DAY). Always check your dialect!"},
+  /* ── ROLLING SUM ── */
+  {cat:"Rolling Sum",q:"What does this query compute for each row?",code:"SELECT date, revenue,\n  SUM(revenue) OVER (\n    ORDER BY date\n    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\n  ) AS running_total\nFROM sales",opts:["Total revenue across the entire table — the same value on every row","Revenue for the current row only","A cumulative (running) sum from the very first row to the current row","The average revenue up to the current date"],ans:2,exp:"ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW defines a frame from the first row in the partition to the current row — the classic cumulative sum.",tip:"This is the most common window frame. UNBOUNDED PRECEDING = start of partition. CURRENT ROW = current row. UNBOUNDED FOLLOWING = end of partition. Omitting ROWS BETWEEN defaults to RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW (slightly different for ties)."},
+  {cat:"Rolling Sum",q:"What does ROWS BETWEEN 6 PRECEDING AND CURRENT ROW compute in this context?",code:"SELECT date, sales,\n  AVG(sales) OVER (\n    ORDER BY date\n    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW\n  ) AS rolling_7day_avg\nFROM daily_sales",opts:["Average of all sales in the table (grand average)","Average of the current row and the 6 rows immediately before it (up to 7 rows)","Average of the next 6 rows after the current row","Average grouped by week — one value per 7 rows"],ans:1,exp:"ROWS BETWEEN 6 PRECEDING AND CURRENT ROW includes the current row plus up to 6 rows before it — a maximum of 7 rows. This creates a 7-day rolling average.",tip:"ROWS counts physical rows. RANGE counts rows with the same ORDER BY value (logical). For time-series smoothing always use ROWS — it behaves predictably. Early rows at the start of the data will have smaller windows (less than 7 rows available)."},
+  /* ── NTILE ── */
+  {cat:"NTILE",q:"What does NTILE(4) OVER (ORDER BY salary DESC) do?",code:"SELECT name, salary,\n  NTILE(4) OVER (ORDER BY salary DESC) AS quartile\nFROM employees",opts:["Assigns each row a rank from 1 to 4 based on salary magnitude","Divides rows into 4 approximately equal-sized buckets (quartiles) labeled 1–4","Calculates the 4th percentile of salary for each row","Returns the top 4 employees by salary"],ans:1,exp:"NTILE(n) divides the ordered result into n approximately equal buckets and assigns each row its bucket number (1 to n). NTILE(4) = quartiles: bucket 1 has the highest salaries.",tip:"NTILE(4) = quartiles. NTILE(10) = deciles. NTILE(100) = percentiles. When rows don't divide evenly, earlier buckets get one extra row. Great for customer segmentation, cohort analysis, and AB test stratification."},
+  {cat:"NTILE",q:"With 10 rows and NTILE(3), how are the buckets distributed?",code:"-- 10 rows, 3 buckets\n-- 10 / 3 = 3 remainder 1\n-- Extra row goes to bucket 1",opts:["Buckets of 3, 3, 4","Buckets of 4, 3, 3","Buckets of 3, 4, 3","Error — 10 is not divisible by 3, NTILE requires even division"],ans:1,exp:"When rows don't divide evenly, NTILE distributes extra rows to the earliest buckets. 10 ÷ 3 = 3 remainder 1, so bucket 1 gets 4 rows; buckets 2 and 3 get 3 rows each.",tip:"NTILE never throws an error for non-divisible counts — it gracefully distributes. The only 'gotcha' is that bucket sizes are not guaranteed to be equal, which matters for truly equal-sized sampling."}
+];
+
+const DOCS = [
+  {icon:"🔗",title:"JOINs",tag:"Foundation",tagClass:"cat-join",content:`
+<p>JOINs combine rows from two or more tables based on a related column.</p>
+<h4>Types of JOINs</h4>
+<ul>
+  <li><strong>INNER JOIN</strong> — only rows with matches in both tables</li>
+  <li><strong>LEFT JOIN</strong> — all left rows + matching right rows (NULLs for no match)</li>
+  <li><strong>RIGHT JOIN</strong> — all right rows + matching left rows (NULLs for no match)</li>
+  <li><strong>FULL OUTER JOIN</strong> — all rows from both tables, NULLs where no match</li>
+  <li><strong>CROSS JOIN</strong> — Cartesian product (every A × every B)</li>
+  <li><strong>SELF JOIN</strong> — a table joined to itself (e.g. employee → manager)</li>
+</ul>
+<pre class="cb"><span class="kw">SELECT</span> c.name, o.amount
+<span class="kw">FROM</span> <span class="tbl">customers</span> c
+<span class="kw">LEFT JOIN</span> <span class="tbl">orders</span> o <span class="kw">ON</span> c.id = o.customer_id
+<span class="kw">WHERE</span> o.id <span class="kw">IS NULL</span> <span class="cmt">-- customers with NO orders</span></pre>
+<h4>Key rules</h4>
+<ul>
+  <li>INNER JOIN = intersection. LEFT/RIGHT JOIN = one side fully preserved.</li>
+  <li>FULL OUTER JOIN = union — use it to find unmatched rows on either side.</li>
+  <li>Avoid CROSS JOIN unless intentional — it explodes row counts.</li>
+  <li>Prefer NOT EXISTS over NOT IN when the subquery may return NULLs.</li>
+</ul>`},
+  {icon:"📊",title:"GROUP BY & HAVING",tag:"Aggregation",tagClass:"cat-group",content:`
+<p>GROUP BY collapses multiple rows into one per unique value (or combination of values) of the grouped columns.</p>
+<pre class="cb"><span class="kw">SELECT</span> department, <span class="fn">COUNT</span>(*) AS headcount, <span class="fn">AVG</span>(salary) AS avg_sal
+<span class="kw">FROM</span> <span class="tbl">employees</span>
+<span class="kw">WHERE</span> status = <span class="str">'active'</span>         <span class="cmt">-- filters rows BEFORE grouping</span>
+<span class="kw">GROUP BY</span> department
+<span class="kw">HAVING</span> <span class="fn">AVG</span>(salary) > <span class="num">60000</span>   <span class="cmt">-- filters GROUPS after aggregation</span>
+<span class="kw">ORDER BY</span> avg_sal <span class="kw">DESC</span></pre>
+<h4>Execution order (crucial)</h4>
+<ul>
+  <li>FROM → WHERE → GROUP BY → aggregate → HAVING → SELECT → ORDER BY → LIMIT</li>
+  <li>WHERE cannot reference aggregate results — use HAVING instead.</li>
+  <li>Every SELECT column not in an aggregate must be in GROUP BY.</li>
+</ul>
+<h4>Advanced: ROLLUP / CUBE / GROUPING SETS</h4>
+<ul>
+  <li><strong>ROLLUP(a,b)</strong> — subtotals at each level + grand total</li>
+  <li><strong>CUBE(a,b)</strong> — all 2^N grouping combinations</li>
+  <li><strong>GROUPING SETS((a,b),(a),())</strong> — explicit combinations</li>
+</ul>`},
+  {icon:"🔢",title:"Aggregation Functions",tag:"Aggregation",tagClass:"cat-agg",content:`
+<p>Aggregate functions collapse multiple rows into a single value. All of them (except COUNT(*)) ignore NULLs.</p>
+<h4>Core functions</h4>
+<ul>
+  <li><strong>COUNT(*)</strong> — count all rows (includes NULLs)</li>
+  <li><strong>COUNT(col)</strong> — count non-NULL values in column</li>
+  <li><strong>COUNT(DISTINCT col)</strong> — count unique non-NULL values</li>
+  <li><strong>SUM(col)</strong> — total of non-NULL values</li>
+  <li><strong>AVG(col)</strong> — average of non-NULL values</li>
+  <li><strong>MIN(col) / MAX(col)</strong> — smallest / largest non-NULL value</li>
+</ul>
+<h4>Conditional aggregation (pivot pattern)</h4>
+<pre class="cb"><span class="kw">SELECT</span> department,
+  <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> gender = <span class="str">'F'</span> <span class="kw">THEN</span> salary <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) AS female_payroll,
+  <span class="fn">COUNT</span>(<span class="kw">CASE WHEN</span> level = <span class="str">'Senior'</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">END</span>)   AS senior_count
+<span class="kw">FROM</span> <span class="tbl">employees</span>
+<span class="kw">GROUP BY</span> department</pre>
+<h4>NULL handling</h4>
+<ul>
+  <li>Use COALESCE(col, 0) before aggregating if you want NULLs treated as 0.</li>
+  <li>AVG(COALESCE(score, 0)) vs AVG(score) — different results on NULL-heavy columns.</li>
+</ul>`},
+  {icon:"🔍",title:"Subqueries",tag:"Intermediate",tagClass:"cat-sub",content:`
+<p>A subquery is a SELECT statement nested inside another SQL statement. It can appear in FROM, WHERE, SELECT, or HAVING.</p>
+<h4>Types</h4>
+<ul>
+  <li><strong>Scalar subquery</strong> — returns exactly 1 row × 1 column (used like a value)</li>
+  <li><strong>Row subquery</strong> — returns 1 row × multiple columns</li>
+  <li><strong>Table subquery (derived table)</strong> — returns a table, used in FROM</li>
+  <li><strong>Correlated subquery</strong> — references outer query; re-runs per outer row</li>
+</ul>
+<pre class="cb"><span class="cmt">-- Correlated: finds employees above their dept average</span>
+<span class="kw">SELECT</span> e.name, e.salary
+<span class="kw">FROM</span> <span class="tbl">employees</span> e
+<span class="kw">WHERE</span> e.salary > (
+  <span class="kw">SELECT</span> <span class="fn">AVG</span>(salary) <span class="kw">FROM</span> <span class="tbl">employees</span>
+  <span class="kw">WHERE</span> department_id = e.department_id
+)</pre>
+<h4>EXISTS vs IN</h4>
+<ul>
+  <li><strong>EXISTS</strong> — stops at the first match (efficient); safe with NULLs</li>
+  <li><strong>IN</strong> — checks membership in a list; NOT IN fails silently if subquery returns NULL</li>
+  <li>Rule: prefer NOT EXISTS over NOT IN whenever NULLs are possible</li>
+</ul>`},
+  {icon:"🏗️",title:"CTEs (Common Table Expressions)",tag:"Intermediate",tagClass:"cat-cte",content:`
+<p>CTEs create named, temporary result sets that exist only for the duration of a single query. They are defined with the WITH keyword before the main SELECT.</p>
+<pre class="cb"><span class="kw">WITH</span>
+  <span class="tbl">active_customers</span> <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> id, name <span class="kw">FROM</span> <span class="tbl">customers</span> <span class="kw">WHERE</span> status = <span class="str">'active'</span>
+  ),
+  <span class="tbl">order_totals</span> <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> customer_id, <span class="fn">SUM</span>(amount) AS total
+    <span class="kw">FROM</span> <span class="tbl">orders</span> <span class="kw">GROUP BY</span> customer_id
+  )
+<span class="kw">SELECT</span> ac.name, ot.total
+<span class="kw">FROM</span> <span class="tbl">active_customers</span> ac
+<span class="kw">JOIN</span> <span class="tbl">order_totals</span> ot <span class="kw">ON</span> ac.id = ot.customer_id</pre>
+<h4>Recursive CTEs</h4>
+<ul>
+  <li>Use RECURSIVE keyword (PostgreSQL, MySQL 8+, SQL Server uses WITH recursion natively)</li>
+  <li>Structure: anchor (base case) UNION ALL recursive step</li>
+  <li>Use cases: org hierarchies, Bill of Materials, path traversal, date series generation</li>
+</ul>
+<h4>CTE vs Subquery vs Temp Table</h4>
+<ul>
+  <li>CTE: readable, reusable in same query, no persistence</li>
+  <li>Subquery: inline, not reusable, harder to read when nested</li>
+  <li>Temp Table: persists in session, can be indexed, better for very large intermediate results</li>
+</ul>`},
+  {icon:"🪟",title:"Window Functions",tag:"Advanced",tagClass:"cat-win",content:`
+<p>Window functions compute a value for each row using a set of related rows (the "window") without collapsing the result like GROUP BY does.</p>
+<pre class="cb"><span class="fn">function_name</span>() <span class="kw">OVER</span> (
+  [<span class="kw">PARTITION BY</span> col1, col2]  <span class="cmt">-- optional: reset window per group</span>
+  [<span class="kw">ORDER BY</span> col3]             <span class="cmt">-- optional: ordering within partition</span>
+  [<span class="kw">ROWS BETWEEN</span> ... <span class="kw">AND</span> ...]  <span class="cmt">-- optional: frame specification</span>
+)</pre>
+<h4>Categories of window functions</h4>
+<ul>
+  <li><strong>Ranking:</strong> ROW_NUMBER, RANK, DENSE_RANK, NTILE, PERCENT_RANK, CUME_DIST</li>
+  <li><strong>Navigation:</strong> LAG, LEAD, FIRST_VALUE, LAST_VALUE, NTH_VALUE</li>
+  <li><strong>Aggregate:</strong> SUM, AVG, COUNT, MIN, MAX (same functions, window context)</li>
+</ul>
+<h4>Frame specification</h4>
+<ul>
+  <li>ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW → running total</li>
+  <li>ROWS BETWEEN 6 PRECEDING AND CURRENT ROW → 7-day rolling window</li>
+  <li>ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING → full partition</li>
+</ul>
+<h4>Key insight</h4>
+<p>Window functions are computed AFTER WHERE, GROUP BY, and HAVING — they see the final filtered rows. Use them in a subquery/CTE if you need to filter on their results.</p>`},
+  {icon:"🏆",title:"ROW_NUMBER, RANK & DENSE_RANK",tag:"Advanced",tagClass:"cat-rank",content:`
+<p>These three ranking functions assign numbers to rows within a partition, differing only in how they handle ties.</p>
+<pre class="cb"><span class="kw">SELECT</span> name, score,
+  <span class="fn">ROW_NUMBER</span>()  <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> score <span class="kw">DESC</span>) AS rn,
+  <span class="fn">RANK</span>()        <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> score <span class="kw">DESC</span>) AS rnk,
+  <span class="fn">DENSE_RANK</span>()  <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> score <span class="kw">DESC</span>) AS dr
+<span class="kw">FROM</span> <span class="tbl">leaderboard</span>
+<span class="cmt">-- score: 100, 90, 90, 80
+-- rn:    1,   2,  3,  4   always unique
+-- rnk:   1,   2,  2,  4   skips 3 after tie
+-- dr:    1,   2,  2,  3   no gap after tie</span></pre>
+<h4>Top-N per group pattern</h4>
+<pre class="cb"><span class="kw">SELECT</span> * <span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> *, <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (
+    <span class="kw">PARTITION BY</span> department <span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>
+  ) AS rn
+  <span class="kw">FROM</span> <span class="tbl">employees</span>
+) t <span class="kw">WHERE</span> rn <= <span class="num">3</span>  <span class="cmt">-- top 3 per dept</span></pre>
+<h4>When to use which</h4>
+<ul>
+  <li><strong>ROW_NUMBER</strong> — always unique; use for deduplication, pagination, top-N with no ties</li>
+  <li><strong>RANK</strong> — sports-style ranking; gaps after ties (1,2,2,4)</li>
+  <li><strong>DENSE_RANK</strong> — no gaps after ties (1,2,2,3); use for business rankings where ties should share a rank without creating gaps</li>
+</ul>`},
+  {icon:"🔀",title:"CASE Expressions",tag:"Foundation",tagClass:"cat-case",content:`
+<p>CASE is SQL's if-then-else. It returns a single value based on conditions and can be used anywhere a value expression is valid.</p>
+<h4>Simple CASE (equality test)</h4>
+<pre class="cb"><span class="kw">CASE</span> status
+  <span class="kw">WHEN</span> <span class="str">'A'</span> <span class="kw">THEN</span> <span class="str">'Active'</span>
+  <span class="kw">WHEN</span> <span class="str">'I'</span> <span class="kw">THEN</span> <span class="str">'Inactive'</span>
+  <span class="kw">ELSE</span> <span class="str">'Unknown'</span>
+<span class="kw">END</span></pre>
+<h4>Searched CASE (arbitrary conditions)</h4>
+<pre class="cb"><span class="kw">CASE</span>
+  <span class="kw">WHEN</span> salary < <span class="num">40000</span>              <span class="kw">THEN</span> <span class="str">'Junior'</span>
+  <span class="kw">WHEN</span> salary <span class="kw">BETWEEN</span> <span class="num">40000</span> <span class="kw">AND</span> <span class="num">70000</span> <span class="kw">THEN</span> <span class="str">'Mid'</span>
+  <span class="kw">WHEN</span> salary > <span class="num">70000</span>              <span class="kw">THEN</span> <span class="str">'Senior'</span>
+  <span class="kw">ELSE</span> <span class="str">'Unknown'</span>
+<span class="kw">END</span></pre>
+<h4>CASE inside aggregates (conditional aggregation)</h4>
+<pre class="cb"><span class="fn">COUNT</span>(<span class="kw">CASE WHEN</span> status = <span class="str">'active'</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">END</span>)     AS active_count
+<span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> region = <span class="str">'EU'</span> <span class="kw">THEN</span> revenue <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) AS eu_revenue</pre>
+<h4>Rules</h4>
+<ul>
+  <li>CASE short-circuits: first matching WHEN wins, rest are skipped</li>
+  <li>Without ELSE, unmatched rows return NULL</li>
+  <li>All THEN values must be the same (or compatible) data type</li>
+</ul>`},
+  {icon:"🔤",title:"String Functions",tag:"Foundation",tagClass:"cat-str",content:`
+<p>String functions manipulate text data. Syntax varies slightly between database dialects.</p>
+<h4>Common string functions</h4>
+<pre class="cb"><span class="fn">UPPER</span>(name)                   <span class="cmt">-- 'alice' → 'ALICE'</span>
+<span class="fn">LOWER</span>(name)                   <span class="cmt">-- 'ALICE' → 'alice'</span>
+<span class="fn">LENGTH</span>(name)                  <span class="cmt">-- character count</span>
+<span class="fn">TRIM</span>(name)                    <span class="cmt">-- remove leading/trailing spaces</span>
+<span class="fn">LTRIM</span>(name) / <span class="fn">RTRIM</span>(name)     <span class="cmt">-- left or right only</span>
+<span class="fn">SUBSTRING</span>(name, <span class="num">1</span>, <span class="num">3</span>)         <span class="cmt">-- extract 3 chars from pos 1</span>
+<span class="fn">REPLACE</span>(name, <span class="str">'a'</span>, <span class="str">'@'</span>)       <span class="cmt">-- replace all occurrences</span>
+<span class="fn">CONCAT</span>(first, <span class="str">' '</span>, last)      <span class="cmt">-- join strings</span>
+first <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> last           <span class="cmt">-- ANSI concatenation</span>
+<span class="fn">SPLIT_PART</span>(email, <span class="str">'@'</span>, <span class="num">1</span>)     <span class="cmt">-- 'user@x.com' → 'user' (PG)</span>
+<span class="fn">POSITION</span>(<span class="str">'@'</span> <span class="kw">IN</span> email)         <span class="cmt">-- find character position</span>
+<span class="fn">LPAD</span>(id::text, <span class="num">6</span>, <span class="str">'0'</span>)         <span class="cmt">-- left-pad to width 6</span></pre>
+<h4>Pattern matching</h4>
+<ul>
+  <li>LIKE 'A%' — starts with A; % = any sequence, _ = single char</li>
+  <li>ILIKE — case-insensitive LIKE (PostgreSQL)</li>
+  <li>REGEXP_LIKE / ~ — regex matching (database-specific)</li>
+</ul>`},
+  {icon:"📅",title:"Date & Time Functions",tag:"Foundation",tagClass:"cat-date",content:`
+<p>Date functions extract, truncate, and calculate with dates and timestamps. Syntax varies heavily by database.</p>
+<h4>Key functions (PostgreSQL focus)</h4>
+<pre class="cb"><span class="fn">CURRENT_DATE</span>                      <span class="cmt">-- today's date</span>
+<span class="fn">NOW</span>() / <span class="fn">CURRENT_TIMESTAMP</span>         <span class="cmt">-- current timestamp</span>
+<span class="fn">DATE_TRUNC</span>(<span class="str">'month'</span>, created_at)   <span class="cmt">-- first of month</span>
+<span class="fn">DATE_TRUNC</span>(<span class="str">'year'</span>, created_at)    <span class="cmt">-- first of year</span>
+<span class="fn">EXTRACT</span>(<span class="kw">YEAR FROM</span> d)              <span class="cmt">-- integer year</span>
+<span class="fn">EXTRACT</span>(<span class="kw">MONTH FROM</span> d)             <span class="cmt">-- 1-12</span>
+<span class="fn">EXTRACT</span>(<span class="kw">DOW FROM</span> d)               <span class="cmt">-- 0=Sun … 6=Sat</span>
+d + <span class="kw">INTERVAL</span> <span class="str">'7 days'</span>             <span class="cmt">-- add 7 days</span>
+end_date - start_date             <span class="cmt">-- integer days (PG)</span>
+<span class="fn">AGE</span>(timestamp1, timestamp2)       <span class="cmt">-- interval (PG)</span>
+<span class="fn">TO_CHAR</span>(d, <span class="str">'YYYY-MM'</span>)             <span class="cmt">-- format as string</span></pre>
+<h4>Dialect differences</h4>
+<ul>
+  <li><strong>PostgreSQL:</strong> date2 - date1 → integer; DATE_TRUNC; EXTRACT; interval arithmetic</li>
+  <li><strong>SQL Server:</strong> DATEDIFF(day, d1, d2); DATEPART(); DATEADD(day, n, d)</li>
+  <li><strong>MySQL:</strong> DATEDIFF(d2, d1); YEAR(d); MONTH(d); DATE_ADD(d, INTERVAL n DAY)</li>
+  <li><strong>BigQuery:</strong> DATE_DIFF(d2, d1, DAY); DATE_TRUNC(d, MONTH); EXTRACT()</li>
+</ul>`},
+  {icon:"📈",title:"Rolling Sums & Moving Averages",tag:"Advanced",tagClass:"cat-roll",content:`
+<p>Rolling (moving) aggregations are window functions with a frame clause that slides as each row is processed.</p>
+<h4>Cumulative / running total</h4>
+<pre class="cb"><span class="fn">SUM</span>(revenue) <span class="kw">OVER</span> (
+  <span class="kw">ORDER BY</span> date
+  <span class="kw">ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</span>
+) AS running_total</pre>
+<h4>7-day rolling average</h4>
+<pre class="cb"><span class="fn">AVG</span>(daily_sales) <span class="kw">OVER</span> (
+  <span class="kw">ORDER BY</span> date
+  <span class="kw">ROWS BETWEEN</span> <span class="num">6</span> <span class="kw">PRECEDING AND CURRENT ROW</span>
+) AS rolling_7day_avg</pre>
+<h4>Frame options</h4>
+<ul>
+  <li>UNBOUNDED PRECEDING — start of partition</li>
+  <li>N PRECEDING — N rows before current</li>
+  <li>CURRENT ROW — current row</li>
+  <li>N FOLLOWING — N rows after current</li>
+  <li>UNBOUNDED FOLLOWING — end of partition</li>
+</ul>
+<h4>ROWS vs RANGE</h4>
+<ul>
+  <li><strong>ROWS</strong> — counts physical rows; precise and predictable; use for time-series</li>
+  <li><strong>RANGE</strong> — counts rows with the same ORDER BY value (logical offset); can include unexpected rows on duplicate dates</li>
+</ul>
+<p>ROWS is almost always what you want for rolling calculations on time-series data.</p>`},
+  {icon:"🎲",title:"NTILE, PERCENT_RANK & CUME_DIST",tag:"Advanced",tagClass:"cat-ntile",content:`
+<p>Distribution functions divide rows into buckets or report relative position as a fraction.</p>
+<h4>NTILE(n) — divide into N equal buckets</h4>
+<pre class="cb"><span class="fn">NTILE</span>(<span class="num">4</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> revenue <span class="kw">DESC</span>) AS quartile
+<span class="cmt">-- Q1 = top 25%, Q4 = bottom 25%</span>
+<span class="cmt">-- Extra rows go to earlier buckets</span></pre>
+<h4>PERCENT_RANK — relative rank as fraction</h4>
+<pre class="cb"><span class="fn">PERCENT_RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> score)
+<span class="cmt">-- Formula: (rank - 1) / (total_rows - 1)</span>
+<span class="cmt">-- Range: 0.0 (lowest) to 1.0 (highest)</span></pre>
+<h4>CUME_DIST — cumulative distribution</h4>
+<pre class="cb"><span class="fn">CUME_DIST</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> score)
+<span class="cmt">-- Formula: rows_with_value_≤_current / total_rows</span>
+<span class="cmt">-- Range: > 0.0 to 1.0</span></pre>
+<h4>Comparison</h4>
+<ul>
+  <li><strong>NTILE(n)</strong> — discrete bucket assignment (1 to n); great for segmentation</li>
+  <li><strong>PERCENT_RANK</strong> — continuous 0–1 scale; 0 = lowest, 1 = highest</li>
+  <li><strong>CUME_DIST</strong> — fraction of rows at or below current; always > 0</li>
+  <li>NTILE(100) approximates percentiles but PERCENT_RANK gives the exact relative rank</li>
+</ul>`}
+];
+
+let current = 0;
+let score = 0;
+let correct = 0;
+let streak = 0;
+let answered = false;
+const catScores = {};
+const catTotals = {};
+QUESTIONS.forEach(q => { catTotals[q.cat] = (catTotals[q.cat]||0) + 1; catScores[q.cat] = catScores[q.cat]||0; });
+
+function catClass(cat) {
+  const m = {JOIN:'cat-join','GROUP BY':'cat-group',Aggregation:'cat-agg',Subqueries:'cat-sub',CTEs:'cat-cte','Window Functions':'cat-win','ROW_NUMBER / RANK':'cat-rank',CASE:'cat-case','String Functions':'cat-str','Date Functions':'cat-date','Rolling Sum':'cat-roll',NTILE:'cat-ntile'};
+  return m[cat]||'cat-join';
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  answered = false;
+  document.getElementById('qnum').textContent = `Question ${current+1} of ${QUESTIONS.length}`;
+  const badge = document.getElementById('qbadge');
+  badge.textContent = q.cat;
+  badge.className = `cbadge ${catClass(q.cat)}`;
+  document.getElementById('qtxt').textContent = q.q;
+  const codeEl = document.getElementById('qcode');
+  if (q.code) {
+    codeEl.innerHTML = syntaxHL(q.code);
+    codeEl.style.display = 'block';
+  } else {
+    codeEl.style.display = 'none';
+  }
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span class="ol">${letters[i]}</span><span>${escapeHTML(opt)}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    optsEl.appendChild(btn);
+  });
+  document.getElementById('fb').style.display = 'none';
+  document.getElementById('fb').className = 'fb';
+  document.getElementById('tip').style.display = 'none';
+  document.getElementById('nxtbtn').style.display = 'none';
+  document.getElementById('qcard').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+  updateProgress();
+}
+
+function escapeHTML(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function syntaxHL(code) {
+  const keywords = ['SELECT','FROM','WHERE','JOIN','LEFT','RIGHT','INNER','OUTER','FULL','CROSS','ON','GROUP BY','ORDER BY','HAVING','WITH','AS','UNION ALL','UNION','PARTITION BY','OVER','ROWS BETWEEN','RANGE BETWEEN','UNBOUNDED PRECEDING','UNBOUNDED FOLLOWING','CURRENT ROW','PRECEDING','FOLLOWING','CASE','WHEN','THEN','ELSE','END','AND','OR','NOT','IN','EXISTS','IS NULL','IS NOT NULL','NULL','DISTINCT','LIMIT','BY','INTO','INSERT','UPDATE','DELETE','CREATE','DROP','ALTER','RECURSIVE','INTERVAL','BETWEEN','LIKE','DATE','YEAR FROM','MONTH FROM','DOW FROM'];
+  const fns = ['COUNT','SUM','AVG','MIN','MAX','ROW_NUMBER','RANK','DENSE_RANK','NTILE','PERCENT_RANK','CUME_DIST','LAG','LEAD','FIRST_VALUE','LAST_VALUE','DATE_TRUNC','DATE_PART','EXTRACT','DATEDIFF','DATE_ADD','CURRENT_DATE','NOW','CURRENT_TIMESTAMP','SUBSTRING','UPPER','LOWER','TRIM','LTRIM','RTRIM','LENGTH','CONCAT','REPLACE','COALESCE','NULLIF','CAST','TO_CHAR','AGE','LPAD','RPAD','SPLIT_PART','POSITION','REGEXP_LIKE'];
+  let h = escapeHTML(code);
+  h = h.replace(/--[^\n]*/g, m => `<span class="cmt">${m}</span>`);
+  keywords.forEach(kw => {
+    h = h.replace(new RegExp(`\\b(${kw})\\b`, 'g'), '<span class="kw">$1</span>');
+  });
+  fns.forEach(fn => {
+    h = h.replace(new RegExp(`\\b(${fn})\\b`, 'g'), '<span class="fn">$1</span>');
+  });
+  h = h.replace(/'[^']*'/g, m => `<span class="str">${m}</span>`);
+  h = h.replace(/\b(\d+)\b/g, '<span class="num">$1</span>');
+  return h;
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = QUESTIONS[current];
+  const btns = document.querySelectorAll('.opt');
+  btns.forEach(b => b.disabled = true);
+  const isCorrect = idx === q.ans;
+  if (isCorrect) {
+    btns[idx].classList.add('correct');
+    score += 10;
+    correct++;
+    streak++;
+    catScores[q.cat] = (catScores[q.cat]||0) + 1;
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[q.ans].classList.add('revealed');
+    streak = 0;
+  }
+  document.getElementById('scoreVal').textContent = score;
+  document.getElementById('correctVal').textContent = correct;
+  document.getElementById('streakVal').textContent = streak;
+  const fb = document.getElementById('fb');
+  fb.className = `fb ${isCorrect?'ok':'bad'}`;
+  fb.innerHTML = `<strong>${isCorrect?'✓ Correct!':'✗ Incorrect'}</strong> — ${escapeHTML(q.exp)}`;
+  fb.style.display = 'block';
+  const tip = document.getElementById('tip');
+  document.getElementById('tipTxt').textContent = q.tip;
+  tip.style.display = 'block';
+  document.getElementById('nxtbtn').style.display = 'inline-block';
+  document.getElementById('nxtbtn').textContent = current < QUESTIONS.length - 1 ? 'Next Question →' : 'See Results →';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= QUESTIONS.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+function updateProgress() {
+  const pct = Math.round((current / QUESTIONS.length) * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progTxt').textContent = `${current} / ${QUESTIONS.length}`;
+}
+
+function showResults() {
+  document.getElementById('qcard').style.display = 'none';
+  const res = document.getElementById('results');
+  res.style.display = 'block';
+  const pct = Math.round((correct / QUESTIONS.length) * 100);
+  document.getElementById('rScore').textContent = pct + '%';
+  let grade, msg;
+  if (pct >= 90) { grade = '🏆 SQL Master'; msg = 'Outstanding! You have expert-level SQL knowledge for data engineering.'; }
+  else if (pct >= 75) { grade = '⭐ Advanced'; msg = 'Great work! You have strong SQL skills. Review the Concepts tab for any gaps.'; }
+  else if (pct >= 60) { grade = '📈 Intermediate'; msg = 'Solid foundation! Focus on window functions and advanced topics to level up.'; }
+  else if (pct >= 40) { grade = '🌱 Developing'; msg = 'Good start! Study the Concepts tab and practice CTEs, window functions, and subqueries.'; }
+  else { grade = '📚 Beginner'; msg = 'Keep going! Start with JOINs and GROUP BY basics, then progress to window functions.'; }
+  document.getElementById('rGrade').textContent = grade;
+  document.getElementById('rMsg').textContent = `${correct} of ${QUESTIONS.length} correct · ${msg}`;
+  const br = document.getElementById('rBreak');
+  br.innerHTML = '';
+  Object.keys(catTotals).forEach(cat => {
+    const c = catScores[cat]||0;
+    const t = catTotals[cat];
+    const div = document.createElement('div');
+    div.className = 'rbi';
+    div.innerHTML = `<div class="rbn">${escapeHTML(cat)}</div><div class="rbs" style="color:${c/t>=0.7?'var(--correct)':c/t>=0.4?'var(--accent-y)':'var(--wrong)'}">${c}/${t}</div>`;
+    br.appendChild(div);
+  });
+}
+
+function restartQuiz() {
+  current = 0; score = 0; correct = 0; streak = 0;
+  Object.keys(catScores).forEach(k => catScores[k] = 0);
+  document.getElementById('scoreVal').textContent = 0;
+  document.getElementById('correctVal').textContent = 0;
+  document.getElementById('streakVal').textContent = 0;
+  renderQuestion();
+}
+
+function showSection(s) {
+  document.getElementById('quiz').style.display = s==='quiz'?'block':'none';
+  document.getElementById('docs').style.display = s==='docs'?'block':'none';
+  document.querySelectorAll('.nb').forEach((b,i) => b.classList.toggle('on', (i===0&&s==='quiz')||(i===1&&s==='docs')));
+  if (s==='docs' && !document.getElementById('docContent').innerHTML.trim()) renderDocs();
+}
+
+function renderDocs() {
+  const el = document.getElementById('docContent');
+  el.innerHTML = DOCS.map((d,i) => `
+    <div class="dcard">
+      <div class="dh" onclick="toggleDoc(${i})">
+        <span class="di">${d.icon}</span>
+        <span class="dt">${d.title}</span>
+        <span class="dtag ${d.tagClass}">${d.tag}</span>
+        <span class="tog" id="tog${i}">▼</span>
+      </div>
+      <div class="db" id="db${i}">${d.content}</div>
+    </div>
+  `).join('');
+}
+
+function toggleDoc(i) {
+  const db = document.getElementById(`db${i}`);
+  const tog = document.getElementById(`tog${i}`);
+  const dh = db.previousElementSibling;
+  const isOpen = db.classList.contains('open');
+  db.classList.toggle('open', !isOpen);
+  tog.classList.toggle('open', !isOpen);
+  dh.classList.toggle('open', !isOpen);
+}
+
+renderQuestion();
+</script>
+</body>
+</html>

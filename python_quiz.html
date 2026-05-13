@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Mastery — Data Engineer Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2333;
+  --surface3: #21262d;
+  --border: #30363d;
+  --border2: #21262d;
+  --accent: #58a6ff;
+  --accent-g: #3fb950;
+  --accent-o: #f0883e;
+  --accent-r: #ff7b72;
+  --accent-p: #bc8cff;
+  --accent-y: #e3b341;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --correct: #3fb950;
+  --wrong: #f85149;
+  --tip: #f0883e;
+  --mono: 'JetBrains Mono', monospace;
+  --display: 'Syne', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;font-size:14px;line-height:1.6;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(188,140,255,0.07),transparent);pointer-events:none;z-index:0;}
+
+.page{max-width:860px;margin:0 auto;padding:0 20px 60px;position:relative;z-index:1;}
+
+header{padding:28px 0 0;border-bottom:1px solid var(--border);}
+.hd{display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;flex-wrap:wrap;gap:12px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:38px;height:38px;background:linear-gradient(135deg,#bc8cff,#58a6ff);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.brand-name{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(90deg,#bc8cff,#58a6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.brand-sub{font-size:10px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;display:block;}
+nav{display:flex;gap:4px;}
+.nb{padding:8px 18px;background:transparent;border:1px solid var(--border);border-bottom:none;color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer;border-radius:6px 6px 0 0;transition:all .2s;text-transform:uppercase;}
+.nb:hover,.nb.on{background:var(--surface);color:var(--accent-p);border-color:var(--accent-p);}
+
+.sbar{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 20px;margin:24px 0 20px;flex-wrap:wrap;}
+.si{text-align:center;min-width:44px;}
+.sv{font-size:22px;font-weight:700;color:var(--accent-p);}
+.sl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;}
+.pc{flex:1;min-width:160px;}
+.pl{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}
+.pb{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.pf{height:100%;background:linear-gradient(90deg,var(--accent-p),var(--accent));border-radius:3px;transition:width .5s ease;width:0%;}
+
+.cbadge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border:1px solid;border-radius:20px;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600;}
+.cat-fileio{color:#58a6ff;border-color:rgba(88,166,255,.3);background:rgba(88,166,255,.07);}
+.cat-csv{color:#3fb950;border-color:rgba(63,185,80,.3);background:rgba(63,185,80,.07);}
+.cat-json{color:#e3b341;border-color:rgba(227,179,65,.3);background:rgba(227,179,65,.07);}
+.cat-parquet{color:#f0883e;border-color:rgba(240,136,62,.3);background:rgba(240,136,62,.07);}
+.cat-pandas{color:#bc8cff;border-color:rgba(188,140,255,.3);background:rgba(188,140,255,.07);}
+.cat-db{color:#58a6ff;border-color:rgba(88,166,255,.3);background:rgba(88,166,255,.07);}
+.cat-api{color:#3fb950;border-color:rgba(63,185,80,.3);background:rgba(63,185,80,.07);}
+.cat-errors{color:#ff7b72;border-color:rgba(255,123,114,.3);background:rgba(255,123,114,.07);}
+.cat-pydantic{color:#bc8cff;border-color:rgba(188,140,255,.3);background:rgba(188,140,255,.07);}
+.cat-testing{color:#e3b341;border-color:rgba(227,179,65,.3);background:rgba(227,179,65,.07);}
+.cat-config{color:#f0883e;border-color:rgba(240,136,62,.3);background:rgba(240,136,62,.07);}
+.cat-sched{color:#3fb950;border-color:rgba(63,185,80,.3);background:rgba(63,185,80,.07);}
+
+.qcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:14px;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.qnum{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;}
+.qtxt{font-size:15px;font-weight:500;color:var(--text);line-height:1.65;margin-bottom:16px;}
+
+pre.cb{background:#010409;border:1px solid var(--border2);border-left:3px solid var(--accent-p);border-radius:8px;padding:14px 16px;font-size:12px;line-height:1.75;overflow-x:auto;margin:10px 0 18px;font-family:var(--mono);white-space:pre;}
+.kw{color:#ff7b72;}.fn{color:#d2a8ff;}.kw2{color:#79c0ff;}.str{color:#a5d6ff;}.cmt{color:#8b949e;font-style:italic;}.cls{color:#7ee787;}.num{color:#f2cc60;}.dec{color:#f0883e;}.bi{color:#ffa657;}
+
+.opts{display:grid;gap:8px;}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;cursor:pointer;text-align:left;font-family:var(--mono);font-size:13px;color:var(--text2);transition:all .18s;line-height:1.5;width:100%;}
+.opt:hover:not(:disabled){border-color:var(--accent-p);color:var(--text);background:rgba(188,140,255,.05);}
+.opt:disabled{cursor:not-allowed;}
+.ol{min-width:22px;height:22px;background:var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text3);flex-shrink:0;margin-top:1px;}
+.opt.correct{border-color:var(--correct);background:rgba(63,185,80,.08);color:var(--correct);}
+.opt.correct .ol{background:var(--correct);color:#000;}
+.opt.wrong{border-color:var(--wrong);background:rgba(248,81,73,.08);color:var(--wrong);}
+.opt.wrong .ol{background:var(--wrong);color:#fff;}
+.opt.revealed{border-color:rgba(63,185,80,.4);background:rgba(63,185,80,.05);color:var(--correct);}
+.opt.revealed .ol{background:rgba(63,185,80,.2);color:var(--correct);}
+
+.fb{margin-top:14px;padding:12px 16px;border-radius:9px;font-size:12.5px;line-height:1.65;display:none;animation:slideIn .28s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:translateY(0);}}
+.fb.ok{background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.3);color:#7ee787;}
+.fb.bad{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);color:#ffa198;}
+
+.tip{margin-top:10px;padding:12px 16px;background:rgba(240,136,62,.06);border:1px solid rgba(240,136,62,.25);border-radius:9px;font-size:12px;color:#e8a87c;line-height:1.7;display:none;}
+.tiplabel{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--tip);font-weight:700;margin-bottom:5px;}
+
+.nxtbtn{margin-top:18px;padding:10px 24px;background:linear-gradient(135deg,var(--accent-p),var(--accent));border:none;border-radius:7px;color:#000;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;display:none;transition:opacity .2s,transform .2s;}
+.nxtbtn:hover{opacity:.85;transform:translateY(-1px);}
+
+#results{display:none;text-align:center;padding:48px 24px;background:var(--surface);border:1px solid var(--border);border-radius:14px;}
+.rscore{font-size:70px;font-weight:800;font-family:var(--display);background:linear-gradient(135deg,var(--accent-p),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.rlabel{font-size:12px;color:var(--text3);margin-top:6px;text-transform:uppercase;letter-spacing:2px;}
+.rgrade{font-size:26px;font-family:var(--display);font-weight:700;color:var(--accent-p);margin:20px 0 6px;}
+.rmsg{color:var(--text2);font-size:13px;margin-bottom:28px;line-height:1.65;}
+.rbr{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin:20px 0;text-align:left;}
+.rbi{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;}
+.rbn{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+.rbs{font-size:17px;font-weight:700;color:var(--accent-p);}
+.rbtn{padding:12px 32px;background:linear-gradient(135deg,var(--accent-p),var(--accent));border:none;border-radius:7px;color:#000;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;}
+
+#docs{display:none;padding-top:8px;}
+.dcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;}
+.dh{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid transparent;cursor:pointer;user-select:none;transition:background .2s;}
+.dh:hover{background:var(--surface2);}
+.dh.open{border-bottom-color:var(--border);}
+.di{font-size:18px;flex-shrink:0;}
+.dt{font-family:var(--display);font-size:15px;font-weight:700;color:var(--text);flex:1;}
+.dtag{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;padding:3px 10px;border-radius:12px;font-weight:700;}
+.tag-fileio{background:rgba(88,166,255,.15);color:#58a6ff;}
+.tag-data{background:rgba(63,185,80,.15);color:#3fb950;}
+.tag-pandas{background:rgba(188,140,255,.15);color:#bc8cff;}
+.tag-db{background:rgba(88,166,255,.15);color:#58a6ff;}
+.tag-api{background:rgba(63,185,80,.15);color:#3fb950;}
+.tag-err{background:rgba(255,123,114,.15);color:#ff7b72;}
+.tag-val{background:rgba(188,140,255,.15);color:#bc8cff;}
+.tag-test{background:rgba(227,179,65,.15);color:#e3b341;}
+.tag-config{background:rgba(240,136,62,.15);color:#f0883e;}
+.tag-sched{background:rgba(63,185,80,.15);color:#3fb950;}
+.tog{color:var(--text3);font-size:11px;transition:transform .3s;}
+.tog.open{transform:rotate(180deg);}
+.db{display:none;padding:18px 20px;}
+.db.open{display:block;}
+.db p{color:var(--text2);font-size:13px;line-height:1.8;margin-bottom:12px;}
+.db h4{font-size:10px;color:var(--accent-p);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 6px;font-weight:600;}
+.db ul{padding-left:18px;color:var(--text2);font-size:13px;line-height:1.8;margin-bottom:12px;}
+.db li{margin-bottom:2px;}
+.db pre.cb{margin:10px 0;}
+
+.fbar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px;}
+.fc{padding:5px 13px;background:var(--surface);border:1px solid var(--border);border-radius:20px;font-size:10px;color:var(--text3);cursor:pointer;font-family:var(--mono);transition:all .2s;text-transform:uppercase;letter-spacing:1px;}
+.fc:hover,.fc.on{background:rgba(188,140,255,.1);border-color:var(--accent-p);color:var(--accent-p);}
+
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <div class="hd">
+    <div class="brand">
+      <div class="brand-icon">🐍</div>
+      <div>
+        <div class="brand-name">Python Mastery</div>
+        <span class="brand-sub">Data Engineer Quiz</span>
+      </div>
+    </div>
+    <nav>
+      <button class="nb on" onclick="showSection('quiz')">🎯 Quiz</button>
+      <button class="nb" onclick="showSection('docs')">📚 Concepts</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div id="quiz">
+  <div class="sbar">
+    <div class="si"><div class="sv" id="scoreVal">0</div><div class="sl">Score</div></div>
+    <div class="si"><div class="sv" id="correctVal">0</div><div class="sl">Correct</div></div>
+    <div class="pc">
+      <div class="pl"><span>Progress</span><span id="progTxt">0 / 36</span></div>
+      <div class="pb"><div class="pf" id="progFill"></div></div>
+    </div>
+    <div class="si"><div class="sv" id="streakVal">0</div><div class="sl">Streak 🔥</div></div>
+  </div>
+
+  <div id="qarea">
+    <div class="qcard" id="qcard">
+      <div class="qnum" id="qnum">Question 1 of 36</div>
+      <div class="cbadge" id="qbadge"></div>
+      <div class="qtxt" id="qtxt"></div>
+      <pre class="cb" id="qcode" style="display:none"></pre>
+      <div class="opts" id="opts"></div>
+      <div class="fb" id="fb"></div>
+      <div class="tip" id="tip"><div class="tiplabel">💡 Pro Tip</div><div id="tipTxt"></div></div>
+      <button class="nxtbtn" id="nxtbtn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </div>
+
+  <div id="results">
+    <div class="rscore" id="rScore"></div>
+    <div class="rlabel">Final Score</div>
+    <div class="rgrade" id="rGrade"></div>
+    <div class="rmsg" id="rMsg"></div>
+    <div class="rbr" id="rBreak"></div>
+    <button class="rbtn" onclick="restartQuiz()">↺ Restart Quiz</button>
+  </div>
+</div>
+
+<div id="docs">
+  <div id="docContent"></div>
+</div>
+</main>
+</div>
+
+<script>
+const QUESTIONS = [
+  /* ── File I/O ── */
+  {cat:"File I/O",q:"What is the safest and most idiomatic way to open a file in Python?",
+  code:`with open('data.txt', 'r', encoding='utf-8') as f:\n    content = f.read()`,
+  opts:["f = open('data.txt'); content = f.read(); f.close()","Using the with statement so the file is automatically closed even if an exception occurs","Using try/finally and manually calling f.close()","Files in Python close automatically when the variable goes out of scope"],
+  ans:1,exp:"The with statement (context manager) guarantees the file is closed via __exit__, even if an exception occurs mid-read. It's idiomatic, readable, and exception-safe.",tip:"Always specify encoding='utf-8' explicitly. The default encoding is platform-dependent and will cause bugs when moving code between Windows and Linux."},
+
+  {cat:"File I/O",q:"What is the difference between open() modes 'w' and 'a'?",
+  code:null,
+  opts:["'w' appends to the file; 'a' overwrites it","'w' truncates (overwrites) the file from the start; 'a' opens for appending to the end","'w' is for binary files; 'a' is for text files","They are identical — both create the file if it doesn't exist"],
+  ans:1,exp:"Mode 'w' truncates the file to zero length before writing, destroying existing content. Mode 'a' positions the pointer at the end, preserving existing data and appending new content.",tip:"Use 'x' mode to create a file and fail if it already exists — great for preventing accidental overwrites in pipelines. Use 'r+' or 'w+' for read+write."},
+
+  {cat:"File I/O",q:"Which method reads a file line by line without loading the entire file into memory?",
+  code:`with open('big_log.txt', 'r') as f:\n    for line in f:\n        process(line.strip())`,
+  opts:["f.read().split('\\n')","f.readlines()","Iterating directly over the file object (for line in f)","f.readline() inside a while True loop"],
+  ans:2,exp:"Iterating over the file object is a lazy generator — it reads one line at a time. f.read() and f.readlines() load the entire file into memory, which fails for large files.",tip:"This pattern is essential for data engineering with large log files or CSVs. Combine with generators to build memory-efficient pipelines: (process(line) for line in f)."},
+
+  /* ── CSV ── */
+  {cat:"CSV",q:"What does csv.DictReader return for each row?",
+  code:`import csv\nwith open('sales.csv') as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        print(row['amount'])`,
+  opts:["A list of values in column order","An OrderedDict (Python 3.7- ) or dict (3.8+) mapping header names to values","A tuple of (column_name, value) pairs","A raw CSV string for the row"],
+  ans:1,exp:"csv.DictReader uses the first row as keys and yields each subsequent row as a dict. In Python 3.8+ it's a regular dict; before that, an OrderedDict. This is far more readable than index-based csv.reader.",tip:"Always open CSV files with newline='' (empty string) per the csv module docs: open('file.csv', newline=''). This prevents the csv module from mishandling line endings on Windows."},
+
+  {cat:"CSV",q:"What happens when you use csv.writer with the default dialect on a field that contains a comma?",
+  code:`import csv\nwith open('out.csv', 'w', newline='') as f:\n    writer = csv.writer(f)\n    writer.writerow(['Alice', 'New York, NY', 29])`,
+  opts:["The comma inside the field is escaped with a backslash","The field is automatically quoted with double-quotes: \"New York, NY\"","The field is split into two columns, breaking the row","An exception is raised for invalid CSV data"],
+  ans:1,exp:"The csv module automatically wraps fields containing the delimiter (comma), quotes, or newlines in double-quotes. So 'New York, NY' becomes \"New York, NY\" in the output, preserving the single-field semantics.",tip:"Use csv.writer(f, quoting=csv.QUOTE_ALL) to force-quote every field. Use csv.QUOTE_NONNUMERIC to quote all non-numeric fields — great for ensuring consistent output across databases."},
+
+  /* ── JSON ── */
+  {cat:"JSON",q:"What is the difference between json.dumps() and json.dump()?",
+  code:null,
+  opts:["json.dumps() is for dicts only; json.dump() works on any type","json.dumps() serialises to a string; json.dump() writes directly to a file-like object","json.dump() is faster for large objects; json.dumps() is for small ones","They are identical — both return a JSON string"],
+  ans:1,exp:"json.dumps() (dump-string) returns a JSON-encoded string. json.dump() writes directly to a file object. Think: 's' = string. The same pattern applies to json.loads() vs json.load().",tip:"Use json.dumps(obj, indent=2, default=str) in pipelines — indent=2 for pretty printing and default=str to handle non-serialisable types like datetime objects automatically."},
+
+  {cat:"JSON",q:"What does this code do with the datetime object?",
+  code:`import json\nfrom datetime import datetime\n\ndef serialiser(obj):\n    if isinstance(obj, datetime):\n        return obj.isoformat()\n    raise TypeError(f'Not serialisable: {type(obj)}')\n\njson.dumps({'ts': datetime.now()}, default=serialiser)`,
+  opts:["Raises a TypeError because datetime is not JSON-serialisable by default","Converts datetime to an ISO 8601 string via the custom default function","Converts datetime to a Unix timestamp integer","Skips the datetime field and returns the rest of the dict"],
+  ans:1,exp:"json.dumps raises TypeError for non-serialisable types. The default= parameter accepts a function called for those types. Here, datetime is converted to its ISO 8601 string representation.",tip:"For data engineering, build a reusable default serialiser that handles datetime, Decimal, UUID, and numpy types. Pass it everywhere you call json.dumps to avoid scattered try/except blocks."},
+
+  /* ── Parquet ── */
+  {cat:"Parquet",q:"Why is Parquet preferred over CSV for large-scale data engineering pipelines?",
+  code:null,
+  opts:["Parquet is human-readable text, making debugging easier","Parquet is columnar, compressed, typed, and supports predicate pushdown — making it faster and smaller than CSV","Parquet files can be opened in Excel, unlike CSVs with large row counts","Parquet does not require a schema, making it more flexible than CSV"],
+  ans:1,exp:"Parquet is a columnar binary format. Columns compress far better than rows (similar values together). It stores schema and types, supports predicate pushdown (read only needed rows/columns), and is splittable for distributed processing.",tip:"Snappy compression (default in many tools) gives a good speed/ratio trade-off. Use zstd for better compression ratios in cold storage. Always prefer Parquet over CSV for any file > 1 MB in production pipelines."},
+
+  {cat:"Parquet",q:"What does this code accomplish?",
+  code:`import pyarrow.parquet as pq\n\ntable = pq.read_table(\n    'orders.parquet',\n    columns=['order_id', 'amount'],\n    filters=[('amount', '>', 1000)]\n)`,
+  opts:["Reads all columns then filters in Python memory after loading","Uses predicate pushdown to read only the specified columns and rows matching the filter at the file level","Raises an error — Parquet does not support row-level filters via the API","Creates an in-memory index on the amount column for faster future queries"],
+  ans:1,exp:"PyArrow supports predicate pushdown: the filters parameter is applied at the Parquet reader level, skipping row groups that don't match. Combined with column selection, this dramatically reduces I/O and memory use.",tip:"Partition your Parquet datasets by date or region (e.g., year=2024/month=01/) using pq.write_to_dataset(). Partition pruning then skips entire directory trees, making filters even faster at scale."},
+
+  /* ── Pandas ── */
+  {cat:"Pandas",q:"What is the difference between .loc[] and .iloc[] in pandas?",
+  code:`df.loc[0:3, 'name']    # label-based\ndf.iloc[0:3, 0]        # integer position-based`,
+  opts:["They are identical — both select by integer row index","loc uses label-based indexing (index values, column names); iloc uses integer position-based indexing","iloc is deprecated; use loc with integer labels instead","loc only works on MultiIndex DataFrames"],
+  ans:1,exp:"loc uses labels — the actual index values and column names. iloc uses integer positions — 0, 1, 2, regardless of the index. When the index is 0-based integers they appear similar, but diverge the moment you filter or reset.",tip:"After filtering a DataFrame the integer positions change but labels don't. Always prefer loc for production code to avoid silent bugs. Use loc[start:end] — note that label slicing with loc is inclusive on both ends, unlike Python slices."},
+
+  {cat:"Pandas",q:"What does this groupby + agg expression compute?",
+  code:`result = df.groupby('region').agg(\n    total_sales=('amount', 'sum'),\n    order_count=('order_id', 'nunique'),\n    avg_amount=('amount', 'mean')\n)`,
+  opts:["Three separate DataFrames, one per aggregation","A single DataFrame with named aggregate columns per region","An error — named aggregation syntax requires pandas >= 2.0","A pivot table with regions as both index and columns"],
+  ans:1,exp:"Named aggregation syntax (column_name=(source_col, func)) was introduced in pandas 0.25. It produces a clean single DataFrame with descriptive column names instead of a MultiIndex, in one pass over the data.",tip:"This is the idiomatic modern pandas pattern. Avoid the older {col: func} dict form — it produces MultiIndex columns and is less readable. Named aggregation also supports custom functions: ('amount', lambda s: s.quantile(0.9))."},
+
+  {cat:"Pandas",q:"What is the most memory-efficient way to read a large CSV with pandas?",
+  code:`for chunk in pd.read_csv('huge.csv', chunksize=100_000):\n    process(chunk)`,
+  opts:["pd.read_csv('huge.csv') — pandas optimises memory automatically","Using chunksize to process the file in iterative chunks rather than loading it all at once","Converting the CSV to a list of dicts first, then creating a DataFrame","Using pd.read_csv with low_memory=True"],
+  ans:1,exp:"chunksize returns a TextFileReader iterator yielding DataFrames of the specified size. Each chunk is processed and discarded before the next is read, keeping memory usage constant regardless of file size.",tip:"Also use dtype={'col': 'int32'} to downcast integer columns, and category dtype for low-cardinality string columns. Combined with chunking, you can process files 10× larger than RAM."},
+
+  {cat:"Pandas",q:"What does df.merge() do differently from pd.concat()?",
+  code:`# merge: join on keys (like SQL JOIN)\nresult = orders.merge(customers, on='customer_id', how='left')\n\n# concat: stack DataFrames (like SQL UNION)\nresult = pd.concat([df_2023, df_2024], ignore_index=True)`,
+  opts:["merge and concat are identical — use either interchangeably","merge joins on column keys (SQL-style); concat stacks DataFrames along an axis (union-style)","concat requires DataFrames with identical columns; merge works with any columns","merge is for row axis; concat is for column axis only"],
+  ans:1,exp:"merge performs database-style joins on matching key columns (like SQL JOIN). concat stacks DataFrames along an axis — rows by default (like UNION ALL). They solve different problems and are not interchangeable.",tip:"Use merge for relational joins, concat for appending or combining datasets. validate='one_to_many' in merge catches accidental fan-outs early. ignore_index=True in concat prevents duplicate index values."},
+
+  /* ── DB / psycopg / SQLAlchemy ── */
+  {cat:"DB / psycopg",q:"Why should you use parameterised queries instead of f-strings with psycopg2?",
+  code:`# DANGEROUS — SQL injection risk\ncur.execute(f"SELECT * FROM users WHERE name = '{user_input}'")\n\n# SAFE — parameterised\ncur.execute("SELECT * FROM users WHERE name = %s", (user_input,))`,
+  opts:["Parameterised queries are faster because psycopg2 caches the query plan","f-strings don't work inside execute() — they cause a SyntaxError","Parameterised queries prevent SQL injection by separating code from data, and let the driver handle type escaping","Parameterised queries automatically commit the transaction"],
+  ans:2,exp:"With f-strings, user input becomes part of the SQL string — an attacker can inject arbitrary SQL. Parameterised queries keep data separate from the query structure. psycopg2 handles quoting, escaping, and type conversion safely.",tip:"Always use %s placeholders with psycopg2 (not Python's %-formatting — that's different). For named params use %(name)s with a dict. Never ever concatenate user input into SQL strings."},
+
+  {cat:"DB / psycopg",q:"What does this SQLAlchemy pattern accomplish?",
+  code:`from sqlalchemy import create_engine, text\n\nengine = create_engine(\n    'postgresql+psycopg2://user:pw@host/db',\n    pool_size=5,\n    max_overflow=10\n)\n\nwith engine.connect() as conn:\n    result = conn.execute(text("SELECT * FROM orders"))`,
+  opts:["Opens a new TCP connection for every query and closes it immediately","Uses a connection pool — borrows a connection, executes the query, and returns the connection to the pool","Requires an explicit conn.commit() after SELECT statements","Creates a persistent dedicated connection that never closes"],
+  ans:1,exp:"SQLAlchemy's connection pool (pool_size=5) maintains open connections. engine.connect() borrows one from the pool and the with block returns it when done. This avoids the overhead of creating a TCP connection per query.",tip:"Use engine.begin() instead of engine.connect() when you need a transaction — it auto-commits on success and rolls back on exception. create_engine is expensive; create it once at application start, not per request."},
+
+  {cat:"DB / psycopg",q:"What is the purpose of execute_values in psycopg2?",
+  code:`from psycopg2.extras import execute_values\n\nexecute_values(\n    cur,\n    "INSERT INTO events (id, ts, value) VALUES %s",\n    [(1, '2024-01-01', 100), (2, '2024-01-02', 200)],\n    page_size=1000\n)`,
+  opts:["It executes multiple SELECT statements in a single round-trip","It inserts multiple rows in a single efficient INSERT statement instead of one INSERT per row","It automatically creates a transaction and commits after all inserts","It validates row types against the table schema before inserting"],
+  ans:1,exp:"execute_values batches multiple rows into a single INSERT...VALUES (...), (...), (...) statement. This is 10–100× faster than calling cur.execute() in a loop because it reduces round-trips and allows PostgreSQL to optimise the multi-row insert.",tip:"For very large bulk loads, consider COPY (psycopg2's copy_expert with StringIO) — it's the fastest way to load data into PostgreSQL, bypassing the WAL for initial loads."},
+
+  /* ── APIs & Requests ── */
+  {cat:"APIs",q:"What does the requests.Session() object provide over plain requests.get()?",
+  code:`import requests\n\nsession = requests.Session()\nsession.headers.update({'Authorization': 'Bearer token'})\nsession.mount('https://', requests.adapters.HTTPAdapter(\n    max_retries=3\n))\nresp = session.get('https://api.example.com/data')`,
+  opts:["Sessions are required for POST requests; get() only works without a session","Sessions persist headers, cookies, and connection pooling across requests; adapters add retry logic","Sessions automatically parse JSON responses","Sessions enforce rate limiting on outbound requests"],
+  ans:1,exp:"Session reuses TCP connections (keep-alive), persists headers/cookies/auth across all requests, and lets you attach adapters with retry policies. This is far more efficient than creating a new connection per request.",tip:"Always use Session with retry adapters in production pipelines. Use urllib3.util.retry.Retry for fine-grained control: retry on 429/503 status codes, with exponential backoff. Never retry on 4xx errors (client errors) except 429."},
+
+  {cat:"APIs",q:"What is the correct way to handle a failed HTTP response with the requests library?",
+  code:`resp = requests.get('https://api.example.com/data', timeout=10)\nresp.raise_for_status()  # <--\ndata = resp.json()`,
+  opts:["Check if resp.status_code == 200 manually and raise a custom exception","Use resp.raise_for_status() — it raises an HTTPError for 4xx and 5xx responses automatically","requests.get() raises an exception automatically for non-200 responses","Check resp.ok and print a warning — non-200 responses can always be ignored"],
+  ans:1,exp:"raise_for_status() raises requests.exceptions.HTTPError for any 4xx or 5xx response. Without it, a 404 or 500 would silently return a response object and your code would fail later with a confusing error. Always call it before accessing .json().",tip:"Wrap in try/except requests.exceptions.RequestException to catch all requests errors (connection errors, timeouts, HTTPError) with a single handler. requests.exceptions.Timeout catches only timeout errors."},
+
+  {cat:"APIs",q:"What does the timeout parameter in requests.get() control?",
+  code:`resp = requests.get(\n    'https://api.example.com/data',\n    timeout=(3.05, 27)  # (connect timeout, read timeout)\n)`,
+  opts:["The maximum total time in seconds before the request is cancelled","The connect timeout only — there is no read timeout","A tuple of (connect timeout, read timeout) — how long to wait for a connection, and how long to wait for data","The number of retry attempts before raising an exception"],
+  ans:2,exp:"timeout=(connect, read): connect is how long to wait to establish the TCP connection; read is how long to wait between bytes of the response. A single number sets both. Without timeout, requests can hang forever — always set it in production.",tip:"3.05 seconds is a common connect timeout (slightly over a TCP retransmit window). Read timeout depends on your API's SLA. Always set timeout — it's one of the most common production bugs when omitted."},
+
+  /* ── Error Handling & Logging ── */
+  {cat:"Error Handling",q:"What is the correct order of except blocks and why?",
+  code:`try:\n    result = 10 / int(user_input)\nexcept ZeroDivisionError:\n    print("Cannot divide by zero")\nexcept ValueError:\n    print("Invalid integer")\nexcept Exception as e:\n    print(f"Unexpected: {e}")`,
+  opts:["Order doesn't matter — Python checks all except blocks","More specific exceptions must come before more general ones — Exception must be last","Exception should always be first to catch everything","You can only have one except block per try statement"],
+  ans:1,exp:"Python matches the first except clause whose type matches the exception. If Exception (the base class) came first, it would catch everything and the specific handlers would be unreachable. Always put the most specific exceptions first.",tip:"Never use a bare except: — it catches SystemExit and KeyboardInterrupt too. Use except Exception as e: as the broadest safe catch. Use logging.exception(e) inside except blocks to automatically include the traceback."},
+
+  {cat:"Error Handling",q:"What does this structured logging setup provide over print() statements?",
+  code:`import logging\nimport json\n\nlogging.basicConfig(\n    level=logging.INFO,\n    format='%(asctime)s %(levelname)s %(name)s %(message)s'\n)\nlogger = logging.getLogger(__name__)\n\nlogger.info("Pipeline started", extra={'job_id': '123', 'rows': 5000})`,
+  opts:["Structured logging is only useful for web servers — print() is fine for data pipelines","Structured logging provides levels (DEBUG/INFO/WARNING/ERROR), timestamps, module names, and machine-parseable output for log aggregation systems","logging is slower than print() for high-throughput pipelines","The extra dict is automatically serialised to JSON in the log output"],
+  ans:1,exp:"logging provides: severity levels for filtering, timestamps, logger hierarchy (__name__ for module-level logs), and integrations with log aggregators (Datadog, Splunk, ELK). print() is fire-and-forget with no metadata.",tip:"Use structlog or python-json-logger for true JSON structured logs. In data pipelines, always log row counts, file paths, and job IDs — these become invaluable when debugging failures at 3am. Use logger.exception() in except blocks to log the full traceback automatically."},
+
+  {cat:"Error Handling",q:"What is the purpose of the 'finally' block?",
+  code:`conn = None\ntry:\n    conn = db.connect()\n    conn.execute(query)\nexcept Exception as e:\n    logger.error(f"Query failed: {e}")\n    raise\nfinally:\n    if conn:\n        conn.close()`,
+  opts:["finally runs only when an exception occurs — it's an alias for except","finally runs only when no exception occurs — it's for success cleanup","finally always runs regardless of whether an exception occurred or was raised","finally suppresses all exceptions raised in the try block"],
+  ans:2,exp:"finally always executes — after the try block if no exception, after the except block if one was caught, and even if an exception is re-raised with raise. It's the guaranteed cleanup code for resources like DB connections, file handles, and locks.",tip:"Context managers (with statement) are the modern alternative to try/finally for resource cleanup. But finally is still essential for pipeline teardown logic that must run regardless of outcome — closing connections, sending completion signals, etc."},
+
+  /* ── Pydantic ── */
+  {cat:"Pydantic",q:"What does this Pydantic model do when it receives invalid data?",
+  code:`from pydantic import BaseModel, Field\nfrom datetime import date\n\nclass Order(BaseModel):\n    order_id: int\n    amount: float = Field(gt=0, description="Must be positive")\n    order_date: date\n\nOrder(order_id='abc', amount=-10, order_date='2024-01-15')`,
+  opts:["Silently coerces 'abc' to 0 and -10 to 10, returning a valid model","Raises a ValidationError listing all field errors: order_id not an int, amount not > 0","Returns None for invalid fields while constructing the rest of the model","Raises a TypeError for the first invalid field and stops validation"],
+  ans:1,exp:"Pydantic validates all fields and collects ALL errors before raising a single ValidationError. It shows the field path, the value received, and the error message. 'abc' cannot be coerced to int; -10 fails the gt=0 constraint.",tip:"Use model.model_validate(dict) or Model(**data) for validation. Call model.model_dump() to get a plain dict back. In v2, Pydantic uses Rust under the hood and is ~17x faster than v1. Use model_config = ConfigDict(strict=True) to disable coercion."},
+
+  {cat:"Pydantic",q:"What does Field(default_factory=list) do in a Pydantic model?",
+  code:`from pydantic import BaseModel, Field\n\nclass Pipeline(BaseModel):\n    name: str\n    tags: list[str] = Field(default_factory=list)\n    metadata: dict = Field(default_factory=dict)`,
+  opts:["It sets the default to an empty list literal — same as tags: list[str] = []","It creates a new empty list for each model instance — preventing the mutable default anti-pattern","It validates that the list contains only str elements and rejects other types","It makes the field optional — tags can be None or omitted"],
+  ans:1,exp:"default_factory=list calls list() for each new instance, creating an independent empty list. Using = [] as a default would share the same list object across all instances — a classic Python mutable default bug. Pydantic enforces this: using a mutable literal as a default raises an error.",tip:"This mirrors Python's anti-pattern of def f(x=[]). In Pydantic, Field(default_factory=list) is the correct solution. You can also use default_factory=lambda: {'key': 'value'} for complex defaults."},
+
+  /* ── Testing with pytest ── */
+  {cat:"Testing",q:"What is the purpose of a pytest fixture?",
+  code:`import pytest\n\n@pytest.fixture\ndef db_connection():\n    conn = create_test_db()\n    yield conn          # test runs here\n    conn.close()        # teardown after test\n\ndef test_insert(db_connection):\n    db_connection.execute("INSERT INTO t VALUES (1)")\n    assert db_connection.fetchone() is not None`,
+  opts:["Fixtures are required for all pytest tests — tests without fixtures are invalid","Fixtures provide reusable setup/teardown logic injected into tests by name, with yield separating setup from teardown","Fixtures replace assert statements with automatic value comparison","Fixtures only work for database tests — use setUp/tearDown for other resources"],
+  ans:1,exp:"Fixtures are dependency-injected by argument name. The yield splits setup (before) from teardown (after). This pattern replaces setUp/tearDown from unittest. Fixtures can be scoped: function (default), class, module, or session.",tip:"Use scope='session' for expensive fixtures like DB connections that can be shared across all tests. Use tmp_path (built-in) for temp file tests. Fixture composition is powerful — a fixture can depend on other fixtures by declaring them as arguments."},
+
+  {cat:"Testing",q:"What does @pytest.mark.parametrize do?",
+  code:`import pytest\n\n@pytest.mark.parametrize("amount,expected", [\n    (100, 10.0),\n    (0,   0.0),\n    (-50, ValueError),\n])\ndef test_calculate_fee(amount, expected):\n    if expected is ValueError:\n        with pytest.raises(ValueError):\n            calculate_fee(amount)\n    else:\n        assert calculate_fee(amount) == expected`,
+  opts:["It runs the test function once with all parameter sets combined into a single call","It runs the test function once per parameter set, treating each as an independent test case","It generates a parametrised class with one method per test case","It marks the test as slow and skips it in fast mode"],
+  ans:1,exp:"parametrize generates N independent test cases from N parameter sets. Each runs separately with its own pass/fail, name, and traceback. This replaces loops inside tests, which would fail on the first error and hide the rest.",tip:"Combine with pytest.mark.parametrize at multiple levels for combinatorial testing. Use ids=['zero','negative','normal'] to give readable names. pytest.raises() is the idiomatic way to assert that an exception is raised."},
+
+  {cat:"Testing",q:"What does unittest.mock.patch() do in a test?",
+  code:`from unittest.mock import patch\n\ndef test_send_email():\n    with patch('myapp.mailer.smtp.sendmail') as mock_send:\n        send_welcome_email('user@example.com')\n        mock_send.assert_called_once_with(\n            'noreply@co.com', 'user@example.com', ANY\n        )`,
+  opts:["patch() executes the real function but records its arguments for later assertion","patch() temporarily replaces the target with a Mock object for the duration of the with block, then restores the original","patch() disables network access to prevent real emails during tests","patch() validates that the function signature matches the mock call"],
+  ans:1,exp:"patch() replaces the named object with a MagicMock for the scope of the with block. The real SMTP call never happens — perfect for testing side effects (emails, HTTP calls, DB writes) without real infrastructure.",tip:"Patch the name where it's used, not where it's defined: patch('myapp.mailer.smtp') not patch('smtplib.SMTP'). Use patch.object(instance, 'method') for instance methods. Use MagicMock(return_value=...) to control what the mock returns."},
+
+  /* ── Env Variables & Config ── */
+  {cat:"Config",q:"What is wrong with this approach to storing credentials?",
+  code:`# config.py\nDB_PASSWORD = "super_secret_password_123"\nAPI_KEY = "sk-abc123xyz"\n\n# This file is committed to git`,
+  opts:["Nothing — passwords in source code are protected by git access controls","Credentials in source code get committed to version control history, exposing them to anyone with repo access — forever","Python files are compiled to .pyc so the passwords are not human-readable","It's only a problem if the repository is public — private repos are safe"],
+  ans:1,exp:"Credentials in code are a critical security vulnerability. Even if deleted later, git history preserves them. Private repos get made public, shared, or breached. Secrets must live in environment variables, secret managers, or .env files (git-ignored).",tip:"Use python-dotenv to load a .env file locally, and real environment variables in production (CI/CD secrets, AWS Secrets Manager, Vault). Add .env to .gitignore immediately. Use git-secrets or pre-commit hooks to prevent accidental commits."},
+
+  {cat:"Config",q:"What does this pydantic-settings pattern accomplish?",
+  code:`from pydantic_settings import BaseSettings\n\nclass Settings(BaseSettings):\n    db_host: str\n    db_port: int = 5432\n    api_key: str\n    debug: bool = False\n\n    model_config = {'env_file': '.env'}\n\nsettings = Settings()  # reads from env vars + .env file`,
+  opts:["It creates a Settings object with hardcoded defaults that cannot be overridden","It reads configuration from environment variables and an optional .env file, validates types, and raises an error if required variables are missing","It encrypts sensitive settings using the system keychain","It merges settings from multiple sources with no type validation"],
+  ans:1,exp:"pydantic-settings reads from environment variables (case-insensitive), with .env as a fallback. It validates types (db_port becomes int, debug becomes bool), provides defaults, and raises ValidationError if required fields are missing.",tip:"Environment variables override .env file values — great for injecting secrets in production while using .env locally. Use SecretStr for sensitive fields: db_password: SecretStr. Access the value with settings.db_password.get_secret_value()."},
+
+  {cat:"Config",q:"What is the recommended way to access environment variables with a fallback default?",
+  code:`import os\n\n# Option A\nport = os.environ['PORT']           # raises KeyError if missing\n\n# Option B  \nport = os.environ.get('PORT', '8080')  # returns '8080' if missing\n\n# Option C\nport = os.getenv('PORT', '8080')       # identical to option B`,
+  opts:["Option A is safest — it fails loudly if the variable is not set","Options B and C are identical — os.getenv is just an alias for os.environ.get","Option A should always be used in production; B and C are for development only","os.environ.get() converts the value to the type of the default; os.getenv() always returns strings"],
+  ans:1,exp:"os.getenv and os.environ.get are functionally identical — os.getenv is literally defined as os.environ.get. Option A (os.environ['PORT']) raises KeyError when the variable is missing, which is desirable for required variables — fail fast is a good pipeline pattern.",tip:"Use os.environ[] for required variables that must exist (fail loudly if missing) and os.getenv('VAR', default) for optional ones. Always remember environment variables are strings — cast explicitly: int(os.getenv('PORT', '8080'))."},
+
+  /* ── Scheduling ── */
+  {cat:"Scheduling",q:"What does this cron expression mean: '0 6 * * 1-5'?",
+  code:`# cron format: minute hour day-of-month month day-of-week\n# 0    6    *            *     1-5\ncrontab -e\n0 6 * * 1-5 /usr/bin/python3 /opt/pipeline/run.py`,
+  opts:["Run every 6 minutes, Monday through Friday","Run at 6:00 AM every day of the week","Run at 6:00 AM, Monday through Friday (weekdays only)","Run at minute 0 of the 6th hour on the first Monday-Friday of the month"],
+  ans:2,exp:"Fields: minute=0, hour=6, day=* (any), month=* (any), weekday=1-5 (Mon-Fri). So: 'at 06:00, on weekdays'. 0 = Sunday or Monday depending on the system (Linux cron: 0=Sunday, 1=Monday).",tip:"Use crontab.guru to visually validate cron expressions. For complex schedules with dependencies, use Airflow or Prefect instead of cron. Always redirect cron output: '>> /var/log/pipeline.log 2>&1' or you'll lose stdout/stderr."},
+
+  {cat:"Scheduling",q:"What does this APScheduler code do?",
+  code:`from apscheduler.schedulers.blocking import BlockingScheduler\n\nscheduler = BlockingScheduler()\n\n@scheduler.scheduled_job('interval', hours=1)\ndef hourly_sync():\n    extract_and_load()\n\n@scheduler.scheduled_job('cron', hour=0, minute=0)\ndef daily_rollup():\n    run_aggregation()\n\nscheduler.start()`,
+  opts:["Runs both jobs once at startup then stops","Schedules hourly_sync to run every hour and daily_rollup at midnight — in-process without a cron daemon","Requires a Redis broker to schedule jobs — it won't run without one","Forks a new process for each job execution"],
+  ans:1,exp:"APScheduler runs jobs in-process on a schedule — no cron daemon or external broker required. BlockingScheduler blocks the main thread (use BackgroundScheduler in web apps). Two trigger types: interval (every N units) and cron (cron-expression).",tip:"For production pipelines prefer dedicated orchestrators (Airflow, Prefect, Dagster) over APScheduler — they provide retries, dependency management, monitoring, and backfill. APScheduler is great for simple single-process scheduled tasks."},
+
+  {cat:"Scheduling",q:"What problem does this pattern solve in a scheduled Python pipeline?",
+  code:`import fcntl\nimport sys\n\nlock_file = open('/tmp/pipeline.lock', 'w')\ntry:\n    fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)\nexcept IOError:\n    print("Pipeline already running — exiting")\n    sys.exit(0)\n\nrun_pipeline()`,
+  opts:["It logs the pipeline start time to a file for audit purposes","It prevents two instances of the pipeline from running simultaneously using a file lock","It checkpoints the pipeline so it can resume from where it left off after a crash","It limits the pipeline to run only once per day regardless of the cron schedule"],
+  ans:1,exp:"LOCK_EX|LOCK_NB tries to acquire an exclusive non-blocking lock. If another process holds the lock, IOError is raised immediately and we exit. This prevents overlapping runs when a pipeline takes longer than its cron interval.",tip:"This is a classic concurrency guard for cron jobs. On Linux, the lock is automatically released when the process dies (even on crash). Alternative: use a database row with a 'running' status column — more robust and gives you a status dashboard."}
+];
+
+const DOCS = [
+  {icon:"📂",title:"Python File I/O",tag:"Foundation",tagClass:"tag-fileio",content:`
+<div class="qlink">📝 Covers Q1 · Q2 · Q3</div>
+<h4>① Why <code>with open()</code> is the only correct way</h4>
+<p>The <strong>with</strong> statement invokes Python's context manager protocol. When the block exits — normally <em>or</em> via an exception — Python calls <code>f.__exit__()</code>, which closes the file and flushes buffers. This is guaranteed, even if your code raises mid-read.</p>
+<pre class="cb"><span class="cmt"># ✅ CORRECT — file closes even if process() raises</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'data.txt'</span>, <span class="str">'r'</span>, encoding=<span class="str">'utf-8'</span>) <span class="kw">as</span> f:
+    content = f.<span class="fn">read</span>()
+
+<span class="cmt"># ❌ WRONG — f.close() is skipped if an exception occurs</span>
+f = <span class="fn">open</span>(<span class="str">'data.txt'</span>)
+content = f.<span class="fn">read</span>()
+f.<span class="fn">close</span>()
+
+<span class="cmt"># ❌ ALSO WRONG — verbose and error-prone</span>
+<span class="kw">try</span>:
+    f = <span class="fn">open</span>(<span class="str">'data.txt'</span>)
+    content = f.<span class="fn">read</span>()
+<span class="kw">finally</span>:
+    f.<span class="fn">close</span>()  <span class="cmt"># with does this automatically</span></pre>
+<p>⚠️ <strong>Always specify <code>encoding='utf-8'</code></strong>. The default encoding is platform-dependent (<code>cp1252</code> on Windows, <code>utf-8</code> on Linux/macOS). Hard-coding <code>utf-8</code> makes your pipeline portable. Files in Python do <strong>NOT</strong> auto-close when the variable goes out of scope — that's a myth.</p>
+
+<h4>② File modes — every mode and its trap</h4>
+<pre class="cb"><span class="str">'r'</span>    read text (default) — raises FileNotFoundError if missing
+<span class="str">'w'</span>    write text — <strong>TRUNCATES TO ZERO BYTES</strong> immediately on open
+<span class="str">'a'</span>    append — preserves existing content, pointer at end
+<span class="str">'x'</span>    exclusive create — raises FileExistsError if already exists
+<span class="str">'r+'</span>   read + write — no truncation, pointer at start
+<span class="str">'rb'</span>   read binary — images, Parquet, Avro, etc.
+<span class="str">'wb'</span>   write binary — truncates, then write bytes</pre>
+<p>🔑 <strong>The critical trap — 'w' vs 'a'</strong>:</p>
+<pre class="cb"><span class="cmt"># 'w' — DESTROYS the file the moment it opens</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'log.txt'</span>, <span class="str">'w'</span>) <span class="kw">as</span> f:   <span class="cmt"># file is now 0 bytes</span>
+    f.<span class="fn">write</span>(<span class="str">'new content'</span>)
+
+<span class="cmt"># 'a' — PRESERVES existing content, appends at the end</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'log.txt'</span>, <span class="str">'a'</span>) <span class="kw">as</span> f:
+    f.<span class="fn">write</span>(<span class="str">'appended line\n'</span>)
+
+<span class="cmt"># 'x' — safe "create-once" mode for pipelines</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'output.csv'</span>, <span class="str">'x'</span>) <span class="kw">as</span> f:  <span class="cmt"># raises if file exists</span>
+    f.<span class="fn">write</span>(<span class="str">'data'</span>)</pre>
+
+<h4>③ Reading strategies — memory is the constraint</h4>
+<pre class="cb"><span class="cmt"># ❌ f.read() — loads the ENTIRE file into one string in RAM</span>
+content = f.<span class="fn">read</span>()           <span class="cmt"># 10 GB file = 10 GB RAM used</span>
+
+<span class="cmt"># ❌ f.readlines() — loads ALL lines into a list in RAM</span>
+lines = f.<span class="fn">readlines</span>()        <span class="cmt"># still 10 GB in RAM</span>
+
+<span class="cmt"># ✅ for line in f — lazy generator, ONE line at a time</span>
+<span class="kw">for</span> line <span class="kw">in</span> f:               <span class="cmt"># constant memory regardless of file size</span>
+    <span class="fn">process</span>(line.<span class="fn">strip</span>())
+
+<span class="cmt"># ✅ Chain generators for zero-copy pipelines</span>
+cleaned = (line.<span class="fn">strip</span>() <span class="kw">for</span> line <span class="kw">in</span> f <span class="kw">if</span> line.<span class="fn">strip</span>())
+<span class="fn">process_all</span>(cleaned)</pre>
+<p>Iterating over the file object is a <strong>lazy iterator</strong>. It reads only as many bytes as needed to fill one line, then discards them before reading the next. This is the correct pattern for logs, large CSVs, and streaming pipelines.</p>
+<h4>④ Quick memory comparison</h4>
+<pre class="cb">Method              | 1 GB file RAM usage
+--------------------|---------------------
+f.read()            | ~1 GB (whole file)
+f.readlines()       | ~1 GB (list of strs)
+for line in f:      | ~few KB (one line)  ✅</pre>`},
+
+  {icon:"📊",title:"CSV & JSON",tag:"Data Formats",tagClass:"tag-data",content:`
+<div class="qlink">📝 Covers Q4 · Q5 · Q6 · Q7</div>
+<h4>① csv.DictReader vs csv.reader — what's returned?</h4>
+<p><code>csv.DictReader</code> uses the <strong>first row as keys</strong> and returns each subsequent row as a <strong>dict</strong> (Python 3.8+). Before 3.8 it was an OrderedDict. <code>csv.reader</code> returns each row as a plain list indexed by position.</p>
+<pre class="cb"><span class="cmt"># csv.DictReader — readable, by column name</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'sales.csv'</span>, newline=<span class="str">''</span>) <span class="kw">as</span> f:
+    <span class="kw">for</span> row <span class="kw">in</span> csv.<span class="fn">DictReader</span>(f):
+        <span class="bi">print</span>(row[<span class="str">'amount'</span>])   <span class="cmt"># → '100' (always a string)</span>
+
+<span class="cmt"># csv.reader — positional, fragile if columns change</span>
+<span class="kw">for</span> row <span class="kw">in</span> csv.<span class="fn">reader</span>(f):
+    <span class="bi">print</span>(row[<span class="num">2</span>])             <span class="cmt"># → '100'</span></pre>
+<p>🔑 <strong>Critical</strong>: always open CSV files with <code>newline=''</code>. Without it, the universal newlines translator and the csv module both process line endings, causing double-processing bugs on Windows (<code>\r\n</code> → <code>\r</code> in the field).</p>
+
+<h4>② csv.writer — automatic quoting rules</h4>
+<p>The csv module automatically wraps fields in double-quotes if the field contains: the delimiter (comma), a double-quote, or a newline. You never manually escape these.</p>
+<pre class="cb">writer.<span class="fn">writerow</span>([<span class="str">'Alice'</span>, <span class="str">'New York, NY'</span>, <span class="num">29</span>])
+<span class="cmt"># → Alice,"New York, NY",29   ← comma inside field: auto-quoted</span>
+
+writer.<span class="fn">writerow</span>([<span class="str">'She said "hi"'</span>, <span class="num">5</span>])
+<span class="cmt"># → "She said ""hi""",5      ← quote inside field: doubled</span></pre>
+<p>Quoting modes you can control:</p>
+<pre class="cb">csv.<span class="fn">writer</span>(f, quoting=csv.QUOTE_ALL)        <span class="cmt"># quote every field</span>
+csv.<span class="fn">writer</span>(f, quoting=csv.QUOTE_NONNUMERIC)  <span class="cmt"># quote all non-numbers</span>
+csv.<span class="fn">writer</span>(f, quoting=csv.QUOTE_MINIMAL)     <span class="cmt"># default: only when needed</span></pre>
+
+<h4>③ JSON — the 4 functions (memorise with "s = string")</h4>
+<pre class="cb">json.<span class="fn">dumps</span>(obj)          <span class="cmt"># → str    (Dump to String)</span>
+json.<span class="fn">dump</span>(obj, f)        <span class="cmt"># → file   (Dump to File)</span>
+json.<span class="fn">loads</span>(s)            <span class="cmt"># ← obj    (Load from String)</span>
+json.<span class="fn">load</span>(f)             <span class="cmt"># ← obj    (Load from File)</span>
+<span class="cmt"># Rule: 's' suffix = works with a string; no 's' = works with a file</span></pre>
+
+<h4>④ Non-serialisable types — the default= parameter</h4>
+<p>By default, <code>json.dumps</code> raises <strong>TypeError</strong> for <code>datetime</code>, <code>Decimal</code>, <code>UUID</code>, numpy types, etc. The <code>default=</code> parameter accepts a callable that is invoked <em>only</em> for types the encoder can't handle.</p>
+<pre class="cb"><span class="cmt"># Quick fix — str() everything non-serialisable</span>
+json.<span class="fn">dumps</span>(obj, default=<span class="bi">str</span>)
+<span class="cmt"># datetime → '2024-01-15T10:30:00', Decimal → '19.99'</span>
+
+<span class="cmt"># Proper custom serialiser</span>
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">from</span> decimal <span class="kw">import</span> Decimal
+
+<span class="kw">def</span> <span class="fn">serialiser</span>(obj):
+    <span class="kw">if</span> <span class="fn">isinstance</span>(obj, datetime):
+        <span class="kw">return</span> obj.<span class="fn">isoformat</span>()       <span class="cmt"># '2024-01-15T10:30:00'</span>
+    <span class="kw">if</span> <span class="fn">isinstance</span>(obj, Decimal):
+        <span class="kw">return</span> <span class="bi">float</span>(obj)             <span class="cmt"># Decimal('19.99') → 19.99</span>
+    <span class="kw">raise</span> <span class="cls">TypeError</span>(<span class="str">f'Not serialisable: {type(obj)}'</span>)
+
+json.<span class="fn">dumps</span>({<span class="str">'ts'</span>: datetime.<span class="fn">now</span>()}, default=serialiser)
+<span class="cmt"># → '{"ts": "2024-01-15T10:30:00.123456"}'</span></pre>
+<p>⚠️ The <code>default</code> function must <strong>raise TypeError</strong> for types it doesn't handle — never return None silently.</p>`},
+
+  {icon:"🪶",title:"Parquet",tag:"Columnar Format",tagClass:"tag-data",content:`
+<div class="qlink">📝 Covers Q8 · Q9</div>
+<h4>① Why Parquet beats CSV — the 4 pillars</h4>
+<ul>
+  <li><strong>Columnar storage</strong> — data is stored column-by-column, not row-by-row. Reading 3 columns from a 100-column file reads ~3% of the data. CSV always reads 100%.</li>
+  <li><strong>Compression</strong> — columns contain similar values (same data type, close range), so algorithms like Snappy and zstd compress them 5–10× better than row-based formats. A 1 GB CSV often becomes 50–150 MB Parquet.</li>
+  <li><strong>Typed schema embedded in file</strong> — Parquet stores the schema (column names, types) in a footer. No silent type casting, no "is 42 an int or a string?" guessing. CSV is always strings.</li>
+  <li><strong>Predicate pushdown</strong> — Parquet stores min/max statistics per row group. The reader can skip entire row groups that can't match a filter <em>before loading data into memory</em>.</li>
+</ul>
+<pre class="cb"><span class="cmt"># CSV: text, uncompressed, no schema, full scan always</span>
+<span class="cmt"># Parquet: binary, compressed, typed, column+row skipping</span>
+<span class="cmt"># Rule: any pipeline file > 1 MB → use Parquet</span></pre>
+
+<h4>② Predicate pushdown + column selection — happens at I/O level</h4>
+<p>This is the most important concept: <code>filters=</code> and <code>columns=</code> are applied <strong>by the file reader before data enters Python memory</strong>. They are not post-load filters. The reader inspects row group statistics and skips non-matching chunks entirely.</p>
+<pre class="cb"><span class="kw">import</span> pyarrow.parquet <span class="kw">as</span> pq
+
+table = pq.<span class="fn">read_table</span>(
+    <span class="str">'orders.parquet'</span>,
+    columns=[<span class="str">'order_id'</span>, <span class="str">'amount'</span>],     <span class="cmt"># ← only these 2 columns read from disk</span>
+    filters=[(<span class="str">'amount'</span>, <span class="str">'>'</span>, <span class="num">1000</span>)]       <span class="cmt"># ← row groups with max≤1000 are skipped</span>
+)
+<span class="cmt"># Both filters applied at I/O level — NOT in Python after loading</span>
+<span class="cmt"># Common misconception: "reads all, then filters" — WRONG</span></pre>
+
+<h4>③ Row groups — how predicate pushdown works internally</h4>
+<p>Parquet files are split into <strong>row groups</strong> (typically 128 MB each). Each row group stores min/max statistics per column. When you apply <code>filters=[('amount', '>', 1000)]</code>, the reader checks: "does this row group's amount column have max ≤ 1000?" If yes, the entire row group is skipped without reading.</p>
+
+<h4>④ Partitioning — directory-level skipping</h4>
+<pre class="cb">pq.<span class="fn">write_to_dataset</span>(
+    table,
+    root_path=<span class="str">'orders/'</span>,
+    partition_cols=[<span class="str">'year'</span>, <span class="str">'month'</span>]
+)
+<span class="cmt"># Creates: orders/year=2024/month=01/part-0.parquet</span>
+<span class="cmt">#          orders/year=2024/month=02/part-0.parquet</span>
+
+<span class="cmt"># Partition pruning: a filter on year=2024 skips all other year dirs</span>
+table = pq.<span class="fn">read_table</span>(<span class="str">'orders/'</span>, filters=[(<span class="str">'year'</span>, <span class="str">'='</span>, <span class="num">2024</span>)])</pre>
+
+<h4>⑤ Compression algorithms</h4>
+<pre class="cb">Snappy  — fast compress/decompress, moderate ratio (default in many tools)
+zstd    — better ratio than Snappy, still fast — best for cold storage
+gzip    — smallest files, slowest — use for archiving only
+lz4     — fastest compression, lowest ratio — use for hot data</pre>`},
+
+  {icon:"🐼",title:"Pandas for Data Engineering",tag:"Core Library",tagClass:"tag-pandas",content:`
+<div class="qlink">📝 Covers Q10 · Q11 · Q12 · Q13</div>
+<h4>① loc vs iloc — label vs position</h4>
+<pre class="cb">df.<span class="fn">loc</span>[row_labels, col_names]   <span class="cmt"># by INDEX VALUE and column NAME</span>
+df.<span class="fn">iloc</span>[row_pos, col_pos]        <span class="cmt"># by INTEGER POSITION (0, 1, 2…)</span>
+
+<span class="cmt"># After filtering, iloc positions shift — loc labels don't</span>
+<span class="cmt"># loc slicing is INCLUSIVE on both ends (unlike Python slices)</span>
+<span class="cmt"># iloc slicing is exclusive on end (standard Python)</span></pre>
+<h4>② Named aggregation — the modern groupby pattern</h4>
+<pre class="cb">df.<span class="fn">groupby</span>(<span class="str">'region'</span>).<span class="fn">agg</span>(
+    total=(<span class="str">'amount'</span>, <span class="str">'sum'</span>),          <span class="cmt"># new_name=(source_col, func)</span>
+    orders=(<span class="str">'id'</span>, <span class="str">'nunique'</span>),
+    avg=(<span class="str">'amount'</span>, <span class="str">'mean'</span>)
+)
+<span class="cmt"># Returns clean DataFrame — no MultiIndex columns</span>
+<span class="cmt"># One pass over the data — efficient</span></pre>
+<h4>③ Large files — chunksize for constant memory</h4>
+<pre class="cb"><span class="kw">for</span> chunk <span class="kw">in</span> pd.<span class="fn">read_csv</span>(<span class="str">'huge.csv'</span>, chunksize=<span class="num">100_000</span>):
+    process(chunk)           <span class="cmt"># each chunk is a DataFrame</span>
+<span class="cmt"># chunksize returns a lazy TextFileReader — NOT a DataFrame</span>
+<span class="cmt"># Memory stays constant regardless of file size</span></pre>
+<h4>④ merge vs concat — JOIN vs UNION</h4>
+<pre class="cb">orders.<span class="fn">merge</span>(customers, on=<span class="str">'id'</span>, how=<span class="str">'left'</span>)
+<span class="cmt"># → SQL-style JOIN — matches rows by key column</span>
+
+pd.<span class="fn">concat</span>([df_jan, df_feb], ignore_index=<span class="kw">True</span>)
+<span class="cmt"># → SQL UNION ALL — stacks rows from multiple DataFrames</span></pre>
+<h4>⑤ dtype optimisation — reduce memory 5–20×</h4>
+<p>Default dtypes waste memory: every integer is <code>int64</code> (8 bytes), every string is <code>object</code> (a Python pointer per element). Choosing smaller types can shrink a DataFrame 5–20×.</p>
+<pre class="cb">df.<span class="fn">info</span>(memory_usage=<span class="str">'deep'</span>)   <span class="cmt"># true memory including strings</span>
+
+<span class="cmt"># Low-cardinality strings → category (highest-impact trick)</span>
+df[<span class="str">'status'</span>] = df[<span class="str">'status'</span>].<span class="fn">astype</span>(<span class="str">'category'</span>)
+<span class="cmt"># 'active','inactive','pending' stored once; rows store integer code</span>
+
+<span class="cmt"># Integer/float downcasting</span>
+df[<span class="str">'age'</span>]   = pd.<span class="fn">to_numeric</span>(df[<span class="str">'age'</span>],   downcast=<span class="str">'integer'</span>)  <span class="cmt"># int64 → int8</span>
+df[<span class="str">'score'</span>] = pd.<span class="fn">to_numeric</span>(df[<span class="str">'score'</span>], downcast=<span class="str">'float'</span>)    <span class="cmt"># float64 → float32</span>
+
+<span class="cmt"># Best: specify dtypes at read time — no extra pass</span>
+df = pd.<span class="fn">read_csv</span>(<span class="str">'file.csv'</span>, dtype={
+    <span class="str">'status'</span>: <span class="str">'category'</span>,
+    <span class="str">'age'</span>:    <span class="str">'int8'</span>,
+    <span class="str">'price'</span>:  <span class="str">'float32'</span>,
+})
+
+<span class="cmt"># Memory comparison (100k rows):</span>
+<span class="cmt"># object series  → ~9.6 MB  |  category series → ~0.1 MB (97% smaller)</span>
+<span class="cmt"># int64 column   → 800 KB   |  int8 column     →  100 KB</span></pre>`},
+
+  {icon:"🐘",title:"Python + PostgreSQL (psycopg2 & SQLAlchemy)",tag:"Databases",tagClass:"tag-db",content:`
+<div class="qlink">📝 Covers Q14 · Q15 · Q16</div>
+<h4>① Parameterised queries — NEVER use f-strings</h4>
+<pre class="cb"><span class="cmt"># ❌ DANGEROUS — user input injected into SQL string</span>
+cur.<span class="fn">execute</span>(<span class="str">f"SELECT * FROM users WHERE name = '{user_input}'"</span>)
+
+<span class="cmt"># ✅ SAFE — data is separate from SQL structure</span>
+cur.<span class="fn">execute</span>(<span class="str">"SELECT * FROM users WHERE name = %s"</span>, (user_input,))
+<span class="cmt"># psycopg2 handles quoting, escaping, and type conversion</span></pre>
+<h4>② SQLAlchemy connection pool — connect vs begin</h4>
+<pre class="cb">engine = <span class="fn">create_engine</span>(<span class="str">'postgresql+psycopg2://...'</span>, pool_size=<span class="num">5</span>)
+<span class="cmt"># engine.connect() — borrows from pool, returns on exit (no auto-commit)</span>
+<span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    conn.<span class="fn">execute</span>(...)
+
+<span class="cmt"># engine.begin() — same but auto-commits on success, rollback on exception</span>
+<span class="kw">with</span> engine.<span class="fn">begin</span>() <span class="kw">as</span> conn:
+    conn.<span class="fn">execute</span>(...)    <span class="cmt"># ← use this for writes</span>
+<span class="cmt"># Connection is returned to the pool, not closed</span></pre>
+<h4>③ execute_values — bulk insert (10–100× faster)</h4>
+<pre class="cb"><span class="cmt"># ❌ Slow — one round-trip per row</span>
+<span class="kw">for</span> row <span class="kw">in</span> rows:
+    cur.<span class="fn">execute</span>(<span class="str">"INSERT INTO t VALUES (%s, %s)"</span>, row)
+
+<span class="cmt"># ✅ Fast — single INSERT with many value tuples</span>
+<span class="fn">execute_values</span>(cur, <span class="str">"INSERT INTO t (a, b) VALUES %s"</span>, rows)
+<span class="cmt"># Batches rows into INSERT ... VALUES (...),(...),(...)</span></pre>
+<h4>④ engine.connect() vs engine.begin() — critical distinction</h4>
+<p><code>engine.connect()</code> is <strong>manual commit mode</strong>: you must call <code>conn.commit()</code> explicitly — forget it and writes are silently rolled back. <code>engine.begin()</code> wraps the block in a transaction that auto-commits on success and auto-rolls back on any exception. Always prefer <code>begin()</code> for writes.</p>
+<pre class="cb"><span class="cmt"># engine.connect() — manual commit</span>
+<span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    conn.<span class="fn">execute</span>(<span class="fn">text</span>(<span class="str">"UPDATE users SET active=1 WHERE id=:id"</span>), {<span class="str">"id"</span>: <span class="num">42</span>})
+    <span class="cmt"># without conn.commit() here: UPDATE is ROLLED BACK silently — no error!</span>
+    conn.<span class="fn">commit</span>()
+
+<span class="cmt"># engine.begin() — auto-commit / auto-rollback (use for all writes)</span>
+<span class="kw">with</span> engine.<span class="fn">begin</span>() <span class="kw">as</span> conn:
+    conn.<span class="fn">execute</span>(<span class="fn">text</span>(<span class="str">"UPDATE users SET active=1 WHERE id=:id"</span>), {<span class="str">"id"</span>: <span class="num">42</span>})
+    conn.<span class="fn">execute</span>(<span class="fn">text</span>(<span class="str">"INSERT INTO audit_log VALUES (:uid, NOW())"</span>), {<span class="str">"uid"</span>: <span class="num">42</span>})
+    <span class="cmt"># ↑ both committed atomically on __exit__; any exception → both rolled back</span>
+
+<span class="cmt"># pool_pre_ping=True: runs "SELECT 1" before use to detect stale connections</span>
+<span class="cmt"># pool_recycle=1800: close & reopen connections idle > 30 min (firewall safe)</span></pre>
+<h4>⑤ SQL injection — how it works</h4>
+<p>The classic payload <code>' OR '1'='1</code> makes a WHERE clause always true. <code>'; DROP TABLE users; --</code> terminates the query and runs a second, destructive one. Parameterised queries are the only safe defence — the driver escapes the data before it ever touches the SQL string.</p>
+<pre class="cb"><span class="cmt"># The attack — f-string injection</span>
+username = <span class="str">"admin' OR '1'='1"</span>
+query = <span class="str">f"SELECT * FROM users WHERE username = '{username}'"</span>
+<span class="cmt"># Executes: WHERE username = 'admin' OR '1'='1'  → returns ALL rows</span>
+
+<span class="cmt"># ✅ Parameterised — driver escapes the value safely</span>
+cursor.<span class="fn">execute</span>(<span class="str">"SELECT * FROM users WHERE username = %s"</span>, (username,))
+<span class="cmt"># If username = "admin' OR '1'='1":</span>
+<span class="cmt"># Executes: WHERE username = 'admin'' OR ''1''=''1'  → no match, fails safely</span></pre>`},
+
+  {icon:"🌐",title:"APIs & the requests Library",tag:"HTTP",tagClass:"tag-api",content:`
+<p>The requests library is the standard for HTTP in Python data engineering — APIs, webhooks, REST integrations.</p>
+<h4>Basic GET with error handling</h4>
+<pre class="cb"><span class="kw">import</span> requests
+
+resp = requests.<span class="fn">get</span>(
+    <span class="str">'https://api.example.com/orders'</span>,
+    params={<span class="str">'page'</span>: <span class="num">1</span>, <span class="str">'limit'</span>: <span class="num">100</span>},
+    headers={<span class="str">'Authorization'</span>: <span class="str">'Bearer token'</span>},
+    timeout=(<span class="num">3.05</span>, <span class="num">27</span>)  <span class="cmt"># (connect, read)</span>
+)
+resp.<span class="fn">raise_for_status</span>()  <span class="cmt"># raises on 4xx/5xx</span>
+data = resp.<span class="fn">json</span>()</pre>
+<h4>Session with retry adapter — production pattern</h4>
+<pre class="cb"><span class="kw">from</span> requests.adapters <span class="kw">import</span> HTTPAdapter
+<span class="kw">from</span> urllib3.util.retry <span class="kw">import</span> Retry
+
+session = requests.<span class="fn">Session</span>()
+retry = <span class="fn">Retry</span>(
+    total=<span class="num">3</span>,
+    backoff_factor=<span class="num">1</span>,
+    status_forcelist=[<span class="num">429</span>, <span class="num">500</span>, <span class="num">502</span>, <span class="num">503</span>]
+)
+session.<span class="fn">mount</span>(<span class="str">'https://'</span>, <span class="fn">HTTPAdapter</span>(max_retries=retry))
+session.headers.<span class="fn">update</span>({<span class="str">'Authorization'</span>: <span class="str">'Bearer token'</span>})</pre>
+<h4>Pagination pattern</h4>
+<pre class="cb"><span class="kw">def</span> <span class="fn">fetch_all_pages</span>(url):
+    results = []
+    page = <span class="num">1</span>
+    <span class="kw">while</span> <span class="kw">True</span>:
+        resp = session.<span class="fn">get</span>(url, params={<span class="str">'page'</span>: page}, timeout=<span class="num">10</span>)
+        resp.<span class="fn">raise_for_status</span>()
+        data = resp.<span class="fn">json</span>()
+        <span class="kw">if</span> <span class="kw">not</span> data[<span class="str">'items'</span>]:
+            <span class="kw">break</span>
+        results.<span class="fn">extend</span>(data[<span class="str">'items'</span>])
+        page += <span class="num">1</span>
+    <span class="kw">return</span> results</pre>
+<h4>Exception hierarchy</h4>
+<ul>
+  <li>requests.exceptions.<strong>Timeout</strong> — connection or read timeout</li>
+  <li>requests.exceptions.<strong>ConnectionError</strong> — DNS, refused connection</li>
+  <li>requests.exceptions.<strong>HTTPError</strong> — raised by raise_for_status()</li>
+  <li>requests.exceptions.<strong>RequestException</strong> — base class for all above</li>
+</ul>
+<h4>Retry adapter — automatic backoff for transient failures</h4>
+<p>Mount an <code>HTTPAdapter</code> with a <code>Retry</code> config on the session so every request through it retries on 429/5xx with exponential backoff — no extra code per request needed.</p>
+<pre class="cb"><span class="kw">from</span> requests.adapters <span class="kw">import</span> HTTPAdapter
+<span class="kw">from</span> urllib3.util.retry <span class="kw">import</span> Retry
+
+retry = <span class="fn">Retry</span>(
+    total=<span class="num">3</span>,
+    backoff_factor=<span class="num">1</span>,                         <span class="cmt"># waits: 1s, 2s, 4s</span>
+    status_forcelist=[<span class="num">429</span>, <span class="num">500</span>, <span class="num">502</span>, <span class="num">503</span>, <span class="num">504</span>],
+    allowed_methods=[<span class="str">"GET"</span>, <span class="str">"POST"</span>],
+)
+session.<span class="fn">mount</span>(<span class="str">"https://"</span>, <span class="fn">HTTPAdapter</span>(max_retries=retry))
+<span class="cmt"># Formula: backoff_factor × (2^(retry_n − 1))  → 1s, 2s, 4s</span>
+<span class="cmt"># Never retry 4xx errors (client bugs) except 429 (rate limit)</span></pre>
+<h4>Full exception hierarchy — catch order matters</h4>
+<pre class="cb"><span class="cmt"># IOError</span>
+<span class="cmt"># └── RequestException          ← catch-all</span>
+<span class="cmt">#     ├── ConnectionError       ← DNS, refused, reset</span>
+<span class="cmt">#     │   ├── ProxyError</span>
+<span class="cmt">#     │   └── SSLError</span>
+<span class="cmt">#     ├── HTTPError             ← raised by raise_for_status() on 4xx/5xx</span>
+<span class="cmt">#     ├── TooManyRedirects</span>
+<span class="cmt">#     └── Timeout               ← parent of both</span>
+<span class="cmt">#         ├── ConnectTimeout    ← TCP connect exceeded</span>
+<span class="cmt">#         └── ReadTimeout       ← waiting for response bytes</span>
+
+<span class="cmt"># Correct catch order: specific → general</span>
+<span class="kw">try</span>:
+    r = session.<span class="fn">get</span>(url, timeout=(<span class="num">3</span>, <span class="num">10</span>))
+    r.<span class="fn">raise_for_status</span>()
+<span class="kw">except</span> requests.exceptions.<span class="cls">ConnectTimeout</span>:
+    logger.<span class="fn">warning</span>(<span class="str">"Connect timeout: %s"</span>, url)
+<span class="kw">except</span> requests.exceptions.<span class="cls">ReadTimeout</span>:
+    logger.<span class="fn">warning</span>(<span class="str">"Read timeout: %s"</span>, url)
+<span class="kw">except</span> requests.exceptions.<span class="cls">HTTPError</span> <span class="kw">as</span> e:
+    logger.<span class="fn">error</span>(<span class="str">"HTTP %s: %s"</span>, e.response.status_code, url)
+<span class="kw">except</span> requests.exceptions.<span class="cls">RequestException</span> <span class="kw">as</span> e:
+    logger.<span class="fn">error</span>(<span class="str">"Request failed: %s"</span>, e)    <span class="cmt"># catch-all last</span></pre>`},
+
+  {icon:"🚨",title:"Error Handling & Structured Logging",tag:"Observability",tagClass:"tag-err",content:`
+<p>Good error handling and logging are what separate production pipelines from scripts.</p>
+<h4>Exception hierarchy</h4>
+<pre class="cb"><span class="kw">try</span>:
+    result = <span class="fn">int</span>(user_input) / divisor
+<span class="kw">except</span> <span class="cls">ZeroDivisionError</span>:
+    logger.<span class="fn">error</span>(<span class="str">"Division by zero"</span>)
+<span class="kw">except</span> <span class="cls">ValueError</span> <span class="kw">as</span> e:
+    logger.<span class="fn">error</span>(<span class="str">f"Invalid input: {e}"</span>)
+<span class="kw">except</span> <span class="cls">Exception</span> <span class="kw">as</span> e:
+    logger.<span class="fn">exception</span>(<span class="str">"Unexpected error"</span>)  <span class="cmt"># logs traceback</span>
+    <span class="kw">raise</span>
+<span class="kw">finally</span>:
+    <span class="fn">cleanup</span>()</pre>
+<h4>Logging setup</h4>
+<pre class="cb"><span class="kw">import</span> logging
+
+logging.<span class="fn">basicConfig</span>(
+    level=logging.INFO,
+    format=<span class="str">'%(asctime)s %(levelname)-8s %(name)s %(message)s'</span>,
+    datefmt=<span class="str">'%Y-%m-%d %H:%M:%S'</span>
+)
+logger = logging.<span class="fn">getLogger</span>(__name__)
+
+logger.<span class="fn">debug</span>(<span class="str">"Verbose detail"</span>)     <span class="cmt"># DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL</span>
+logger.<span class="fn">info</span>(<span class="str">"Pipeline started"</span>)
+logger.<span class="fn">warning</span>(<span class="str">"Missing field"</span>)
+logger.<span class="fn">error</span>(<span class="str">"Failed to load"</span>)
+logger.<span class="fn">exception</span>(<span class="str">"Crash"</span>)          <span class="cmt"># error + full traceback</span></pre>
+<h4>JSON structured logging (production)</h4>
+<pre class="cb"><span class="kw">from</span> pythonjsonlogger <span class="kw">import</span> jsonlogger
+
+handler = logging.<span class="fn">StreamHandler</span>()
+handler.<span class="fn">setFormatter</span>(<span class="fn">jsonlogger.JsonFormatter</span>(
+    <span class="str">'%(asctime)s %(name)s %(levelname)s %(message)s'</span>
+))
+logger.<span class="fn">addHandler</span>(handler)
+<span class="cmt"># Output: {"asctime": "2024-01-01", "levelname": "INFO", ...}</span></pre>
+<h4>Custom exceptions</h4>
+<pre class="cb"><span class="kw">class</span> <span class="cls">PipelineError</span>(<span class="cls">Exception</span>):
+    <span class="str">"""Base for all pipeline errors."""</span>
+
+<span class="kw">class</span> <span class="cls">ExtractionError</span>(<span class="cls">PipelineError</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, source, reason):
+        <span class="bi">super</span>().<span class="fn">__init__</span>(<span class="str">f"Failed to extract from {source}: {reason}"</span>)
+        <span class="kw">self</span>.source = source</pre>
+<h4>Bare except — the most dangerous anti-pattern</h4>
+<p>A <code>except:</code> with no type catches <strong>everything</strong> — including <code>SystemExit</code> (<code>sys.exit()</code>) and <code>KeyboardInterrupt</code> (Ctrl+C). Your program becomes impossible to stop. A <code>pass</code> inside any <code>except</code> block is almost always a bug — swallowed exceptions leave no trace.</p>
+<pre class="cb"><span class="cmt"># ❌ TERRIBLE — catches SystemExit and KeyboardInterrupt</span>
+<span class="kw">try</span>:
+    <span class="fn">risky_operation</span>()
+<span class="kw">except</span>:
+    <span class="kw">pass</span>   <span class="cmt"># Ctrl+C now does nothing. sys.exit() does nothing.</span>
+
+<span class="cmt"># ✅ CORRECT — catch specific errors; re-raise unexpected ones</span>
+<span class="kw">try</span>:
+    <span class="fn">risky_operation</span>()
+<span class="kw">except</span> <span class="cls">ValueError</span> <span class="kw">as</span> e:
+    logger.<span class="fn">warning</span>(<span class="str">"Recoverable: %s"</span>, e)     <span class="cmt"># handle it, don't re-raise</span>
+<span class="kw">except</span> <span class="cls">Exception</span>:
+    logger.<span class="fn">exception</span>(<span class="str">"Unexpected error"</span>)     <span class="cmt"># logs full traceback</span>
+    <span class="kw">raise</span>                                    <span class="cmt"># unexpected errors MUST propagate</span></pre>
+<h4>logger.exception() vs logger.error()</h4>
+<p><code>logger.error("msg")</code> logs the message only. <code>logger.exception("msg")</code> logs the message <strong>plus the full traceback</strong> automatically — it reads the current exception from <code>sys.exc_info()</code>, so it only makes sense inside an <code>except</code> block.</p>
+<pre class="cb"><span class="cmt"># logger.error — message only (no traceback)</span>
+<span class="kw">except</span> <span class="cls">ZeroDivisionError</span> <span class="kw">as</span> e:
+    logger.<span class="fn">error</span>(<span class="str">"Division failed: %s"</span>, e)
+<span class="cmt"># Output: ERROR:app:Division failed: division by zero</span>
+
+<span class="cmt"># logger.exception — message + full traceback (preferred for unexpected errors)</span>
+<span class="kw">except</span> <span class="cls">ZeroDivisionError</span>:
+    logger.<span class="fn">exception</span>(<span class="str">"Division failed"</span>)
+<span class="cmt"># Output: ERROR:app:Division failed</span>
+<span class="cmt">#         Traceback ... ZeroDivisionError: division by zero</span>
+
+<span class="cmt"># Rule: exception() for unexpected/debug; error() when traceback is noise</span>
+<span class="cmt"># logger.exception() ≡ logger.error("...", exc_info=True)</span></pre>
+<h4>Logging levels — hierarchy</h4>
+<pre class="cb"><span class="cmt"># DEBUG(10) < INFO(20) < WARNING(30) < ERROR(40) < CRITICAL(50)</span>
+<span class="cmt"># Root logger defaults to WARNING — INFO and DEBUG are invisible until configured</span>
+
+logger.<span class="fn">debug</span>(<span class="str">"Config loaded: %s"</span>, config)     <span class="cmt"># dev only — never in prod</span>
+logger.<span class="fn">info</span>(<span class="str">"Pipeline started, rows=%d"</span>, n)    <span class="cmt"># normal milestones</span>
+logger.<span class="fn">warning</span>(<span class="str">"Retrying after 429: url=%s"</span>, u) <span class="cmt"># unexpected but recoverable</span>
+logger.<span class="fn">error</span>(<span class="str">"DB write failed: order=%s"</span>, oid)  <span class="cmt"># operation failed</span>
+logger.<span class="fn">critical</span>(<span class="str">"Cannot reach DB, aborting"</span>)    <span class="cmt"># system stability at risk</span>
+
+<span class="cmt"># Always use %s, not f-strings — lazy evaluation skips formatting if level disabled</span>
+logger.<span class="fn">debug</span>(<span class="str">"Items: %s"</span>, <span class="fn">len</span>(big_list))   <span class="cmt"># ✅ format only if DEBUG enabled</span>
+logger.<span class="fn">debug</span>(<span class="str">f"Items: {len(big_list)}"</span>)    <span class="cmt"># ❌ always evaluates</span>
+
+<span class="cmt"># Suppress noisy third-party libraries:</span>
+logging.<span class="fn">getLogger</span>(<span class="str">'urllib3'</span>).<span class="fn">setLevel</span>(logging.WARNING)</pre>
+<h4>JSON structured logging — production pattern</h4>
+<pre class="cb"><span class="cmt"># pip install python-json-logger</span>
+<span class="kw">from</span> pythonjsonlogger <span class="kw">import</span> jsonlogger
+
+handler = logging.<span class="fn">StreamHandler</span>()
+handler.<span class="fn">setFormatter</span>(<span class="fn">jsonlogger.JsonFormatter</span>(
+    <span class="str">'%(asctime)s %(name)s %(levelname)s %(message)s'</span>
+))
+logger.<span class="fn">addHandler</span>(handler)
+
+<span class="cmt"># Pass context as extra= dict — each key becomes a top-level JSON field</span>
+logger.<span class="fn">info</span>(<span class="str">"Payment processed"</span>,
+            extra={<span class="str">'user_id'</span>: <span class="num">42</span>, <span class="str">'amount'</span>: <span class="num">99.99</span>, <span class="str">'duration_ms'</span>: <span class="num">87</span>})
+<span class="cmt"># → {"asctime":"2024-01-15","levelname":"INFO","message":"Payment processed",</span>
+<span class="cmt">#     "user_id":42,"amount":99.99,"duration_ms":87}</span>
+<span class="cmt"># Each field is independently filterable in Datadog / CloudWatch / Splunk</span></pre>`},
+
+  {icon:"✅",title:"Pydantic & Data Validation",tag:"Validation",tagClass:"tag-val",content:`
+<p>Pydantic provides runtime data validation using Python type annotations — essential for API responses, configs, and pipeline inputs.</p>
+<h4>Basic model</h4>
+<pre class="cb"><span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, Field, field_validator
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">from</span> typing <span class="kw">import</span> Optional
+
+<span class="kw">class</span> <span class="cls">Order</span>(<span class="cls">BaseModel</span>):
+    order_id: int
+    amount: float = <span class="fn">Field</span>(gt=<span class="num">0</span>, description=<span class="str">"Must be positive"</span>)
+    status: str = <span class="fn">Field</span>(default=<span class="str">'pending'</span>, pattern=<span class="str">r'^(pending|done|failed)$'</span>)
+    created_at: datetime
+    tags: list[str] = <span class="fn">Field</span>(default_factory=list)
+
+    @<span class="fn">field_validator</span>(<span class="str">'amount'</span>)
+    @<span class="fn">classmethod</span>
+    <span class="kw">def</span> <span class="fn">round_amount</span>(cls, v):
+        <span class="kw">return</span> <span class="bi">round</span>(v, <span class="num">2</span>)
+
+order = <span class="fn">Order</span>(order_id=<span class="str">'42'</span>, amount=<span class="str">'99.999'</span>, created_at=<span class="str">'2024-01-15'</span>)
+<span class="cmt"># Pydantic coerces '42' → 42, '99.999' → 100.0, str → datetime</span></pre>
+<h4>Serialisation</h4>
+<pre class="cb">order.<span class="fn">model_dump</span>()                    <span class="cmt"># dict</span>
+order.<span class="fn">model_dump_json</span>()               <span class="cmt"># JSON string</span>
+<span class="cls">Order</span>.<span class="fn">model_validate</span>({<span class="str">'order_id'</span>: <span class="num">1</span>, ...})  <span class="cmt"># from dict</span>
+<span class="cls">Order</span>.<span class="fn">model_validate_json</span>(json_string)      <span class="cmt"># from JSON</span></pre>
+<h4>pydantic-settings for config</h4>
+<pre class="cb"><span class="kw">from</span> pydantic_settings <span class="kw">import</span> BaseSettings
+<span class="kw">from</span> pydantic <span class="kw">import</span> SecretStr
+
+<span class="kw">class</span> <span class="cls">Settings</span>(<span class="cls">BaseSettings</span>):
+    db_host: str
+    db_password: <span class="cls">SecretStr</span>
+    debug: bool = <span class="kw">False</span>
+    model_config = {<span class="str">'env_file'</span>: <span class="str">'.env'</span>}
+
+settings = <span class="fn">Settings</span>()
+<span class="bi">print</span>(settings.db_password.<span class="fn">get_secret_value</span>())  <span class="cmt"># access secret</span></pre>
+<h4>Validation error handling</h4>
+<pre class="cb"><span class="kw">from</span> pydantic <span class="kw">import</span> ValidationError
+
+<span class="kw">try</span>:
+    order = <span class="fn">Order</span>(**raw_data)
+<span class="kw">except</span> <span class="cls">ValidationError</span> <span class="kw">as</span> e:
+    <span class="kw">for</span> err <span class="kw">in</span> e.<span class="fn">errors</span>():
+        logger.<span class="fn">error</span>(<span class="str">f"Field {err['loc']}: {err['msg']}"</span>)</pre>
+<h4>Type coercion — lax vs strict mode</h4>
+<p>Pydantic v2 operates in <strong>lax mode</strong> by default: <code>"42"</code> → <code>42</code>, <code>"true"</code> → <code>True</code>, <code>"3.14"</code> → <code>3.14</code>. Coercion is silent — <code>Order(quantity="5")</code> stores the integer <code>5</code>, not the string <code>"5"</code>. Use <code>ConfigDict(strict=True)</code> to require exact types.</p>
+<pre class="cb"><span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, ConfigDict
+
+<span class="cmt"># Lax mode (default) — coercion succeeds silently</span>
+<span class="kw">class</span> <span class="cls">Order</span>(<span class="cls">BaseModel</span>):
+    quantity: int
+    active: bool
+
+o = <span class="fn">Order</span>(quantity=<span class="str">"5"</span>, active=<span class="str">"true"</span>)
+<span class="bi">print</span>(o.quantity)  <span class="cmt"># 5 (int) — silent coercion</span>
+<span class="fn">Order</span>(quantity=<span class="str">"five"</span>)   <span class="cmt"># → ValidationError: can't coerce "five" → int</span>
+
+<span class="cmt"># Strict mode — no coercion at all</span>
+<span class="kw">class</span> <span class="cls">StrictOrder</span>(<span class="cls">BaseModel</span>):
+    model_config = <span class="fn">ConfigDict</span>(strict=<span class="kw">True</span>)
+    quantity: int
+
+<span class="fn">StrictOrder</span>(quantity=<span class="str">"5"</span>)  <span class="cmt"># → ValidationError in strict mode</span>
+<span class="fn">StrictOrder</span>(quantity=<span class="num">5</span>)   <span class="cmt"># ✅ OK</span></pre>
+<h4>@field_validator — custom validation logic</h4>
+<p>Use <code>@field_validator</code> for constraints that <code>Field()</code> can't express — cross-referencing a database, normalising a value, or comparing to today's date. Runs <em>after</em> type coercion. Return the (possibly transformed) value, or raise <code>ValueError</code>.</p>
+<pre class="cb"><span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, field_validator
+<span class="kw">from</span> datetime <span class="kw">import</span> date
+
+<span class="kw">class</span> <span class="cls">Employee</span>(<span class="cls">BaseModel</span>):
+    username:  str
+    hire_date: date
+    dept:      str
+
+    @<span class="fn">field_validator</span>(<span class="str">'username'</span>)
+    @<span class="fn">classmethod</span>   <span class="cmt"># ← required in v2, forgetting it raises RuntimeError</span>
+    <span class="kw">def</span> <span class="fn">username_alphanumeric</span>(cls, v: str) -> str:
+        <span class="kw">if</span> <span class="kw">not</span> v.<span class="fn">isalnum</span>():
+            <span class="kw">raise</span> <span class="cls">ValueError</span>(<span class="str">'must be alphanumeric only'</span>)
+        <span class="kw">return</span> v.<span class="fn">lower</span>()    <span class="cmt"># normalise in place — return the value</span>
+
+    @<span class="fn">field_validator</span>(<span class="str">'hire_date'</span>)
+    @<span class="fn">classmethod</span>
+    <span class="kw">def</span> <span class="fn">not_future</span>(cls, v: date) -> date:
+        <span class="kw">if</span> v > date.<span class="fn">today</span>():
+            <span class="kw">raise</span> <span class="cls">ValueError</span>(<span class="str">'cannot be in the future'</span>)
+        <span class="kw">return</span> v
+
+    <span class="cmt"># One validator for multiple fields:</span>
+    @<span class="fn">field_validator</span>(<span class="str">'username'</span>, <span class="str">'dept'</span>)
+    @<span class="fn">classmethod</span>
+    <span class="kw">def</span> <span class="fn">strip_ws</span>(cls, v: str) -> str:
+        <span class="kw">return</span> v.<span class="fn">strip</span>()</pre>
+<h4>model_dump — serialisation control</h4>
+<pre class="cb">u = <span class="fn">User</span>(id=<span class="num">1</span>, name=<span class="str">"Alice"</span>, password=<span class="str">"secret"</span>, email=<span class="kw">None</span>)
+
+u.<span class="fn">model_dump</span>()                    <span class="cmt"># → full dict including None values</span>
+u.<span class="fn">model_dump</span>(exclude={<span class="str">'password'</span>})  <span class="cmt"># → drop sensitive fields</span>
+u.<span class="fn">model_dump</span>(exclude_none=<span class="kw">True</span>)     <span class="cmt"># → drop fields whose value is None</span>
+u.<span class="fn">model_dump</span>(include={<span class="str">'id'</span>, <span class="str">'name'</span>}) <span class="cmt"># → whitelist specific fields</span>
+u.<span class="fn">model_dump_json</span>(exclude={<span class="str">'password'</span>})  <span class="cmt"># → JSON string directly</span>
+
+<span class="cmt"># Aliases: JSON key differs from Python attribute name</span>
+<span class="kw">class</span> <span class="cls">Resp</span>(<span class="cls">BaseModel</span>):
+    user_id: int = <span class="fn">Field</span>(alias=<span class="str">'userId'</span>)
+
+r = <span class="fn">Resp</span>(userId=<span class="num">5</span>)
+r.<span class="fn">model_dump</span>()               <span class="cmt"># {'user_id': 5}  ← Python name</span>
+r.<span class="fn">model_dump</span>(by_alias=<span class="kw">True</span>)  <span class="cmt"># {'userId': 5}   ← JSON alias</span></pre>`},
+
+  {icon:"🧪",title:"Testing with pytest",tag:"Quality",tagClass:"tag-test",content:`
+<p>pytest is the standard testing framework for Python. Write tests that give you confidence to refactor.</p>
+<h4>Basic test structure</h4>
+<pre class="cb"><span class="cmt"># test_pipeline.py</span>
+<span class="kw">import</span> pytest
+<span class="kw">from</span> myapp.pipeline <span class="kw">import</span> calculate_fee, transform_row
+
+<span class="kw">def</span> <span class="fn">test_calculate_fee_normal</span>():
+    assert <span class="fn">calculate_fee</span>(<span class="num">100</span>) == <span class="num">10.0</span>
+
+<span class="kw">def</span> <span class="fn">test_calculate_fee_zero</span>():
+    assert <span class="fn">calculate_fee</span>(<span class="num">0</span>) == <span class="num">0.0</span>
+
+<span class="kw">def</span> <span class="fn">test_calculate_fee_negative</span>():
+    <span class="kw">with</span> pytest.<span class="fn">raises</span>(<span class="cls">ValueError</span>, match=<span class="str">"positive"</span>):
+        <span class="fn">calculate_fee</span>(-<span class="num">50</span>)</pre>
+<h4>Parametrize — run one test with many inputs</h4>
+<pre class="cb">@pytest.mark.<span class="fn">parametrize</span>(<span class="str">"inp,expected"</span>, [
+    (<span class="num">100</span>, <span class="num">10.0</span>),
+    (<span class="num">0</span>, <span class="num">0.0</span>),
+    (<span class="num">1000</span>, <span class="num">100.0</span>),
+])
+<span class="kw">def</span> <span class="fn">test_fee</span>(inp, expected):
+    assert <span class="fn">calculate_fee</span>(inp) == expected</pre>
+<h4>Fixtures — reusable setup/teardown</h4>
+<pre class="cb">@pytest.<span class="fn">fixture</span>(scope=<span class="str">'session'</span>)  <span class="cmt"># shared across all tests</span>
+<span class="kw">def</span> <span class="fn">db</span>():
+    engine = <span class="fn">create_test_engine</span>()
+    <span class="fn">create_tables</span>(engine)
+    <span class="kw">yield</span> engine                  <span class="cmt"># test runs here</span>
+    engine.<span class="fn">dispose</span>()              <span class="cmt"># teardown
+
+@pytest.fixture
+def sample_df():
+    return pd.DataFrame({'id': [1,2], 'amount': [100, 200]})</span></pre>
+<h4>Mocking with unittest.mock</h4>
+<pre class="cb"><span class="kw">from</span> unittest.mock <span class="kw">import</span> patch, <span class="cls">MagicMock</span>
+
+<span class="kw">def</span> <span class="fn">test_api_call</span>():
+    <span class="kw">with</span> <span class="fn">patch</span>(<span class="str">'myapp.client.requests.get'</span>) <span class="kw">as</span> mock_get:
+        mock_get.<span class="fn">return_value</span>.<span class="fn">json</span>.<span class="fn">return_value</span> = {<span class="str">'data'</span>: [<span class="num">1</span>,<span class="num">2</span>]}
+        mock_get.<span class="fn">return_value</span>.status_code = <span class="num">200</span>
+        result = <span class="fn">fetch_data</span>()
+    assert result == [<span class="num">1</span>, <span class="num">2</span>]</pre>
+<h4>Running tests</h4>
+<pre class="cb">pytest                     <span class="cmt"># run all tests</span>
+pytest -v                  <span class="cmt"># verbose output</span>
+pytest -k "test_fee"       <span class="cmt"># filter by name</span>
+pytest --cov=myapp         <span class="cmt"># with coverage</span></pre>
+<h4>MagicMock — spec and side_effect</h4>
+<p><code>MagicMock</code> auto-generates mocks for any attribute access or method call. Use <code>spec=MyClass</code> to restrict it to the real class's interface — calling a non-existent method raises <code>AttributeError</code>, catching typos at test time.</p>
+<pre class="cb"><span class="kw">from</span> unittest.mock <span class="kw">import</span> MagicMock
+
+mock = <span class="fn">MagicMock</span>()
+mock.<span class="fn">get_user</span>.<span class="fn">return_value</span> = {<span class="str">'id'</span>: <span class="num">1</span>, <span class="str">'name'</span>: <span class="str">'Alice'</span>}
+
+<span class="cmt"># Raise an exception on call:</span>
+mock.<span class="fn">fetch</span>.side_effect = <span class="cls">ConnectionError</span>(<span class="str">"network down"</span>)
+
+<span class="cmt"># Multiple sequential return values:</span>
+mock.<span class="fn">read</span>.side_effect = [<span class="str">b'chunk1'</span>, <span class="str">b'chunk2'</span>, <span class="str">b''</span>]
+
+<span class="cmt"># spec — prevents accessing non-existent attributes (catches typos)</span>
+<span class="kw">from</span> myapp.services <span class="kw">import</span> UserService
+mock_svc = <span class="fn">MagicMock</span>(spec=<span class="cls">UserService</span>)
+mock_svc.<span class="fn">nonexistent_method</span>()  <span class="cmt"># ← AttributeError raised at test time</span></pre>
+<h4>assert_called_once_with vs assert_called_with</h4>
+<p><code>assert_called_with()</code> only checks the <strong>last call</strong> — it passes even if the mock was called 100 times. Always prefer <code>assert_called_once_with()</code> for critical operations (DB writes, emails) to verify exactly one call.</p>
+<pre class="cb">m = <span class="fn">MagicMock</span>()
+m(<span class="str">'first'</span>)
+m(<span class="str">'second'</span>)                        <span class="cmt"># ← this is the last call</span>
+m.<span class="fn">assert_called_with</span>(<span class="str">'second'</span>)     <span class="cmt"># ✅ passes (last call matches)</span>
+m.<span class="fn">assert_called_once_with</span>(<span class="str">'second'</span>) <span class="cmt"># ❌ FAILS — called twice!</span>
+
+<span class="cmt"># Full family of call assertions:</span>
+m.<span class="fn">assert_called</span>()                     <span class="cmt"># was called at all</span>
+m.<span class="fn">assert_called_once</span>()                 <span class="cmt"># called exactly once</span>
+m.<span class="fn">assert_called_with</span>(args)             <span class="cmt"># last call args only</span>
+m.<span class="fn">assert_called_once_with</span>(args)        <span class="cmt"># once AND specific args</span>
+m.<span class="fn">assert_not_called</span>()                  <span class="cmt"># never called</span>
+<span class="bi">print</span>(m.call_count)                    <span class="cmt"># number of times called</span>
+<span class="bi">print</span>(m.call_args_list)                <span class="cmt"># full list of every call</span></pre>
+<h4>Fixture scope — choosing the right level</h4>
+<pre class="cb"><span class="cmt"># scope='function' (default) — fresh per test → safest, slowest</span>
+@pytest.<span class="fn">fixture</span>
+<span class="kw">def</span> <span class="fn">db_conn</span>():
+    conn = <span class="fn">create_test_db</span>()
+    <span class="kw">yield</span> conn
+    conn.<span class="fn">rollback</span>()    <span class="cmt"># undo all writes after each test</span>
+    conn.<span class="fn">close</span>()
+
+<span class="cmt"># scope='session' — shared across all tests → fast, but mutations carry over!</span>
+@pytest.<span class="fn">fixture</span>(scope=<span class="str">'session'</span>)
+<span class="kw">def</span> <span class="fn">db_engine</span>():
+    engine = <span class="fn">create_engine</span>(TEST_DB_URL)
+    <span class="kw">yield</span> engine
+    engine.<span class="fn">dispose</span>()   <span class="cmt"># once after all tests</span>
+
+<span class="cmt"># Fixtures compose — a fixture can depend on other fixtures:</span>
+@pytest.<span class="fn">fixture</span>
+<span class="kw">def</span> <span class="fn">test_user</span>(db_conn):  <span class="cmt"># receives db_conn fixture by name</span>
+    user = <span class="cls">User</span>(name=<span class="str">'Alice'</span>)
+    db_conn.<span class="fn">add</span>(user)
+    <span class="kw">yield</span> user            <span class="cmt"># rollback from db_conn handles cleanup</span></pre>`},
+
+  {icon:"⚙️",title:"Env Variables & Config Management",tag:"Config",tagClass:"tag-config",content:`
+<p>Never hardcode secrets. Use environment variables for all config that changes between environments.</p>
+<h4>Environment variables</h4>
+<pre class="cb"><span class="kw">import</span> os
+
+<span class="cmt"># Required — fails loudly if missing</span>
+db_host = os.environ[<span class="str">'DB_HOST'</span>]
+
+<span class="cmt"># Optional with default</span>
+port = <span class="bi">int</span>(os.<span class="fn">getenv</span>(<span class="str">'PORT'</span>, <span class="str">'8080'</span>))
+debug = os.<span class="fn">getenv</span>(<span class="str">'DEBUG'</span>, <span class="str">'false'</span>).<span class="fn">lower</span>() == <span class="str">'true'</span></pre>
+<h4>.env file with python-dotenv</h4>
+<pre class="cb"><span class="cmt"># .env file (add to .gitignore!)</span>
+<span class="cmt"># DB_HOST=localhost</span>
+<span class="cmt"># DB_PASSWORD=secret</span>
+
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="fn">load_dotenv</span>()                  <span class="cmt"># loads .env into os.environ</span>
+<span class="fn">load_dotenv</span>(<span class="str">'.env.production'</span>)  <span class="cmt"># load a specific env file</span></pre>
+<h4>pydantic-settings (recommended)</h4>
+<pre class="cb"><span class="kw">from</span> pydantic_settings <span class="kw">import</span> BaseSettings
+
+<span class="kw">class</span> <span class="cls">Config</span>(<span class="cls">BaseSettings</span>):
+    db_host: str
+    db_port: int = <span class="num">5432</span>
+    api_key: str
+    batch_size: int = <span class="num">1000</span>
+    model_config = {<span class="str">'env_file'</span>: <span class="str">'.env'</span>}
+
+config = <span class="fn">Config</span>()  <span class="cmt"># validated, typed, one source of truth</span></pre>
+<h4>Secrets management in production</h4>
+<ul>
+  <li><strong>AWS Secrets Manager</strong> — boto3.client('secretsmanager').get_secret_value()</li>
+  <li><strong>HashiCorp Vault</strong> — hvac library</li>
+  <li><strong>GCP Secret Manager</strong> — google-cloud-secret-manager</li>
+  <li><strong>GitHub/GitLab CI Secrets</strong> — injected as env vars at runtime</li>
+</ul>
+<h4>.gitignore essentials</h4>
+<pre class="cb">.env
+.env.*
+*.pem
+*_key.json
+secrets/
+config/local.py</pre>`},
+
+  {icon:"⏰",title:"Scheduling: Python & Cron Basics",tag:"Orchestration",tagClass:"tag-sched",content:`
+<p>Scheduled execution is at the core of every data pipeline. Know cron basics and Python scheduling libraries.</p>
+<h4>Cron syntax</h4>
+<pre class="cb"><span class="cmt"># ┌─── minute (0–59)</span>
+<span class="cmt"># │ ┌─── hour (0–23)</span>
+<span class="cmt"># │ │ ┌─── day of month (1–31)</span>
+<span class="cmt"># │ │ │ ┌─── month (1–12)</span>
+<span class="cmt"># │ │ │ │ ┌─── day of week (0=Sun, 7=Sun)</span>
+<span class="cmt"># │ │ │ │ │</span>
+  <span class="num">0</span> <span class="num">6</span> * * <span class="num">1</span>-<span class="num">5</span>  <span class="cmt"># 6 AM Mon–Fri</span>
+  <span class="num">0</span> <span class="num">0</span> * * *    <span class="cmt"># midnight daily</span>
+  <span class="num">*/</span><span class="num">15</span> * * * * <span class="cmt"># every 15 minutes</span>
+  <span class="num">0</span> <span class="num">0</span> <span class="num">1</span> * *   <span class="cmt"># first of every month</span></pre>
+<h4>crontab commands</h4>
+<pre class="cb">crontab -e          <span class="cmt"># edit your crontab</span>
+crontab -l          <span class="cmt"># list all cron jobs</span>
+crontab -r          <span class="cmt"># remove all cron jobs (careful!)</span>
+
+<span class="cmt"># With logging</span>
+<span class="num">0</span> <span class="num">6</span> * * * /usr/bin/python3 /opt/pipeline.py >> /var/log/pipeline.log <span class="num">2</span>&><span class="num">1</span></pre>
+<h4>APScheduler — in-process Python scheduler</h4>
+<pre class="cb"><span class="kw">from</span> apscheduler.schedulers.blocking <span class="kw">import</span> <span class="cls">BlockingScheduler</span>
+
+scheduler = <span class="fn">BlockingScheduler</span>()
+
+@scheduler.scheduled_job(<span class="str">'cron'</span>, hour=<span class="num">6</span>, day_of_week=<span class="str">'mon-fri'</span>)
+<span class="kw">def</span> <span class="fn">daily_etl</span>():
+    <span class="fn">run_pipeline</span>()
+
+@scheduler.scheduled_job(<span class="str">'interval'</span>, minutes=<span class="num">15</span>)
+<span class="kw">def</span> <span class="fn">heartbeat</span>():
+    <span class="fn">check_health</span>()
+
+scheduler.<span class="fn">start</span>()</pre>
+<h4>Overlap prevention (file lock)</h4>
+<pre class="cb"><span class="kw">import</span> fcntl, sys
+
+lock = <span class="bi">open</span>(<span class="str">'/tmp/pipeline.lock'</span>, <span class="str">'w'</span>)
+<span class="kw">try</span>:
+    fcntl.<span class="fn">flock</span>(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+<span class="kw">except</span> <span class="cls">IOError</span>:
+    sys.<span class="fn">exit</span>(<span class="str">'Already running'</span>)</pre>
+<h4>When to upgrade from cron</h4>
+<ul>
+  <li>Need retries on failure → Apache Airflow, Prefect, Dagster</li>
+  <li>Need job dependencies (A runs after B) → orchestrators</li>
+  <li>Need monitoring dashboard → orchestrators</li>
+  <li>Need backfill (re-run historical dates) → orchestrators</li>
+  <li>Simple, single-machine, no dependencies → cron is fine</li>
+</ul>`}
+];
+
+let current = 0;
+let score = 0;
+let correct = 0;
+let streak = 0;
+let answered = false;
+const catScores = {};
+const catTotals = {};
+QUESTIONS.forEach(q => { catTotals[q.cat] = (catTotals[q.cat]||0) + 1; catScores[q.cat] = catScores[q.cat]||0; });
+
+function catClass(cat) {
+  const m = {
+    'File I/O':'cat-fileio','CSV':'cat-csv','JSON':'cat-json','Parquet':'cat-parquet',
+    'Pandas':'cat-pandas','DB / psycopg':'cat-db','APIs':'cat-api',
+    'Error Handling':'cat-errors','Pydantic':'cat-pydantic','Testing':'cat-testing',
+    'Config':'cat-config','Scheduling':'cat-sched'
+  };
+  return m[cat]||'cat-fileio';
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  answered = false;
+  document.getElementById('qnum').textContent = `Question ${current+1} of ${QUESTIONS.length}`;
+  const badge = document.getElementById('qbadge');
+  badge.textContent = q.cat;
+  badge.className = `cbadge ${catClass(q.cat)}`;
+  document.getElementById('qtxt').textContent = q.q;
+  const codeEl = document.getElementById('qcode');
+  if (q.code) {
+    codeEl.innerHTML = syntaxHL(q.code);
+    codeEl.style.display = 'block';
+  } else {
+    codeEl.style.display = 'none';
+  }
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span class="ol">${letters[i]}</span><span>${escapeHTML(opt)}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    optsEl.appendChild(btn);
+  });
+  document.getElementById('fb').style.display = 'none';
+  document.getElementById('fb').className = 'fb';
+  document.getElementById('tip').style.display = 'none';
+  document.getElementById('nxtbtn').style.display = 'none';
+  document.getElementById('qcard').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+  updateProgress();
+}
+
+function escapeHTML(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function syntaxHL(code) {
+  const keywords = ['import','from','as','def','class','return','with','for','in','if','elif','else','while','try','except','finally','raise','yield','pass','break','continue','and','or','not','is','lambda','True','False','None','self','cls','await','async'];
+  const builtins = ['print','open','len','range','int','float','str','list','dict','tuple','set','bool','type','isinstance','super','round','any','all','zip','enumerate','map','filter','sorted','reversed'];
+  const decorators = ['@pytest','@scheduler','@classmethod','@staticmethod','@property','@field_validator'];
+
+  let h = escapeHTML(code);
+  // comments
+  h = h.replace(/#[^\n]*/g, m => `<span class="cmt">${m}</span>`);
+  // strings (single, double, f-strings)
+  h = h.replace(/(f?)("""[\s\S]*?"""|'''[\s\S]*?'''|"[^"\n]*"|'[^'\n]*')/g, (m, fp, s) => `<span class="str">${fp}${s}</span>`);
+  // decorators
+  decorators.forEach(d => {
+    const esc = d.replace('@','@');
+    h = h.replace(new RegExp(esc + '[a-zA-Z_.]*', 'g'), m => `<span class="dec">${m}</span>`);
+  });
+  // keywords
+  keywords.forEach(kw => {
+    h = h.replace(new RegExp(`\\b(${kw})\\b`, 'g'), '<span class="kw">$1</span>');
+  });
+  // builtins
+  builtins.forEach(bi => {
+    h = h.replace(new RegExp(`\\b(${bi})\\b`, 'g'), '<span class="bi">$1</span>');
+  });
+  // class names (CamelCase)
+  h = h.replace(/\b([A-Z][a-zA-Z0-9]+)\b/g, '<span class="cls">$1</span>');
+  // function calls
+  h = h.replace(/\b([a-z_][a-zA-Z0-9_]*)(\s*\()/g, '<span class="fn">$1</span>$2');
+  // numbers
+  h = h.replace(/\b(\d[\d_]*\.?\d*)\b/g, '<span class="num">$1</span>');
+  return h;
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = QUESTIONS[current];
+  const btns = document.querySelectorAll('.opt');
+  btns.forEach(b => b.disabled = true);
+  const isCorrect = idx === q.ans;
+  if (isCorrect) {
+    btns[idx].classList.add('correct');
+    score += 10;
+    correct++;
+    streak++;
+    catScores[q.cat] = (catScores[q.cat]||0) + 1;
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[q.ans].classList.add('revealed');
+    streak = 0;
+  }
+  document.getElementById('scoreVal').textContent = score;
+  document.getElementById('correctVal').textContent = correct;
+  document.getElementById('streakVal').textContent = streak;
+  const fb = document.getElementById('fb');
+  fb.className = `fb ${isCorrect?'ok':'bad'}`;
+  fb.innerHTML = `<strong>${isCorrect?'✓ Correct!':'✗ Incorrect'}</strong> — ${escapeHTML(q.exp)}`;
+  fb.style.display = 'block';
+  const tip = document.getElementById('tip');
+  document.getElementById('tipTxt').textContent = q.tip;
+  tip.style.display = 'block';
+  document.getElementById('nxtbtn').style.display = 'inline-block';
+  document.getElementById('nxtbtn').textContent = current < QUESTIONS.length - 1 ? 'Next Question →' : 'See Results →';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= QUESTIONS.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+function updateProgress() {
+  const pct = Math.round((current / QUESTIONS.length) * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progTxt').textContent = `${current} / ${QUESTIONS.length}`;
+}
+
+function showResults() {
+  document.getElementById('qcard').style.display = 'none';
+  const res = document.getElementById('results');
+  res.style.display = 'block';
+  const pct = Math.round((correct / QUESTIONS.length) * 100);
+  document.getElementById('rScore').textContent = pct + '%';
+  let grade, msg;
+  if (pct >= 90) { grade = '🏆 Python Master'; msg = 'Outstanding! You have expert-level Python data engineering knowledge.'; }
+  else if (pct >= 75) { grade = '⭐ Advanced'; msg = 'Great work! You have strong Python DE skills. Review the Concepts tab for any gaps.'; }
+  else if (pct >= 60) { grade = '📈 Intermediate'; msg = 'Solid foundation! Focus on testing, Pydantic, and database patterns to level up.'; }
+  else if (pct >= 40) { grade = '🌱 Developing'; msg = 'Good start! Study the Concepts tab and practice file I/O, pandas, and error handling.'; }
+  else { grade = '📚 Beginner'; msg = 'Keep going! Start with file I/O and CSV basics, then progress to pandas and databases.'; }
+  document.getElementById('rGrade').textContent = grade;
+  document.getElementById('rMsg').textContent = `${correct} of ${QUESTIONS.length} correct · ${msg}`;
+  const br = document.getElementById('rBreak');
+  br.innerHTML = '';
+  Object.keys(catTotals).forEach(cat => {
+    const c = catScores[cat]||0;
+    const t = catTotals[cat];
+    const div = document.createElement('div');
+    div.className = 'rbi';
+    div.innerHTML = `<div class="rbn">${escapeHTML(cat)}</div><div class="rbs" style="color:${c/t>=0.7?'var(--correct)':c/t>=0.4?'var(--accent-y)':'var(--wrong)'}">${c}/${t}</div>`;
+    br.appendChild(div);
+  });
+}
+
+function restartQuiz() {
+  current = 0; score = 0; correct = 0; streak = 0;
+  Object.keys(catScores).forEach(k => catScores[k] = 0);
+  document.getElementById('scoreVal').textContent = 0;
+  document.getElementById('correctVal').textContent = 0;
+  document.getElementById('streakVal').textContent = 0;
+  renderQuestion();
+}
+
+function showSection(s) {
+  document.getElementById('quiz').style.display = s==='quiz'?'block':'none';
+  document.getElementById('docs').style.display = s==='docs'?'block':'none';
+  document.querySelectorAll('.nb').forEach((b,i) => b.classList.toggle('on', (i===0&&s==='quiz')||(i===1&&s==='docs')));
+  if (s==='docs' && !document.getElementById('docContent').innerHTML.trim()) renderDocs();
+}
+
+function renderDocs() {
+  const el = document.getElementById('docContent');
+  el.innerHTML = DOCS.map((d,i) => `
+    <div class="dcard">
+      <div class="dh" onclick="toggleDoc(${i})">
+        <span class="di">${d.icon}</span>
+        <span class="dt">${d.title}</span>
+        <span class="dtag ${d.tagClass}">${d.tag}</span>
+        <span class="tog" id="tog${i}">▼</span>
+      </div>
+      <div class="db" id="db${i}">${d.content}</div>
+    </div>
+  `).join('');
+}
+
+function toggleDoc(i) {
+  const db = document.getElementById(`db${i}`);
+  const tog = document.getElementById(`tog${i}`);
+  const dh = db.previousElementSibling;
+  const isOpen = db.classList.contains('open');
+  db.classList.toggle('open', !isOpen);
+  tog.classList.toggle('open', !isOpen);
+  dh.classList.toggle('open', !isOpen);
+}
+
+renderQuestion();
+</script>
+</body>
+</html>
