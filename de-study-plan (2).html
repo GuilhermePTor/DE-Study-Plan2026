@@ -1,0 +1,2394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Engineering Study Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0E0F11;
+    --surface: #161719;
+    --surface2: #1E2023;
+    --border: #2A2D32;
+    --border-strong: #3A3D44;
+    --text: #E8E9EC;
+    --text-2: #9DA0A8;
+    --text-3: #5C6070;
+    --accent: #E2FF5D;
+    --accent-dim: rgba(226,255,93,0.08);
+    --accent-border: rgba(226,255,93,0.22);
+    --sql: #5DAAFF;
+    --sql-bg: rgba(93,170,255,0.08);
+    --sql-border: rgba(93,170,255,0.22);
+    --py: #B87DFF;
+    --py-bg: rgba(184,125,255,0.08);
+    --py-border: rgba(184,125,255,0.22);
+    --proj: #FF8A5D;
+    --proj-bg: rgba(255,138,93,0.08);
+    --proj-border: rgba(255,138,93,0.22);
+    --tools: #5DFFB8;
+    --tools-bg: rgba(93,255,184,0.08);
+    --tools-border: rgba(93,255,184,0.22);
+    --min: rgba(93,170,255,0.12);
+    --min-border: rgba(93,170,255,0.25);
+    --done-bg: #131415;
+    --done-text: #3A3D44;
+    --today-border: rgba(226,255,93,0.5);
+    --header-h: 97px;
+    --timer-h: 0px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); font-family: 'Syne', sans-serif; color: var(--text); min-height: 100vh; }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2.5rem 1.1rem;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 0.85rem; flex-wrap: wrap; }
+  .header-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; margin-right: 4px; }
+  .header-title span { color: var(--accent); }
+  .header-sub { font-size: 10px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; margin-right: auto; }
+  .header-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+  .quiz-card {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--sql-bg); border: 1px solid var(--sql-border);
+    border-radius: 6px; padding: 4px 11px;
+    text-decoration: none; transition: all 0.15s;
+    flex-shrink: 0; white-space: nowrap;
+  }
+  .quiz-card:hover { background: rgba(93,170,255,0.18); border-color: var(--sql); }
+  .quiz-card-icon { font-size: 12px; line-height: 1; }
+  .quiz-card-label { font-size: 10px; font-weight: 700; color: var(--sql); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.05em; }
+  .quiz-card.py-card { background: var(--py-bg); border-color: var(--py-border); }
+  .quiz-card.py-card:hover { background: rgba(184,125,255,0.18); border-color: var(--py); }
+  .quiz-card.py-card .quiz-card-label { color: var(--py); }
+
+  .streak-pill {
+    font-size: 10px; font-family: 'JetBrains Mono', monospace;
+    color: var(--accent); background: var(--accent-dim);
+    border: 1px solid var(--accent-border);
+    padding: 3px 10px; border-radius: 4px; white-space: nowrap;
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  .start-date-wrapper {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 4px; padding: 2px 8px; transition: border-color 0.15s;
+  }
+  .start-date-wrapper:focus-within { border-color: var(--accent-border); }
+  .start-date-wrapper:hover { border-color: var(--border-strong); }
+  .start-date-label { font-size: 9px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+  .start-date-input { font-size: 10px; color: var(--text-2); background: transparent; border: none; outline: none; cursor: pointer; font-family: 'JetBrains Mono', monospace; color-scheme: dark; padding: 1px 0; }
+  .start-date-input:focus { color: var(--accent); }
+
+  .goto-btn { font-size: 10px; color: var(--text-2); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 3px 10px; cursor: pointer; font-family: 'Syne', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .goto-btn:hover { border-color: var(--accent-border); color: var(--accent); }
+  .reset-btn { font-size: 10px; color: var(--text-3); background: none; border: 1px solid var(--border); border-radius: 4px; padding: 3px 10px; cursor: pointer; font-family: 'Syne', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .reset-btn:hover { color: var(--text); border-color: var(--border-strong); }
+
+  .progress-row { display: flex; align-items: center; gap: 12px; }
+  .progress-track { flex: 1; height: 2px; background: var(--border); border-radius: 2px; max-width: 340px; }
+  .progress-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.4s ease; }
+  .progress-label { font-size: 10px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+  .days-left { font-size: 10px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; margin-left: auto; }
+
+  .timer-toggle-btn { font-size: 10px; color: var(--text-2); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 3px 10px; cursor: pointer; font-family: 'JetBrains Mono', monospace; transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+  .timer-toggle-btn:hover { border-color: var(--accent-border); color: var(--accent); }
+  .timer-toggle-btn.active { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+  /* ── TIMER BAR ── */
+  .timer-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 2.5rem; position: sticky; top: var(--header-h); z-index: 95; overflow: hidden; max-height: 0; transition: max-height 0.3s ease, padding 0.3s ease, border-color 0.3s; border-bottom-color: transparent; }
+  .timer-bar.visible { max-height: 80px; border-bottom-color: var(--border); padding: 10px 2.5rem; }
+  .timer-inner { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+  .timer-modes { display: flex; gap: 3px; }
+  .tmode-btn { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; padding: 4px 9px; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--text-3); cursor: pointer; font-family: 'JetBrains Mono', monospace; transition: all 0.15s; }
+  .tmode-btn:hover { border-color: var(--border-strong); color: var(--text-2); }
+  .tmode-btn.active { background: var(--accent); color: #0E0F11; border-color: var(--accent); }
+  .tmode-btn.active.break { background: var(--tools); border-color: var(--tools); }
+
+  .timer-display { position: relative; width: 50px; height: 50px; flex-shrink: 0; }
+  .timer-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: var(--border); stroke-width: 3.5; }
+  .ring-fill { fill: none; stroke: var(--accent); stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 138.23; stroke-dashoffset: 0; transition: stroke-dashoffset 0.9s linear, stroke 0.3s ease; }
+  .ring-fill.break-mode { stroke: var(--tools); }
+  .timer-time { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+
+  .timer-controls { display: flex; gap: 5px; align-items: center; }
+  .timer-btn-start { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; padding: 5px 16px; border-radius: 4px; border: 1px solid var(--accent-border); background: var(--accent-dim); color: var(--accent); cursor: pointer; font-family: 'JetBrains Mono', monospace; transition: all 0.15s; min-width: 70px; text-align: center; }
+  .timer-btn-start:hover { background: rgba(226,255,93,0.15); }
+  .timer-btn-start.running { background: var(--accent); color: #0E0F11; border-color: var(--accent); }
+  .timer-btn-start.break-running { background: var(--tools); color: #0E0F11; border-color: var(--tools); }
+  .timer-btn-sec { font-size: 10px; color: var(--text-3); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 5px 10px; cursor: pointer; font-family: 'JetBrains Mono', monospace; transition: all 0.15s; }
+  .timer-btn-sec:hover { border-color: var(--border-strong); color: var(--text-2); }
+
+  .timer-pomos { display: flex; gap: 5px; align-items: center; }
+  .pomo-dot { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--border-strong); background: transparent; transition: all 0.25s; }
+  .pomo-dot.done { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 6px rgba(226,255,93,0.4); }
+
+  .timer-custom { display: flex; align-items: center; gap: 5px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; transition: border-color 0.15s; }
+  .timer-custom:focus-within { border-color: var(--accent-border); }
+  .timer-min-input { width: 28px; font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--text-2); background: transparent; border: none; outline: none; text-align: center; color-scheme: dark; }
+  .timer-min-input:focus { color: var(--accent); }
+
+  .timer-status { font-size: 9px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.06em; text-transform: uppercase; min-width: 52px; }
+  .timer-status.work-mode { color: rgba(226,255,93,0.7); }
+  .timer-status.break-mode { color: rgba(93,255,184,0.7); }
+
+  /* ── PHASE NAV ── */
+  .phase-nav { display: flex; gap: 4px; padding: 0.85rem 2.5rem; flex-wrap: wrap; background: var(--bg); border-bottom: 1px solid var(--border); position: sticky; top: calc(var(--header-h) + var(--timer-h)); z-index: 90; transition: top 0.3s ease; }
+  .phase-btn { font-size: 10px; font-weight: 500; padding: 5px 13px; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--text-3); cursor: pointer; font-family: 'Syne', sans-serif; transition: all 0.15s; white-space: nowrap; letter-spacing: 0.03em; }
+  .phase-btn:hover { border-color: var(--border-strong); color: var(--text-2); }
+  .phase-btn.active { background: var(--accent); color: #0E0F11; border-color: var(--accent); font-weight: 700; }
+
+  /* ── MAIN ── */
+  .main { max-width: 880px; margin: 0 auto; padding: 2rem 2.5rem 5rem; }
+
+  /* ── FREE STACK ── */
+  .free-stack { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; position: relative; overflow: hidden; }
+  .free-stack::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--sql), var(--py), var(--tools)); }
+  .free-stack-title { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; font-family: 'JetBrains Mono', monospace; }
+  .stack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+  .stack-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; transition: border-color 0.15s; text-decoration: none; }
+  .stack-item:hover { border-color: var(--border-strong); }
+  .stack-item-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .stack-item-desc { font-size: 11px; color: var(--text-3); line-height: 1.4; }
+  .stack-item-tag { font-size: 9px; font-family: 'JetBrains Mono', monospace; padding: 1px 6px; border-radius: 3px; display: inline-block; margin-top: 4px; width: fit-content; }
+  .tag-free { background: rgba(93,255,184,0.1); color: var(--tools); }
+  .tag-audit { background: rgba(93,170,255,0.1); color: var(--sql); }
+
+  /* ── PHASE BLOCK ── */
+  .phase-block { margin-bottom: 3rem; }
+  .phase-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+  .phase-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-3); background: var(--surface2); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; }
+  .phase-title { font-size: 17px; font-weight: 700; letter-spacing: -0.2px; }
+  .phase-weeks { font-size: 10px; color: var(--text-3); margin-left: auto; font-family: 'JetBrains Mono', monospace; }
+
+  .week-label { font-size: 9px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.12em; margin: 1.5rem 0 0.5rem; font-family: 'JetBrains Mono', monospace; }
+
+  /* ── DAY CARD ── */
+  .day-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 5px; overflow: hidden; transition: border-color 0.15s; }
+  .day-card:hover { border-color: var(--border-strong); }
+  .day-card.completed { background: var(--done-bg); border-color: var(--border); }
+  .day-card.today { border-color: var(--today-border); }
+  .day-card.today .day-header { background: var(--accent-dim); }
+  .day-card.milestone { border-color: var(--accent-border); }
+  .day-card.milestone .day-header { background: var(--accent-dim); }
+
+  .day-header { display: flex; align-items: center; gap: 12px; padding: 10px 14px; cursor: pointer; user-select: none; }
+  .day-check { width: 17px; height: 17px; border-radius: 50%; border: 1.5px solid var(--border-strong); background: transparent; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; position: relative; }
+  .day-check.checked { background: var(--accent); border-color: var(--accent); }
+  .day-check.checked::after { content: ''; display: block; width: 4px; height: 7px; border: 1.5px solid #0E0F11; border-top: 0; border-left: 0; transform: rotate(45deg) translate(-1px, -1px); position: absolute; }
+  .day-date { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-3); width: 72px; flex-shrink: 0; }
+  .day-topic { font-size: 12.5px; font-weight: 600; flex: 1; }
+  .day-card.completed .day-topic { color: var(--done-text); text-decoration: line-through; }
+
+  .today-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; background: var(--accent); color: #0E0F11; padding: 2px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+  .type-badge { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; letter-spacing: 0.05em; font-family: 'JetBrains Mono', monospace; }
+  .type-sql    { background: var(--sql-bg);   color: var(--sql);   border: 1px solid var(--sql-border); }
+  .type-python { background: var(--py-bg);    color: var(--py);    border: 1px solid var(--py-border); }
+  .type-project{ background: var(--proj-bg);  color: var(--proj);  border: 1px solid var(--proj-border); }
+  .type-tools  { background: var(--tools-bg); color: var(--tools); border: 1px solid var(--tools-border); }
+  .expand-icon { font-size: 10px; color: var(--text-3); flex-shrink: 0; transition: transform 0.2s; }
+  .day-card.open .expand-icon { transform: rotate(180deg); }
+
+  /* ── DAY BODY ── */
+  .day-body { border-top: 1px solid var(--border); max-height: 0; overflow: hidden; transition: max-height 0.28s ease; }
+  .day-card.open .day-body { max-height: 1400px; }
+  .day-body-inner { padding: 14px 14px 16px; }
+
+  /* ── OUTCOME NOTE ── */
+  .outcome-note {
+    font-size: 9.5px; font-family: 'JetBrains Mono', monospace;
+    color: var(--text-3); letter-spacing: 0.06em; text-transform: uppercase;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .outcome-note::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── TASK ITEMS ── */
+  .task-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .task-item:last-of-type { border-bottom: none; }
+
+  input[type=checkbox].task-check { width: 14px; height: 14px; border: 1.5px solid var(--border-strong); border-radius: 3px; flex-shrink: 0; margin-top: 3px; cursor: pointer; appearance: none; -webkit-appearance: none; display: flex; align-items: center; justify-content: center; transition: all 0.15s; position: relative; background: transparent; }
+  input[type=checkbox].task-check:checked { background: var(--accent); border-color: var(--accent); }
+  input[type=checkbox].task-check:checked::after { content: ''; display: block; width: 3px; height: 6px; border: 1.5px solid #0E0F11; border-top: 0; border-left: 0; transform: rotate(45deg) translate(0, -1px); position: absolute; }
+
+  .task-body { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+  label.task-text { font-size: 12.5px; line-height: 1.65; color: var(--text-2); font-family: 'Lora', serif; cursor: pointer; display: block; }
+  label.task-text.done { text-decoration: line-through; color: var(--text-3); }
+
+  /* ── MINIMUM VERSION ── */
+  .task-min {
+    display: block;
+    font-size: 10.5px;
+    color: var(--text-3);
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.55;
+    padding: 5px 8px;
+    background: var(--min);
+    border: 1px solid var(--min-border);
+    border-radius: 4px;
+    position: relative;
+  }
+  .task-min::before {
+    content: 'MIN ▸ ';
+    color: var(--sql);
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+  .day-card.completed .task-min { opacity: 0.4; }
+
+  .resource-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .resource-link { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: var(--text-3); text-decoration: none; border: 1px solid var(--border); border-radius: 4px; padding: 3px 9px; transition: all 0.15s; font-family: 'JetBrains Mono', monospace; }
+  .resource-link:hover { color: var(--text); border-color: var(--border-strong); }
+  .resource-link.primary { border-color: var(--accent-border); color: var(--accent); background: var(--accent-dim); }
+  .resource-link.primary:hover { background: rgba(226,255,93,0.15); }
+
+  /* ── PHASE INTRO ── */
+  .phase-intro { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; margin-bottom: 1.1rem; font-size: 12px; color: var(--text-2); line-height: 1.65; font-family: 'Lora', serif; border-left: 2px solid var(--accent); }
+
+  /* ── COURSES ── */
+  .courses-section { margin-top: 3rem; border-top: 1px solid var(--border); padding-top: 2rem; }
+  .courses-title { font-size: 17px; font-weight: 700; margin-bottom: 0.4rem; }
+  .courses-subtitle { font-size: 10px; color: var(--text-3); margin-bottom: 1.5rem; font-family: 'JetBrains Mono', monospace; }
+  .course-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .course-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 13px 14px; transition: border-color 0.15s; }
+  .course-card:hover { border-color: var(--border-strong); }
+  .course-card.highlight { border-color: var(--accent-border); }
+  .course-name { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .course-free-tag { font-size: 9px; font-family: 'JetBrains Mono', monospace; color: var(--tools); background: var(--tools-bg); border: 1px solid var(--tools-border); padding: 1px 5px; border-radius: 3px; }
+  .course-audit-tag { font-size: 9px; font-family: 'JetBrains Mono', monospace; color: var(--sql); background: var(--sql-bg); border: 1px solid var(--sql-border); padding: 1px 5px; border-radius: 3px; }
+  .course-url { font-size: 10px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; text-decoration: none; }
+  .course-url:hover { color: var(--text-2); }
+  .course-desc { font-size: 11.5px; color: var(--text-2); line-height: 1.55; margin-top: 7px; font-family: 'Lora', serif; }
+  .course-phase { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 3px; display: inline-block; margin-top: 7px; font-family: 'JetBrains Mono', monospace; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .main { padding: 1.25rem 1rem 4rem; }
+    .phase-nav { padding: 0.7rem 1rem; }
+    .header { padding: 1.1rem 1rem 0.9rem; }
+    .timer-bar { padding: 10px 1rem; }
+    .stack-grid { grid-template-columns: 1fr 1fr; }
+    .course-grid { grid-template-columns: 1fr; }
+    .header-sub { width: 100%; order: 3; }
+    .days-left { display: none; }
+    .timer-status { display: none; }
+    .timer-custom { display: none; }
+    .quiz-card-label { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<div class="header" id="mainHeader">
+  <div class="header-top">
+    <span class="header-title">Data Engineering <span>Study Plan</span></span>
+    <span class="header-sub" id="headerSub">May 4, 2026 → Jun 28, 2026 · 1 hr/day · 56 days · 100% free</span>
+    <div class="header-actions">
+      <a class="quiz-card" href="sql-quiz.html" target="_blank">
+        <span class="quiz-card-icon">🗄️</span>
+        <span class="quiz-card-label">SQL Quiz</span>
+      </a>
+      <a class="quiz-card py-card" href="python-quiz.html" target="_blank">
+        <span class="quiz-card-icon">🐍</span>
+        <span class="quiz-card-label">Python Quiz</span>
+      </a>
+      <span class="streak-pill" id="streakLabel">🔥 0-day streak</span>
+      <button class="timer-toggle-btn" id="timerToggleBtn" onclick="toggleTimerBar()">
+        <span>⏱</span> Pomodoro
+      </button>
+      <div class="start-date-wrapper">
+        <span class="start-date-label">start:</span>
+        <input type="date" class="start-date-input" id="startDateInput" onchange="setStartDate(this.value)">
+      </div>
+      <button class="goto-btn" onclick="scrollToToday()">→ Today</button>
+      <button class="reset-btn" onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <span class="progress-label" id="progressLabel">0 / 56 days · 0%</span>
+    <span class="days-left" id="daysLeft"></span>
+  </div>
+</div>
+
+<!-- ═══════════════ POMODORO TIMER BAR ═══════════════ -->
+<div class="timer-bar" id="timerBar">
+  <div class="timer-inner">
+    <div class="timer-modes">
+      <button class="tmode-btn active" id="btnWork" onclick="setMode('work',30,this)">WORK</button>
+      <button class="tmode-btn" id="btnShort" onclick="setMode('short',5,this)">SHORT</button>
+      <button class="tmode-btn" id="btnLong" onclick="setMode('long',15,this)">LONG</button>
+    </div>
+    <div class="timer-display">
+      <svg class="timer-ring" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+        <circle class="ring-bg" cx="25" cy="25" r="22"/>
+        <circle class="ring-fill" id="ringFill" cx="25" cy="25" r="22"/>
+      </svg>
+      <span class="timer-time" id="timerTime">30:00</span>
+    </div>
+    <span class="timer-status work-mode" id="timerStatus">FOCUS</span>
+    <div class="timer-controls">
+      <button class="timer-btn-start" id="timerStartBtn" onclick="timerToggle()">START</button>
+      <button class="timer-btn-sec" onclick="timerReset()">RESET</button>
+    </div>
+    <div class="timer-pomos">
+      <span class="pomo-dot" id="pd1"></span>
+      <span class="pomo-dot" id="pd2"></span>
+      <span class="pomo-dot" id="pd3"></span>
+      <span class="pomo-dot" id="pd4"></span>
+    </div>
+    <div class="timer-custom">
+      <span class="start-date-label">min:</span>
+      <input type="number" class="timer-min-input" id="timerMinInput" min="1" max="99" value="30" onchange="setCustomDuration(this.value)">
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PHASE NAV ═══════════════ -->
+<div class="phase-nav" id="phaseNav">
+  <button class="phase-btn active" onclick="showPhase('all',this)">All phases</button>
+  <button class="phase-btn" onclick="showPhase('stack',this)">Free Stack</button>
+  <button class="phase-btn" onclick="showPhase('p1',this)">① SQL Foundations</button>
+  <button class="phase-btn" onclick="showPhase('p2',this)">② Advanced SQL</button>
+  <button class="phase-btn" onclick="showPhase('p3',this)">③ Python DE</button>
+  <button class="phase-btn" onclick="showPhase('p4',this)">④ Combined</button>
+  <button class="phase-btn" onclick="showPhase('p5',this)">⑤ DE Tools</button>
+  <button class="phase-btn" onclick="showPhase('courses',this)">Resources</button>
+</div>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<div class="main">
+
+<!-- ───── FREE STACK ───── -->
+<div class="free-stack" data-phase="stack">
+  <div class="free-stack-title">// Complete free resource stack — total cost $0</div>
+  <div class="stack-grid">
+    <a class="stack-item" href="https://sqlbolt.com" target="_blank"><span class="stack-item-name">SQLBolt</span><span class="stack-item-desc">Interactive SQL from zero. Best first stop — no signup, instant feedback.</span><span class="stack-item-tag tag-free">FREE</span></a>
+    <a class="stack-item" href="https://pgexercises.com" target="_blank"><span class="stack-item-name">pgexercises.com</span><span class="stack-item-desc">PostgreSQL drills from beginner to advanced. Daily practice engine.</span><span class="stack-item-tag tag-free">FREE</span></a>
+    <a class="stack-item" href="https://datalemur.com/sql-tutorial" target="_blank"><span class="stack-item-name">DataLemur</span><span class="stack-item-desc">Window functions, CTEs, LEAD/LAG. Real FAANG interview problems.</span><span class="stack-item-tag tag-free">FREE</span></a>
+    <a class="stack-item" href="https://cs50.harvard.edu/sql/2024/" target="_blank"><span class="stack-item-name">CS50 SQL (Harvard)</span><span class="stack-item-desc">Rigorous foundations. Schema design, indexes, query planning.</span><span class="stack-item-tag tag-free">FREE</span></a>
+    <a class="stack-item" href="https://www.coursera.org/professional-certificates/ibm-data-engineer" target="_blank"><span class="stack-item-name">IBM DE — Coursera</span><span class="stack-item-desc">Full DE curriculum: SQL, databases, warehousing, pipelines.</span><span class="stack-item-tag tag-audit">AUDIT FREE</span></a>
+    <a class="stack-item" href="https://www.coursera.org/professional-certificates/data-engineering" target="_blank"><span class="stack-item-name">DeepLearning.AI DE</span><span class="stack-item-desc">ETL, pipelines, cloud platforms, modern DE practices.</span><span class="stack-item-tag tag-audit">AUDIT FREE</span></a>
+    <a class="stack-item" href="https://leetcode.com/studyplan/top-sql-50/" target="_blank"><span class="stack-item-name">LeetCode SQL 50</span><span class="stack-item-desc">Top 50 SQL interview problems. Timed practice across 8 weeks.</span><span class="stack-item-tag tag-free">FREE TIER</span></a>
+    <a class="stack-item" href="https://realpython.com" target="_blank"><span class="stack-item-name">Real Python</span><span class="stack-item-desc">DE Python patterns: ETL, SQLAlchemy, pandas, pytest, logging.</span><span class="stack-item-tag tag-free">FREE</span></a>
+    <a class="stack-item" href="https://learn.getdbt.com" target="_blank"><span class="stack-item-name">dbt Learn</span><span class="stack-item-desc">Official dbt course (~5 hr). Models, tests, docs. Essential for DE.</span><span class="stack-item-tag tag-free">FREE</span></a>
+    <a class="stack-item" href="https://github.com/DataTalksClub/data-engineering-zoomcamp" target="_blank"><span class="stack-item-name">DE Zoomcamp</span><span class="stack-item-desc">Free bootcamp: GCP, Terraform, Airflow, dbt, Spark, Kafka.</span><span class="stack-item-tag tag-free">FREE</span></a>
+    <a class="stack-item" href="https://www.cloudskillsboost.google" target="_blank"><span class="stack-item-name">Google Cloud Skills</span><span class="stack-item-desc">Free GCP labs. BigQuery, Cloud Storage, IAM hands-on.</span><span class="stack-item-tag tag-free">FREE</span></a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PHASE 1 — SQL FOUNDATIONS (Days 1–7)
+═══════════════════════════════════════════ -->
+<div class="phase-block" data-phase="p1">
+  <div class="phase-heading">
+    <span class="phase-num">01</span>
+    <span class="phase-title">SQL Foundations</span>
+    <span class="phase-weeks" data-phase="p1">May 4 – May 10</span>
+  </div>
+  <div class="phase-intro">Start from solid ground. SQLBolt for fast interactive syntax, CS50 SQL for depth, pgexercises for daily reps. By end of week you'll have a working PostgreSQL schema on Supabase (free) and a growing personal cheat sheet. Resources: <strong>SQLBolt → CS50 SQL → pgexercises.com</strong></div>
+  <div class="week-label" data-week="1">Week 1 — May 4–10</div>
+
+  <!-- Day 1 -->
+  <div class="day-card" id="day1">
+    <div class="day-header" onclick="toggleDay('day1')">
+      <div class="day-check" id="dc_day1" onclick="event.stopPropagation();markDay('day1')"></div>
+      <span class="day-date">Mon May 4</span><span class="day-topic">SELECT, FROM, WHERE, ORDER BY</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t1_1">
+        <div class="task-body">
+          <label class="task-text" for="t1_1">Complete SQLBolt lessons 1–6 with every interactive exercise solved before advancing. You're done when you can write SELECT, filter with WHERE, sort with ORDER BY, and handle NULLs without looking anything up.</label>
+          <span class="task-min">finish at least lessons 1–4 and write one working SELECT query with a WHERE clause and an ORDER BY from memory</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t1_2">
+        <div class="task-body">
+          <label class="task-text" for="t1_2">Write the SQL logical execution order in your notes — FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY — and write one concrete query where swapping WHERE and HAVING returns wrong results. Keep this diagram permanently.</label>
+          <span class="task-min">write the execution order sequence (all 6 steps) in your notes without looking it up</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://sqlbolt.com" target="_blank">↗ SQLBolt lessons 1–6</a>
+        <a class="resource-link" href="https://cs50.harvard.edu/sql/2024/" target="_blank">↗ CS50 SQL — Week 0</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 2 -->
+  <div class="day-card" id="day2">
+    <div class="day-header" onclick="toggleDay('day2')">
+      <div class="day-check" id="dc_day2" onclick="event.stopPropagation();markDay('day2')"></div>
+      <span class="day-date">Tue May 5</span><span class="day-topic">JOINs — all types</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t2_1">
+        <div class="task-body">
+          <label class="task-text" for="t2_1">Complete the full Joins section on pgexercises.com — every exercise, no skipping the harder ones at the end. You're done when you can write INNER, LEFT, RIGHT, and FULL OUTER joins from memory and explain what each returns.</label>
+          <span class="task-min">complete at least the first 6 pgexercises joins problems and write a LEFT JOIN from memory with a real-world example</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t2_2">
+        <div class="task-body">
+          <label class="task-text" for="t2_2">Write the anti-join pattern in your cheat sheet from memory — LEFT JOIN … WHERE right.id IS NULL — and run it to find customers with zero orders. Label it clearly so you can reuse it in two months.</label>
+          <span class="task-min">write the anti-join pattern (with the IS NULL condition) in your notes — even if you needed to look it up once</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://pgexercises.com/questions/joins/" target="_blank">↗ pgexercises — Joins</a>
+        <a class="resource-link" href="https://sqlbolt.com" target="_blank">↗ SQLBolt lessons 6–9</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 3 -->
+  <div class="day-card" id="day3">
+    <div class="day-header" onclick="toggleDay('day3')">
+      <div class="day-check" id="dc_day3" onclick="event.stopPropagation();markDay('day3')"></div>
+      <span class="day-date">Wed May 6</span><span class="day-topic">GROUP BY &amp; aggregations</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t3_1">
+        <div class="task-body">
+          <label class="task-text" for="t3_1">Complete the full Aggregation section on pgexercises.com — every exercise. You're done when you can fluently explain why HAVING filters groups while WHERE filters rows, and demonstrate it with a working query.</label>
+          <span class="task-min">complete at least 6 pgexercises aggregation problems and write one GROUP BY + HAVING query that would break if HAVING were replaced with WHERE</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t3_2">
+        <div class="task-body">
+          <label class="task-text" for="t3_2">Write a ROLLUP query that produces per-product, per-category, and grand totals in one pass. Add it to your cheat sheet with a note on why this beats three separate GROUP BYs with UNION ALL.</label>
+          <span class="task-min">write any working GROUP BY query using COUNT, SUM, or AVG with a HAVING clause and add it to your notes</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://pgexercises.com/questions/aggregates/" target="_blank">↗ pgexercises — Aggregates</a>
+        <a class="resource-link" href="https://sqlbolt.com" target="_blank">↗ SQLBolt lessons 10–11</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 4 -->
+  <div class="day-card" id="day4">
+    <div class="day-header" onclick="toggleDay('day4')">
+      <div class="day-check" id="dc_day4" onclick="event.stopPropagation();markDay('day4')"></div>
+      <span class="day-date">Thu May 7</span><span class="day-topic">Subqueries &amp; CTEs</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t4_1">
+        <div class="task-body">
+          <label class="task-text" for="t4_1">Rewrite 3 pgexercises subquery solutions as CTEs using WITH. You're done when you can read both versions aloud and explain to someone else why the CTE version is easier to maintain at 2am during a production incident.</label>
+          <span class="task-min">rewrite at least 1 subquery as a CTE and write the WITH syntax structure from memory</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t4_2">
+        <div class="task-body">
+          <label class="task-text" for="t4_2">Add a "CTE-first" rule to your cheat sheet with a one-sentence justification — production SQL is maintained by teams, not just you, and nested subqueries are not debuggable under pressure.</label>
+          <span class="task-min">write the rule in your notes: when to use CTEs vs subqueries, even as a one-line reminder</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://cs50.harvard.edu/sql/2024/" target="_blank">↗ CS50 SQL — Week 1</a>
+        <a class="resource-link" href="https://pgexercises.com" target="_blank">↗ pgexercises.com</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 5 -->
+  <div class="day-card" id="day5">
+    <div class="day-header" onclick="toggleDay('day5')">
+      <div class="day-check" id="dc_day5" onclick="event.stopPropagation();markDay('day5')"></div>
+      <span class="day-date">Fri May 8</span><span class="day-topic">Schema design &amp; DDL</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t5_1">
+        <div class="task-body">
+          <label class="task-text" for="t5_1">Create a working schema in Supabase (free Postgres) — customers, products, orders tables — written as full DDL from scratch with no copy-paste. Every table must have a PRIMARY KEY, correct data types, and at least one NOT NULL constraint. You're done when the schema exists in Supabase and you've run a JOIN across all three tables.</label>
+          <span class="task-min">write the DDL for at least one table with a correct PRIMARY KEY and one FOREIGN KEY relationship, and run it successfully</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t5_2">
+        <div class="task-body">
+          <label class="task-text" for="t5_2">Add one sentence to your cheat sheet explaining why analytics warehouses intentionally denormalize — the answer is query performance over write efficiency, fewer joins at read time.</label>
+          <span class="task-min">write your own one-sentence explanation of denormalization, even imperfectly</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://cs50.harvard.edu/sql/2024/" target="_blank">↗ CS50 SQL — Week 2</a>
+        <a class="resource-link" href="https://supabase.com" target="_blank">↗ Supabase (free Postgres)</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 6 -->
+  <div class="day-card" id="day6">
+    <div class="day-header" onclick="toggleDay('day6')">
+      <div class="day-check" id="dc_day6" onclick="event.stopPropagation();markDay('day6')"></div>
+      <span class="day-date">Sat May 9</span><span class="day-topic">Mini project — SQL schema on GitHub</span>
+      <span class="type-badge type-project">Project</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t6_1">
+        <div class="task-body">
+          <label class="task-text" for="t6_1">Write 10 SQL queries on your Supabase schema covering JOINs, GROUP BY, subqueries, and CTEs — each answering a real reporting question. Push all SQL files to a new GitHub repo with a README that explains the schema and what each query answers. This is Portfolio Piece #1.</label>
+          <span class="task-min">write at least 5 queries covering JOIN, GROUP BY, and one CTE, and push them to GitHub with at minimum a one-paragraph README that describes the schema</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://supabase.com" target="_blank">↗ Supabase (free Postgres)</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 7 -->
+  <div class="day-card" id="day7">
+    <div class="day-header" onclick="toggleDay('day7')">
+      <div class="day-check" id="dc_day7" onclick="event.stopPropagation();markDay('day7')"></div>
+      <span class="day-date">Sun May 10</span><span class="day-topic">LeetCode SQL warm-up &amp; week review</span>
+      <span class="type-badge type-project">Review</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t7_1">
+        <div class="task-body">
+          <label class="task-text" for="t7_1">Solve LeetCode SQL problems 1–5 (Easy) — all five, submitted and correct. Focus entirely on understanding each solution before moving on, not on speed.</label>
+          <span class="task-min">attempt all 5 problems and get at least 3 correct submissions — record what went wrong on the others</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t7_2">
+        <div class="task-body">
+          <label class="task-text" for="t7_2">Review any concepts from this week that felt shaky, update your cheat sheet, and write one sentence about the most important thing you learned this week. This sentence is your week 1 anchor.</label>
+          <span class="task-min">write down one thing that confused you this week and the correct explanation next to it</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://leetcode.com/studyplan/top-sql-50/" target="_blank">↗ LeetCode — Top SQL 50</a>
+      </div>
+    </div></div>
+  </div>
+</div><!-- /phase p1 -->
+
+<!-- ═══════════════════════════════════════════
+     PHASE 2 — ADVANCED SQL (Days 8–21)
+═══════════════════════════════════════════ -->
+<div class="phase-block" data-phase="p2">
+  <div class="phase-heading">
+    <span class="phase-num">02</span>
+    <span class="phase-title">Advanced SQL for Data Engineering</span>
+    <span class="phase-weeks" data-phase="p2">May 11 – May 24</span>
+  </div>
+  <div class="phase-intro">This is where DE SQL lives: window functions, indexes, query optimization, stored procedures, upserts, incremental loads, and warehouse patterns. Resources: <strong>DataLemur → pgexercises → CS50 SQL → LeetCode SQL 50</strong></div>
+  <div class="week-label" data-week="2">Week 2 — May 11–17</div>
+
+  <!-- Day 8 -->
+  <div class="day-card" id="day8">
+    <div class="day-header" onclick="toggleDay('day8')">
+      <div class="day-check" id="dc_day8" onclick="event.stopPropagation();markDay('day8')"></div>
+      <span class="day-date">Mon May 11</span><span class="day-topic">Window functions — ROW_NUMBER, RANK</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t8_1">
+        <div class="task-body">
+          <label class="task-text" for="t8_1">Solve 3 DataLemur window function problems (Easy/Medium) — all submitted correctly. You're done when you can confidently explain the key conceptual difference: window functions do not collapse rows the way GROUP BY does.</label>
+          <span class="task-min">solve at least 1 DataLemur window function problem correctly and write the ROW_NUMBER() OVER (PARTITION BY … ORDER BY …) syntax from memory</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t8_2">
+        <div class="task-body">
+          <label class="task-text" for="t8_2">Write the deduplication CTE pattern from memory in your cheat sheet: the ROW_NUMBER() OVER (PARTITION BY id ORDER BY updated_at DESC) pattern with WHERE rn = 1. This pattern comes up in nearly every real DE job.</label>
+          <span class="task-min">write the deduplication CTE with correct syntax — looking it up once is fine, but write it out in full in your notes</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://datalemur.com/sql-tutorial/window-functions" target="_blank">↗ DataLemur — Window Functions</a>
+        <a class="resource-link" href="https://datalemur.com/questions" target="_blank">↗ DataLemur — Practice</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 9 -->
+  <div class="day-card" id="day9">
+    <div class="day-header" onclick="toggleDay('day9')">
+      <div class="day-check" id="dc_day9" onclick="event.stopPropagation();markDay('day9')"></div>
+      <span class="day-date">Tue May 12</span><span class="day-topic">LEAD, LAG &amp; frame clauses</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t9_1">
+        <div class="task-body">
+          <label class="task-text" for="t9_1">Solve 3 DataLemur LEAD/LAG problems — session gap detection, running totals, or period-over-period change. You're done when you can use LAG without looking up the syntax and can explain what the default frame clause is (and why it surprises people).</label>
+          <span class="task-min">solve at least 1 LEAD or LAG problem correctly and write one working LAG query from memory</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t9_2">
+        <div class="task-body">
+          <label class="task-text" for="t9_2">Write a LAG query for day-over-day revenue change on your orders table, add it to your cheat sheet, and note next to it why LAG beats a self-join — one scan vs two.</label>
+          <span class="task-min">add a working LAG query to your cheat sheet, even with a comment explaining what it does</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://datalemur.com/sql-tutorial" target="_blank">↗ DataLemur — Tutorial</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 10 -->
+  <div class="day-card" id="day10">
+    <div class="day-header" onclick="toggleDay('day10')">
+      <div class="day-check" id="dc_day10" onclick="event.stopPropagation();markDay('day10')"></div>
+      <span class="day-date">Wed May 13</span><span class="day-topic">CASE WHEN &amp; conditional pivoting</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t10_1">
+        <div class="task-body">
+          <label class="task-text" for="t10_1">Solve 3 DataLemur CASE WHEN problems and write a working pivot query on your Supabase schema showing counts per status as columns using SUM(CASE WHEN … THEN 1 ELSE 0 END). You're done when the pivot query runs and returns the correct column-per-status result.</label>
+          <span class="task-min">solve at least 1 DataLemur CASE WHEN problem correctly and write one conditional aggregation query that uses CASE WHEN inside SUM()</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t10_2">
+        <div class="task-body">
+          <label class="task-text" for="t10_2">Run EXPLAIN ANALYZE in Supabase comparing three separate subqueries joined vs one query with SUM(CASE WHEN). Record the cost difference in your notes — even one line is enough to cement the lesson.</label>
+          <span class="task-min">run EXPLAIN ANALYZE on any one of your queries today and write down what the output tells you (even if it's just "Seq Scan" or "cost=")</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://datalemur.com/questions" target="_blank">↗ DataLemur — Practice</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 11 -->
+  <div class="day-card" id="day11">
+    <div class="day-header" onclick="toggleDay('day11')">
+      <div class="day-check" id="dc_day11" onclick="event.stopPropagation();markDay('day11')"></div>
+      <span class="day-date">Thu May 14</span><span class="day-topic">String &amp; date functions</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t11_1">
+        <div class="task-body">
+          <label class="task-text" for="t11_1">Write three DATE_TRUNC queries on your orders table grouped by day, week, and month — all running correctly. Then write a current-month vs same-month-last-year revenue comparison using EXTRACT and interval arithmetic. You're done when both queries return real results.</label>
+          <span class="task-min">write at least one working DATE_TRUNC query grouped by month and save it to your notes</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t11_2">
+        <div class="task-body">
+          <label class="task-text" for="t11_2">Save both date queries to your GitHub repo with comments. Analytics engineers run variants of these every working day — having them ready in a file is more useful than memorising the syntax.</label>
+          <span class="task-min">save at least one date query to your repo, even with a minimal comment</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://pgexercises.com/questions/string/" target="_blank">↗ pgexercises — String</a>
+        <a class="resource-link" href="https://pgexercises.com/questions/date/" target="_blank">↗ pgexercises — Dates</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 12 -->
+  <div class="day-card" id="day12">
+    <div class="day-header" onclick="toggleDay('day12')">
+      <div class="day-check" id="dc_day12" onclick="event.stopPropagation();markDay('day12')"></div>
+      <span class="day-date">Fri May 15</span><span class="day-topic">Indexes &amp; EXPLAIN ANALYZE</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t12_1">
+        <div class="task-body">
+          <label class="task-text" for="t12_1">Run EXPLAIN ANALYZE on 3 queries in Supabase before and after adding an index. You're done when you can identify which changed from Seq Scan to Index Scan and explain in one sentence why that matters.</label>
+          <span class="task-min">run EXPLAIN ANALYZE on at least 1 query before and after adding an index, and note whether the scan type changed</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t12_2">
+        <div class="task-body">
+          <label class="task-text" for="t12_2">Create query_optimisation_checklist.md in your GitHub repo with at least 5 rules, each with a before/after example: avoid SELECT *, filter early with WHERE, never wrap indexed columns in functions, prefer JOINs over correlated subqueries, always run EXPLAIN ANALYZE before merging.</label>
+          <span class="task-min">create the file with at least 3 rules — even in rough note form</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://cs50.harvard.edu/sql/2024/" target="_blank">↗ CS50 SQL — Week 3</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 13 -->
+  <div class="day-card" id="day13">
+    <div class="day-header" onclick="toggleDay('day13')">
+      <div class="day-check" id="dc_day13" onclick="event.stopPropagation();markDay('day13')"></div>
+      <span class="day-date">Sat May 16</span><span class="day-topic">Views, materialized views &amp; upserts</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t13_1">
+        <div class="task-body">
+          <label class="task-text" for="t13_1">Create both a regular view and a materialized view on your schema, then write and test an upsert stored procedure (INSERT ON CONFLICT DO UPDATE) for your orders table — insert the same row twice and verify it updates, not duplicates. You're done when all three objects exist and the upsert behaves correctly.</label>
+          <span class="task-min">create one view (regular or materialized) and write one working INSERT ON CONFLICT DO UPDATE statement that you've verified doesn't create a duplicate</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t13_2">
+        <div class="task-body">
+          <label class="task-text" for="t13_2">Add a comparison table to your cheat sheet covering View, CTE, and Materialized View across four properties: persisted to disk, auto-refreshes, has own query plan, best used when.</label>
+          <span class="task-min">write at least one row of the comparison — pick the most confusing one and clarify it for yourself</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://cs50.harvard.edu/sql/2024/" target="_blank">↗ CS50 SQL — Week 5</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 14 -->
+  <div class="day-card" id="day14">
+    <div class="day-header" onclick="toggleDay('day14')">
+      <div class="day-check" id="dc_day14" onclick="event.stopPropagation();markDay('day14')"></div>
+      <span class="day-date">Sun May 17</span><span class="day-topic">LeetCode SQL — timed practice</span>
+      <span class="type-badge type-project">Review</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t14_1">
+        <div class="task-body">
+          <label class="task-text" for="t14_1">Solve LeetCode SQL problems 6–12 (Medium) — all submitted. Spend 5 minutes on each before checking hints. Getting stuck is part of the training. You're done when all 7 are attempted and submitted.</label>
+          <span class="task-min">attempt all 7 problems and get at least 4 correct — document the patterns you missed on the others</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t14_2">
+        <div class="task-body">
+          <label class="task-text" for="t14_2">For every wrong answer today: write out exactly why your approach failed and add the correct pattern to your cheat sheet with a minimal working example beside it.</label>
+          <span class="task-min">write down at least one lesson from a wrong answer today, with the correct approach</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://leetcode.com/studyplan/top-sql-50/" target="_blank">↗ LeetCode — Top SQL 50</a>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="week-label" data-week="3">Week 3 — May 18–24</div>
+
+  <!-- Day 15 -->
+  <div class="day-card" id="day15">
+    <div class="day-header" onclick="toggleDay('day15')">
+      <div class="day-check" id="dc_day15" onclick="event.stopPropagation();markDay('day15')"></div>
+      <span class="day-date">Mon May 18</span><span class="day-topic">Incremental load patterns &amp; SCDs</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t15_1">
+        <div class="task-body">
+          <label class="task-text" for="t15_1">Implement both SCD Type 1 (INSERT ON CONFLICT DO UPDATE) and a basic SCD Type 2 pattern on your schema with valid_from / valid_to columns and an is_current flag. You're done when both patterns exist in Supabase and you can update a record using each and verify the result.</label>
+          <span class="task-min">implement at least SCD Type 1 (upsert) on one table and verify it updates rather than duplicates</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t15_2">
+        <div class="task-body">
+          <label class="task-text" for="t15_2">Commit load_strategy_notes.md with a Full Refresh vs Incremental comparison covering: row count threshold, failure/re-run behaviour, late-arriving data, and a definition of idempotency in your own words.</label>
+          <span class="task-min">write your own definition of idempotency and add it to your notes — even one sentence</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://www.coursera.org/professional-certificates/ibm-data-engineer" target="_blank">↗ IBM DE — Coursera (audit free)</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 16 -->
+  <div class="day-card" id="day16">
+    <div class="day-header" onclick="toggleDay('day16')">
+      <div class="day-check" id="dc_day16" onclick="event.stopPropagation();markDay('day16')"></div>
+      <span class="day-date">Tue May 19</span><span class="day-topic">Recursive CTEs &amp; date spines</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t16_1">
+        <div class="task-body">
+          <label class="task-text" for="t16_1">Write a recursive CTE that generates all dates between two dates (a date spine), then LEFT JOIN it to your orders table. You're done when the result shows zero-revenue dates that would be invisible without the spine — this is the moment the concept clicks.</label>
+          <span class="task-min">write a working recursive CTE that generates at least 7 consecutive dates — even without the JOIN</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t16_2">
+        <div class="task-body">
+          <label class="task-text" for="t16_2">Save the date spine CTE to reusable_snippets.sql in your repo with a comment explaining what a dashboard line chart looks like without it — broken, gapped lines instead of a continuous series.</label>
+          <span class="task-min">save the date spine snippet to your repo with any comment that explains its purpose</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://datalemur.com/sql-tutorial" target="_blank">↗ DataLemur — CTEs</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 17 -->
+  <div class="day-card" id="day17">
+    <div class="day-header" onclick="toggleDay('day17')">
+      <div class="day-check" id="dc_day17" onclick="event.stopPropagation();markDay('day17')"></div>
+      <span class="day-date">Wed May 20</span><span class="day-topic">Data warehouse concepts — star schema</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t17_1">
+        <div class="task-body">
+          <label class="task-text" for="t17_1">Redesign your Supabase schema as a star schema — dim_customers, dim_products, fact_orders — writing the full DDL from scratch. You're done when the schema exists in Supabase and you can answer "revenue by category" with a single JOIN across fact and dimension tables.</label>
+          <span class="task-min">write the DDL for at least one dimension table and one fact table with correct foreign key relationships</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t17_2">
+        <div class="task-body">
+          <label class="task-text" for="t17_2">Draw star vs snowflake on paper and count the JOINs needed for "revenue by category" in each. Add to your cheat sheet: star = 1 join, snowflake = 2+. Note that BigQuery and Redshift both recommend star schemas for analytics.</label>
+          <span class="task-min">draw the star schema (even a rough sketch) and write down the join count difference between star and snowflake</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://www.coursera.org/professional-certificates/ibm-data-engineer" target="_blank">↗ IBM DE — Coursera (audit free)</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 18 -->
+  <div class="day-card" id="day18">
+    <div class="day-header" onclick="toggleDay('day18')">
+      <div class="day-check" id="dc_day18" onclick="event.stopPropagation();markDay('day18')"></div>
+      <span class="day-date">Thu May 21</span><span class="day-topic">Hard DataLemur problems — timed</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t18_1">
+        <div class="task-body">
+          <label class="task-text" for="t18_1">Solve 3 DataLemur Hard SQL problems treating each like a real interview — no hints on the first attempt, 15 minutes each. You're done when all 3 are submitted (correct or not) and you've read every solution explanation.</label>
+          <span class="task-min">attempt all 3 problems and submit at least 1 correct solution — read and understand the solution for every one you didn't solve</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t18_2">
+        <div class="task-body">
+          <label class="task-text" for="t18_2">For every concept you missed, add it to your cheat sheet with a minimal working example. The cheat sheet only gets valuable if you update it under pressure.</label>
+          <span class="task-min">add at least one new pattern to your cheat sheet from today's problems</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://datalemur.com/questions?category=SQL&difficulty=Hard" target="_blank">↗ DataLemur — Hard SQL</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 19 -->
+  <div class="day-card" id="day19">
+    <div class="day-header" onclick="toggleDay('day19')">
+      <div class="day-check" id="dc_day19" onclick="event.stopPropagation();markDay('day19')"></div>
+      <span class="day-date">Fri May 22</span><span class="day-topic">LeetCode SQL — Medium &amp; Hard</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t19_1">
+        <div class="task-body">
+          <label class="task-text" for="t19_1">Solve LeetCode SQL 50 problems 13–20 — all submitted. These combine window functions and CTEs, the same patterns used in every dbt intermediate model. You're done when all 8 are submitted and you've reviewed every solution.</label>
+          <span class="task-min">solve at least 5 of the 8 problems and note which categories you found hardest — those become tomorrow's extra practice</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t19_2">
+        <div class="task-body">
+          <label class="task-text" for="t19_2">Document every pattern that surprised you — even a one-line note per problem. The act of writing it down is what converts a solution into a repeatable skill.</label>
+          <span class="task-min">write down at least one surprising pattern from today's problems</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://leetcode.com/studyplan/top-sql-50/" target="_blank">↗ LeetCode — Top SQL 50</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 20 -->
+  <div class="day-card" id="day20">
+    <div class="day-header" onclick="toggleDay('day20')">
+      <div class="day-check" id="dc_day20" onclick="event.stopPropagation();markDay('day20')"></div>
+      <span class="day-date">Sat May 23</span><span class="day-topic">SQL project — extend &amp; commit</span>
+      <span class="type-badge type-project">Project</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t20_1">
+        <div class="task-body">
+          <label class="task-text" for="t20_1">Extend your star schema project with: a materialized view for weekly revenue, a window function query (7-day rolling average), the date spine CTE with LEFT JOIN, and the upsert procedure. Push everything to GitHub with a solid README. Portfolio Piece #1 is complete when a stranger can read the README and understand what the project does.</label>
+          <span class="task-min">add at least 2 of the 4 new pieces (materialized view, rolling average, date spine, or upsert), commit to GitHub, and update the README with what you added</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://supabase.com" target="_blank">↗ Supabase</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 21 -->
+  <div class="day-card" id="day21">
+    <div class="day-header" onclick="toggleDay('day21')">
+      <div class="day-check" id="dc_day21" onclick="event.stopPropagation();markDay('day21')"></div>
+      <span class="day-date">Sun May 24</span><span class="day-topic">SQL full review — cheat sheet &amp; retry</span>
+      <span class="type-badge type-project">Review</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t21_1">
+        <div class="task-body">
+          <label class="task-text" for="t21_1">Write a consolidated 1-page SQL cheat sheet covering every key pattern from weeks 1–3: joins, window functions, CTEs, indexes, DW patterns, incremental load, date spine. You're done when it fits on one page and you could hand it to a new hire to get them up to speed.</label>
+          <span class="task-min">review your existing cheat sheet and fill in at least 2 gaps — patterns you know you covered but didn't write down clearly</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t21_2">
+        <div class="task-body">
+          <label class="task-text" for="t21_2">Retry the 2 hardest problems from the past 3 weeks from memory — no notes, timed at 12 minutes each. Struggling is training. You're done when both are attempted and submitted, regardless of outcome.</label>
+          <span class="task-min">retry at least 1 hard problem from memory and note specifically where you got stuck compared to last time</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+</div><!-- /phase p2 -->
+
+<!-- ═══════════════════════════════════════════
+     PHASE 3 — PYTHON FOR DE (Days 22–35)
+═══════════════════════════════════════════ -->
+<div class="phase-block" data-phase="p3">
+  <div class="phase-heading">
+    <span class="phase-num">03</span>
+    <span class="phase-title">Python for Data Engineering</span>
+    <span class="phase-weeks" data-phase="p3">May 25 – Jun 7</span>
+  </div>
+  <div class="phase-intro">Python is the second language of DE. Focus on practical pipeline patterns: file I/O, pandas, database connections, REST APIs, error handling, validation, testing, and Docker. Resource: <strong>Real Python (free)</strong></div>
+  <div class="week-label" data-week="4">Week 4 — May 25–31</div>
+
+  <!-- Day 22 -->
+  <div class="day-card" id="day22">
+    <div class="day-header" onclick="toggleDay('day22')">
+      <div class="day-check" id="dc_day22" onclick="event.stopPropagation();markDay('day22')"></div>
+      <span class="day-date">Mon May 25</span><span class="day-topic">Python file I/O — CSV, JSON, Parquet</span>
+      <span class="type-badge type-python">Python</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t22_1">
+        <div class="task-body">
+          <label class="task-text" for="t22_1">Write a script that reads a CSV, applies a transformation (rename columns, cast types), then writes the result to both JSON and Parquet. You're done when all three files exist on disk and a quick print confirms they contain the same data.</label>
+          <span class="task-min">write a script that reads a CSV and writes it to at least one other format (JSON or Parquet) without errors</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t22_2">
+        <div class="task-body">
+          <label class="task-text" for="t22_2">Add the three Parquet advantages over CSV to your cheat sheet: file size reduction (~3–10×), column-pruning speed, and built-in schema enforcement. Write why each one matters in a production pipeline.</label>
+          <span class="task-min">write at least one Parquet advantage in your notes with a one-line explanation of why it matters</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://realpython.com/python-csv" target="_blank">↗ Real Python — CSV/JSON</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 23 -->
+  <div class="day-card" id="day23">
+    <div class="day-header" onclick="toggleDay('day23')">
+      <div class="day-check" id="dc_day23" onclick="event.stopPropagation();markDay('day23')"></div>
+      <span class="day-date">Tue May 26</span><span class="day-topic">pandas for Data Engineering</span>
+      <span class="type-badge type-python">Python</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t23_1">
+        <div class="task-body">
+          <label class="task-text" for="t23_1">Apply 5 pandas transformations on a free Kaggle dataset (merge, groupby, fillna, drop_duplicates, astype are good targets), then rewrite the same logic as SQL on Supabase and verify both outputs are identical. You're done when you've confirmed the row counts and values match.</label>
+          <span class="task-min">apply at least 3 pandas operations on any dataset and write one of them as an equivalent SQL query</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t23_2">
+        <div class="task-body">
+          <label class="task-text" for="t23_2">Add the DE rule to your cheat sheet: if the data already lives in a database, transform it there. Only pull into pandas when SQL cannot express the logic. Write one concrete example of when each approach is correct.</label>
+          <span class="task-min">write the rule in your notes — one sentence for "use SQL" and one concrete example of when pandas is the right tool instead</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://realpython.com/pandas-dataframe" target="_blank">↗ Real Python — pandas</a>
+        <a class="resource-link" href="https://kaggle.com/datasets" target="_blank">↗ Kaggle datasets (free)</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 24 -->
+  <div class="day-card" id="day24">
+    <div class="day-header" onclick="toggleDay('day24')">
+      <div class="day-check" id="dc_day24" onclick="event.stopPropagation();markDay('day24')"></div>
+      <span class="day-date">Wed May 27</span><span class="day-topic">Python + Postgres — psycopg2 &amp; SQLAlchemy</span>
+      <span class="type-badge type-python">Python</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t24_1">
+        <div class="task-body">
+          <label class="task-text" for="t24_1">Write a loader script that reads rows from CSV, validates them, then bulk-inserts into your Supabase schema using SQLAlchemy and pd.to_sql. You're done when the script runs end-to-end and you've confirmed the row count in the database matches the source file.</label>
+          <span class="task-min">write a script that successfully inserts at least a few rows from a CSV into Postgres using SQLAlchemy — row count printed before and after</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t24_2">
+        <div class="task-body">
+          <label class="task-text" for="t24_2">Add the bulk vs row-by-row benchmark to your cheat sheet: on 1M rows, one executemany call vs a Python for-loop with individual inserts is roughly 10× different in wall time. Add a note on what connection pooling means conceptually.</label>
+          <span class="task-min">write a note on why bulk insert matters for DE performance — your own words, one sentence</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://realpython.com/python-sql-libraries" target="_blank">↗ Real Python — Python + SQL</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 25 -->
+  <div class="day-card" id="day25">
+    <div class="day-header" onclick="toggleDay('day25')">
+      <div class="day-check" id="dc_day25" onclick="event.stopPropagation();markDay('day25')"></div>
+      <span class="day-date">Thu May 28</span><span class="day-topic">APIs &amp; the requests library</span>
+      <span class="type-badge type-python">Python</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t25_1">
+        <div class="task-body">
+          <label class="task-text" for="t25_1">Call the Open Meteo API (free, no API key needed) and extract 30 days of weather data for Lisbon. Insert it into a new table in your Postgres schema. You're done when the data is in the database and you've confirmed the row count via a SELECT COUNT(*).</label>
+          <span class="task-min">make a successful GET request to Open Meteo, print the JSON response, and save the raw data to a local file</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t25_2">
+        <div class="task-body">
+          <label class="task-text" for="t25_2">Write a retry wrapper with exponential backoff: catch 429 and 5xx, wait 2^attempt seconds between tries, log each retry. Add it to an etl_utils.py module. You're done when the function exists, is importable, and handles at least one simulated failure correctly.</label>
+          <span class="task-min">write a retry wrapper that catches one error type (429 or 500) and retries at least once — even without the exponential backoff</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://open-meteo.com" target="_blank">↗ open-meteo.com (free API)</a>
+        <a class="resource-link" href="https://realpython.com/python-requests" target="_blank">↗ Real Python — requests</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 26 -->
+  <div class="day-card" id="day26">
+    <div class="day-header" onclick="toggleDay('day26')">
+      <div class="day-check" id="dc_day26" onclick="event.stopPropagation();markDay('day26')"></div>
+      <span class="day-date">Fri May 29</span><span class="day-topic">Error handling &amp; structured logging</span>
+      <span class="type-badge type-python">Python</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t26_1">
+        <div class="task-body">
+          <label class="task-text" for="t26_1">Add structured logging to your API pipeline with one log entry per ETL stage in a consistent JSON format: event, source, target, rows_extracted, rows_loaded, rows_rejected, duration_sec. You're done when a full pipeline run produces clean, readable logs at each stage.</label>
+          <span class="task-min">add logging to at least one stage of your pipeline that prints a structured message (even a dict or f-string JSON) showing rows processed</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t26_2">
+        <div class="task-body">
+          <label class="task-text" for="t26_2">Add the PII/logging rule to your cheat sheet: never log raw row data. Log counts, identifiers, and durations only. Write one concrete example of what would happen if a raw customer record ended up in a log file.</label>
+          <span class="task-min">write the rule — "log counts not rows" — in your notes with a one-line reason why</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://realpython.com/python-logging" target="_blank">↗ Real Python — logging</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 27 -->
+  <div class="day-card" id="day27">
+    <div class="day-header" onclick="toggleDay('day27')">
+      <div class="day-check" id="dc_day27" onclick="event.stopPropagation();markDay('day27')"></div>
+      <span class="day-date">Sat May 30</span><span class="day-topic">ETL project — build</span>
+      <span class="type-badge type-project">Project</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t27_1">
+        <div class="task-body">
+          <label class="task-text" for="t27_1">Build a small end-to-end ETL: extract from the Open Meteo API, transform with pandas, load into Supabase Postgres with SQLAlchemy. Add the structured logging and retry wrapper from this week. Push to GitHub with a README that includes a data flow diagram. You're done when someone else could clone the repo and run it.</label>
+          <span class="task-min">build a working extract → load script (transformation can be minimal), push it to GitHub with at minimum a README that explains what the pipeline does and how to run it</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://open-meteo.com" target="_blank">↗ open-meteo.com</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 28 -->
+  <div class="day-card" id="day28">
+    <div class="day-header" onclick="toggleDay('day28')">
+      <div class="day-check" id="dc_day28" onclick="event.stopPropagation();markDay('day28')"></div>
+      <span class="day-date">Sun May 31</span><span class="day-topic">Refactor ETL &amp; week review</span>
+      <span class="type-badge type-project">Review</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t28_1">
+        <div class="task-body">
+          <label class="task-text" for="t28_1">Refactor your ETL into three modules — extract.py, transform.py, load.py — with type hints and docstrings on every public function. You're done when the three files exist, each has a clear single responsibility, and the pipeline still runs correctly after the refactor.</label>
+          <span class="task-min">split your ETL into at least two files with a logical separation of concerns — even if type hints are incomplete</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t28_2">
+        <div class="task-body">
+          <label class="task-text" for="t28_2">Re-read any Real Python articles from this week that felt unclear and update your cheat sheet. Identify the one concept from this week that took the longest to understand — that's the most important one to review again in a week.</label>
+          <span class="task-min">identify and write down the one hardest concept from this week and the correct explanation in your notes</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="week-label" data-week="5">Week 5 — Jun 1–7</div>
+
+  <!-- Day 29 -->
+  <div class="day-card" id="day29">
+    <div class="day-header" onclick="toggleDay('day29')">
+      <div class="day-check" id="dc_day29" onclick="event.stopPropagation();markDay('day29')"></div>
+      <span class="day-date">Mon Jun 1</span><span class="day-topic">Pydantic &amp; data validation</span>
+      <span class="type-badge type-python">Python</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t29_1">
+        <div class="task-body">
+          <label class="task-text" for="t29_1">Add Pydantic models to your ETL transform layer. Deliberately send bad data and confirm ValidationError is raised and logged with a descriptive message. You're done when every incoming record passes through a Pydantic model before reaching the load step.</label>
+          <span class="task-min">create one Pydantic BaseModel for your data, run a bad record through it, and confirm it raises a ValidationError</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t29_2">
+        <div class="task-body">
+          <label class="task-text" for="t29_2">Add to your cheat sheet: what is the real cost of letting one bad row silently pass through to the warehouse? A corrupted metric in a dashboard is discovered weeks later, when the data is stale and the cause is invisible.</label>
+          <span class="task-min">write one sentence in your notes describing what happens in production when invalid data reaches the warehouse undetected</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://docs.pydantic.dev" target="_blank">↗ docs.pydantic.dev (free)</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 30 -->
+  <div class="day-card" id="day30">
+    <div class="day-header" onclick="toggleDay('day30')">
+      <div class="day-check" id="dc_day30" onclick="event.stopPropagation();markDay('day30')"></div>
+      <span class="day-date">Tue Jun 2</span><span class="day-topic">Unit testing with pytest</span>
+      <span class="type-badge type-python">Python</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t30_1">
+        <div class="task-body">
+          <label class="task-text" for="t30_1">Write 5 unit tests for your transform.py functions covering edge cases — nulls, empty DataFrames, wrong column types, unexpected categories. You're done when pytest -v runs and all 5 tests pass.</label>
+          <span class="task-min">write at least 3 passing pytest tests for any transform functions, including at least one edge case (nulls or empty input)</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t30_2">
+        <div class="task-body">
+          <label class="task-text" for="t30_2">Use unittest.mock.patch to mock both the database connection and the API call in one test file. The full test suite must pass in under 1 second with zero network access.</label>
+          <span class="task-min">mock at least one external dependency (the database or the API call) so the relevant test runs without a real connection</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://realpython.com/pytest-python-testing" target="_blank">↗ Real Python — pytest</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 31 -->
+  <div class="day-card" id="day31">
+    <div class="day-header" onclick="toggleDay('day31')">
+      <div class="day-check" id="dc_day31" onclick="event.stopPropagation();markDay('day31')"></div>
+      <span class="day-date">Wed Jun 3</span><span class="day-topic">Env variables &amp; config management</span>
+      <span class="type-badge type-python">Python</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t31_1">
+        <div class="task-body">
+          <label class="task-text" for="t31_1">Refactor all your projects: every credential and connection string moved to .env, a .env.example with placeholder values committed, and .env in .gitignore. You're done when grep -rn "password\|postgres://" . returns zero results in your project directories.</label>
+          <span class="task-min">move at least your database connection string to a .env file and confirm .env is listed in .gitignore</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t31_2">
+        <div class="task-body">
+          <label class="task-text" for="t31_2">Add a note to every project README: "Never commit .env. Add a pre-commit hook (detect-secrets) to block accidental credential commits." One committed credential can expose a production database — this is worth a permanent reminder.</label>
+          <span class="task-min">add the .env warning to at least one project README</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 32 -->
+  <div class="day-card" id="day32">
+    <div class="day-header" onclick="toggleDay('day32')">
+      <div class="day-check" id="dc_day32" onclick="event.stopPropagation();markDay('day32')"></div>
+      <span class="day-date">Thu Jun 4</span><span class="day-topic">Docker — containerise your ETL</span>
+      <span class="type-badge type-python">Python</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t32_1">
+        <div class="task-body">
+          <label class="task-text" for="t32_1">Write a Dockerfile for your ETL app and a docker-compose.yml that spins up both your Python app and a Postgres service. Run docker compose up and confirm the ETL connects successfully and loads data. You're done when the pipeline runs in Docker with no manual setup beyond running one command.</label>
+          <span class="task-min">write a working Dockerfile for your Python app that builds and runs without errors — even if the Compose Postgres connection comes later</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t32_2">
+        <div class="task-body">
+          <label class="task-text" for="t32_2">Delete all containers and volumes, then run docker compose up again from a clean state. Confirm everything still works. This is the reliability test — if it only works the first time, it's not production-ready.</label>
+          <span class="task-min">run docker compose down -v and bring it back up at least once — just confirm it recovers cleanly</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://docs.docker.com/get-started" target="_blank">↗ Docker docs — get started (free)</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 33 -->
+  <div class="day-card" id="day33">
+    <div class="day-header" onclick="toggleDay('day33')">
+      <div class="day-check" id="dc_day33" onclick="event.stopPropagation();markDay('day33')"></div>
+      <span class="day-date">Fri Jun 5</span><span class="day-topic">SQL-based data quality checks in Python</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t33_1">
+        <div class="task-body">
+          <label class="task-text" for="t33_1">Write a quality_checks.py module that runs 5 SQL-based checks after every load and raises a DataQualityError with a descriptive message if any check fails. You're done when a test run with deliberately bad data triggers the error and logs the right message.</label>
+          <span class="task-min">write at least 2 SQL quality checks (a null check and a uniqueness check) that raise an error when they fail</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t33_2">
+        <div class="task-body">
+          <label class="task-text" for="t33_2">Add one check to your cheat sheet as a Python dict: {"check_name": "no_nulls_customer_id", "query": "SELECT COUNT(*) FROM … WHERE customer_id IS NULL", "expected": 0}. Note that this is exactly the pattern dbt uses internally — you've just re-invented it.</label>
+          <span class="task-min">write the dict pattern for at least one quality check in your notes</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 34 -->
+  <div class="day-card" id="day34">
+    <div class="day-header" onclick="toggleDay('day34')">
+      <div class="day-check" id="dc_day34" onclick="event.stopPropagation();markDay('day34')"></div>
+      <span class="day-date">Sat Jun 6</span><span class="day-topic">Python DE portfolio project — polish</span>
+      <span class="type-badge type-project">Project</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t34_1">
+        <div class="task-body">
+          <label class="task-text" for="t34_1">Polish your ETL into Portfolio Piece #2: modular structure (extract / transform / load), Pydantic validation, pytest unit tests (all passing), Docker Compose with Postgres, structured logging, quality checks, and a README with an architecture diagram and Quick Start (3 commands: clone → cp .env.example .env → docker compose up). You're done when a stranger can run the pipeline in under 5 minutes by following the README alone.</label>
+          <span class="task-min">ensure at least 4 of the 7 features are working and documented (modular structure, tests, Docker, README Quick Start are the highest priority)</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 35 -->
+  <div class="day-card" id="day35">
+    <div class="day-header" onclick="toggleDay('day35')">
+      <div class="day-check" id="dc_day35" onclick="event.stopPropagation();markDay('day35')"></div>
+      <span class="day-date">Sun Jun 7</span><span class="day-topic">Python review &amp; interview prep</span>
+      <span class="type-badge type-project">Review</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t35_1">
+        <div class="task-body">
+          <label class="task-text" for="t35_1">Solve one Python DE problem from memory: flatten a list of nested JSON records into a flat DataFrame, handling missing keys gracefully with a default value. Write, run, and verify it produces the correct output before checking any reference.</label>
+          <span class="task-min">write a function that flattens at least one level of nested JSON and handles at least one missing key without throwing a KeyError</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t35_2">
+        <div class="task-body">
+          <label class="task-text" for="t35_2">Write 3 "tell me about something you built" answers for your ETL project: one on the technical design, one on a problem you debugged, one on an error handling decision. Each answer should take about 90 seconds to deliver out loud.</label>
+          <span class="task-min">write at least one "tell me about something you built" answer for your ETL project — technical detail included</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+</div><!-- /phase p3 -->
+
+<!-- ═══════════════════════════════════════════
+     PHASE 4 — SQL + PYTHON COMBINED (Days 36–42)
+═══════════════════════════════════════════ -->
+<div class="phase-block" data-phase="p4">
+  <div class="phase-heading">
+    <span class="phase-num">04</span>
+    <span class="phase-title">SQL + Python Combined</span>
+    <span class="phase-weeks" data-phase="p4">Jun 8 – Jun 14</span>
+  </div>
+  <div class="phase-intro">Merge both skill sets into a complete, production-grade pipeline. Incremental loads, basic scheduling, a capstone project that becomes your main Zoomcamp-ready portfolio piece, and a final SQL interview push.</div>
+  <div class="week-label" data-week="6">Week 6 — Jun 8–14</div>
+
+  <!-- Day 36 -->
+  <div class="day-card" id="day36">
+    <div class="day-header" onclick="toggleDay('day36')">
+      <div class="day-check" id="dc_day36" onclick="event.stopPropagation();markDay('day36')"></div>
+      <span class="day-date">Mon Jun 8</span><span class="day-topic">Incremental loads in Python</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t36_1">
+        <div class="task-body">
+          <label class="task-text" for="t36_1">Add incremental load logic to your ETL using the watermark pattern — store last_loaded timestamp in a pipeline_metadata table, extract only records WHERE updated_at &gt; last_loaded, update the watermark on success. Run the pipeline twice with no new source data and verify the target row count is identical after both runs.</label>
+          <span class="task-min">implement a watermark that stores the last run timestamp and prevents re-loading already-loaded records — verify with a second run</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t36_2">
+        <div class="task-body">
+          <label class="task-text" for="t36_2">Write the definition of idempotency and the two standard techniques in your cheat sheet: upsert (INSERT ON CONFLICT DO UPDATE) and delete-then-re-insert for the affected time window. Both must be in your own words.</label>
+          <span class="task-min">write your own definition of idempotency — one sentence — in your cheat sheet</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 37 -->
+  <div class="day-card" id="day37">
+    <div class="day-header" onclick="toggleDay('day37')">
+      <div class="day-check" id="dc_day37" onclick="event.stopPropagation();markDay('day37')"></div>
+      <span class="day-date">Tue Jun 9</span><span class="day-topic">Scheduling with Python &amp; cron basics</span>
+      <span class="type-badge type-python">Python</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t37_1">
+        <div class="task-body">
+          <label class="task-text" for="t37_1">Schedule your incremental ETL to run every hour using the Python schedule library. Add a health log entry at the start of each run that shows the run number and watermark timestamp. You're done when you observe at least two scheduled runs in the logs.</label>
+          <span class="task-min">set up a schedule.every(1).hours.do(run_etl) call that triggers at least once while you watch — even 1-minute intervals to test</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t37_2">
+        <div class="task-body">
+          <label class="task-text" for="t37_2">Add to your cheat sheet: 5 things Airflow does that the Python schedule library cannot — auto-retry, DAG visualisation, run history + SLA alerts, XComs, multi-worker execution. This list is your motivation for Phase 5.</label>
+          <span class="task-min">write at least 3 Airflow capabilities that the schedule library lacks — this primes your mental model before you use Airflow</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 38 -->
+  <div class="day-card" id="day38">
+    <div class="day-header" onclick="toggleDay('day38')">
+      <div class="day-check" id="dc_day38" onclick="event.stopPropagation();markDay('day38')"></div>
+      <span class="day-date">Wed Jun 10</span><span class="day-topic">Git &amp; GitHub — professional standards</span>
+      <span class="type-badge type-python">Python</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t38_1">
+        <div class="task-body">
+          <label class="task-text" for="t38_1">Polish all your GitHub repos: meaningful commit history using conventional commits format, .gitignore covering .env / __pycache__ / .venv, no credentials anywhere, and a README with a Quick Start section. You're done when you can read each README as a stranger and understand what the pipeline does in under 90 seconds.</label>
+          <span class="task-min">clean up at least your capstone repo: verify no credentials in history, add a .gitignore, and confirm the README has a one-paragraph Quick Start</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t38_2">
+        <div class="task-body">
+          <label class="task-text" for="t38_2">Read each README as a stranger. For any repo where you can't understand the purpose in 90 seconds, rewrite the first paragraph until you can. Clear documentation is a hiring signal.</label>
+          <span class="task-min">rewrite at least one README's opening paragraph for clarity — read it out loud to check if it makes sense</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 39 -->
+  <div class="day-card" id="day39">
+    <div class="day-header" onclick="toggleDay('day39')">
+      <div class="day-check" id="dc_day39" onclick="event.stopPropagation();markDay('day39')"></div>
+      <span class="day-date">Thu Jun 11</span><span class="day-topic">LeetCode SQL — final push</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t39_1">
+        <div class="task-body">
+          <label class="task-text" for="t39_1">Solve LeetCode SQL 50 problems 21–35 — all submitted. Window functions plus CTEs together, the same patterns in every dbt intermediate model. No hints until after your first attempt on each. You're done when all 15 are submitted and reviewed.</label>
+          <span class="task-min">solve at least 10 of the 15 problems and submit all 15 — document what you missed on any wrong answers</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t39_2">
+        <div class="task-body">
+          <label class="task-text" for="t39_2">Document every pattern that surprised you today. Any pattern you encounter for the first time here belongs in your cheat sheet before tomorrow.</label>
+          <span class="task-min">add at least one new SQL pattern to your cheat sheet from today's problems</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://leetcode.com/studyplan/top-sql-50/" target="_blank">↗ LeetCode — Top SQL 50</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 40 -->
+  <div class="day-card" id="day40">
+    <div class="day-header" onclick="toggleDay('day40')">
+      <div class="day-check" id="dc_day40" onclick="event.stopPropagation();markDay('day40')"></div>
+      <span class="day-date">Fri Jun 12</span><span class="day-topic">SQL + Python combined interview prep</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t40_1">
+        <div class="task-body">
+          <label class="task-text" for="t40_1">Solve 3 DataLemur Hard SQL problems treating each as a real technical screen — write your approach in comments before writing any SQL, no hints, 10 minutes each. You're done when all 3 are submitted and you've read every solution explanation in full.</label>
+          <span class="task-min">attempt all 3 problems with your approach written in comments first — even if none are correct, the practice of reasoning out loud is the goal</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t40_2">
+        <div class="task-body">
+          <label class="task-text" for="t40_2">Write two Python DE solutions — (1) flatten a nested JSON list into a flat DataFrame; (2) deduplicate a DataFrame on a composite key keeping the most recent row by timestamp. Commit both clean, commented solutions to a code_samples/ folder in GitHub.</label>
+          <span class="task-min">write and commit at least one of the two Python solutions — clean, commented, and working</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://datalemur.com/questions" target="_blank">↗ DataLemur Hard SQL</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 41 -->
+  <div class="day-card" id="day41">
+    <div class="day-header" onclick="toggleDay('day41')">
+      <div class="day-check" id="dc_day41" onclick="event.stopPropagation();markDay('day41')"></div>
+      <span class="day-date">Sat Jun 13</span><span class="day-topic">Capstone project — build (day 1)</span>
+      <span class="type-badge type-project">Project</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t41_1">
+        <div class="task-body">
+          <label class="task-text" for="t41_1">Start the capstone ETL: multi-source extract (Open Meteo API + a CSV file), Pydantic validation, SQLAlchemy load to Postgres with a star schema (dim_date, dim_location, fact_weather), and incremental load with watermark. You're done when data flows from at least one source into the star schema tables without errors.</label>
+          <span class="task-min">get the extract step working for at least one source and load into at least one table in the star schema — even without full Pydantic or incremental logic yet</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://open-meteo.com" target="_blank">↗ open-meteo.com</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 42 -->
+  <div class="day-card" id="day42">
+    <div class="day-header" onclick="toggleDay('day42')">
+      <div class="day-check" id="dc_day42" onclick="event.stopPropagation();markDay('day42')"></div>
+      <span class="day-date">Sun Jun 14</span><span class="day-topic">Capstone project — complete (day 2)</span>
+      <span class="type-badge type-project">Project</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t42_1">
+        <div class="task-body">
+          <label class="task-text" for="t42_1">Complete the capstone: schedule wrapper, pytest unit tests (mocked), structured logging, SQL quality checks, and a full README with an architecture diagram and example queries. You're done when Portfolio Piece #3 is published on GitHub and the README passes the 90-second stranger test.</label>
+          <span class="task-min">push the capstone to GitHub with a README that has an architecture diagram and at least one example query showing how to use the data — tests and quality checks can be added later</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+</div><!-- /phase p4 -->
+
+<!-- ═══════════════════════════════════════════
+     PHASE 5 — DE TOOLS & ZOOMCAMP PREP (Days 43–56)
+═══════════════════════════════════════════ -->
+<div class="phase-block" data-phase="p5">
+  <div class="phase-heading">
+    <span class="phase-num">05</span>
+    <span class="phase-title">DE Tools &amp; Zoomcamp Prep</span>
+    <span class="phase-weeks" data-phase="p5">Jun 15 – Jun 28</span>
+  </div>
+  <div class="phase-intro">The modern DE stack: dbt, Airflow, BigQuery, Terraform, and a taste of Kafka. All free to run locally or on free tiers. By day 56 you will be ready for the DataTalks DE Zoomcamp. Resources: <strong>dbt Learn · Airflow docs · GCP free tier · Zoomcamp repo</strong></div>
+  <div class="week-label" data-week="7">Week 7 — Jun 15–21</div>
+
+  <!-- Day 43 -->
+  <div class="day-card" id="day43">
+    <div class="day-header" onclick="toggleDay('day43')">
+      <div class="day-check" id="dc_day43" onclick="event.stopPropagation();markDay('day43')"></div>
+      <span class="day-date">Mon Jun 15</span><span class="day-topic">dbt — first model</span>
+      <span class="type-badge type-tools">Tools</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t43_1">
+        <div class="task-body">
+          <label class="task-text" for="t43_1">Install dbt-core, connect to your Supabase Postgres via profiles.yml, run dbt debug successfully, and write and run your first model. You're done when dbt run completes without errors and you can see the materialised table in Supabase.</label>
+          <span class="task-min">get dbt debug to show a successful database connection and write one .sql model file that dbt run materialises — even a trivial SELECT</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t43_2">
+        <div class="task-body">
+          <label class="task-text" for="t43_2">Add to your cheat sheet: 4 things dbt gives you for free that raw SQL files don't — version-controlled lineage via ref(), automatic DAG visualisation, column-level tests built in, materialisation control without rewriting queries.</label>
+          <span class="task-min">write at least 2 dbt advantages over plain SQL files in your notes — in your own words</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://learn.getdbt.com" target="_blank">↗ learn.getdbt.com (free)</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 44 -->
+  <div class="day-card" id="day44">
+    <div class="day-header" onclick="toggleDay('day44')">
+      <div class="day-check" id="dc_day44" onclick="event.stopPropagation();markDay('day44')"></div>
+      <span class="day-date">Tue Jun 16</span><span class="day-topic">dbt model layers — staging → marts</span>
+      <span class="type-badge type-tools">Tools</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t44_1">
+        <div class="task-body">
+          <label class="task-text" for="t44_1">Build 3 dbt models on your star schema following the staging → intermediate → mart pattern, using ref() to connect them. You're done when dbt run materialises all three correctly and you can explain to someone else what each layer is responsible for.</label>
+          <span class="task-min">build at least 2 connected dbt models using ref() — one staging and one mart — and confirm both materialise</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t44_2">
+        <div class="task-body">
+          <label class="task-text" for="t44_2">Add to your cheat sheet: a two-column table mapping dbt layers to medallion architecture — staging = bronze, intermediate = silver, mart = gold. This mental model will come up in every DE interview that touches dbt.</label>
+          <span class="task-min">write the three-layer mapping (staging/intermediate/mart → bronze/silver/gold) in your notes</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://learn.getdbt.com" target="_blank">↗ learn.getdbt.com</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 45 -->
+  <div class="day-card" id="day45">
+    <div class="day-header" onclick="toggleDay('day45')">
+      <div class="day-check" id="dc_day45" onclick="event.stopPropagation();markDay('day45')"></div>
+      <span class="day-date">Wed Jun 17</span><span class="day-topic">dbt tests &amp; documentation</span>
+      <span class="type-badge type-tools">Tools</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t45_1">
+        <div class="task-body">
+          <label class="task-text" for="t45_1">Add tests to all your dbt models in schema.yml, run dbt test successfully, then generate and serve the lineage DAG locally with dbt docs generate &amp;&amp; dbt docs serve. You're done when you can click through the lineage graph and see tests passing for each model.</label>
+          <span class="task-min">add at least one not_null and one unique test to any one model, run dbt test and confirm they pass</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t45_2">
+        <div class="task-body">
+          <label class="task-text" for="t45_2">Map your Phase 3 quality checks to dbt YAML: null check → not_null, uniqueness → unique, allowed values → accepted_values, FK integrity → relationships. Write this mapping in your cheat sheet — you just re-discovered what dbt's test framework is doing under the hood.</label>
+          <span class="task-min">map at least 2 of your Python quality checks to the equivalent dbt YAML test</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://learn.getdbt.com" target="_blank">↗ learn.getdbt.com</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 46 -->
+  <div class="day-card" id="day46">
+    <div class="day-header" onclick="toggleDay('day46')">
+      <div class="day-check" id="dc_day46" onclick="event.stopPropagation();markDay('day46')"></div>
+      <span class="day-date">Thu Jun 18</span><span class="day-topic">Apache Airflow — first DAG</span>
+      <span class="type-badge type-tools">Tools</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t46_1">
+        <div class="task-body">
+          <label class="task-text" for="t46_1">Run Airflow locally via Docker Compose (official docker-compose.yaml), write your first DAG with 2 PythonOperator tasks (extract → load), trigger it manually from the Airflow UI, and confirm your structured logging output appears in the task logs. You're done when you can see a successful green DAG run in the UI.</label>
+          <span class="task-min">get Airflow running via Docker Compose and write a DAG with at least 1 PythonOperator task that runs successfully — even a task that just prints "hello"</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t46_2">
+        <div class="task-body">
+          <label class="task-text" for="t46_2">Trigger a deliberate failure and watch Airflow retry automatically based on retries=3. Add a note to your cheat sheet about the on_failure_callback parameter — in production this sends a Slack alert or PagerDuty notification.</label>
+          <span class="task-min">trigger at least one failure in your DAG and observe the retry mechanism in the Airflow UI logs</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://airflow.apache.org/docs/apache-airflow/stable/tutorial/index.html" target="_blank">↗ Airflow tutorial</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 47 -->
+  <div class="day-card" id="day47">
+    <div class="day-header" onclick="toggleDay('day47')">
+      <div class="day-check" id="dc_day47" onclick="event.stopPropagation();markDay('day47')"></div>
+      <span class="day-date">Fri Jun 19</span><span class="day-topic">Airflow DAG for your capstone ETL</span>
+      <span class="type-badge type-tools">Tools</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t47_1">
+        <div class="task-body">
+          <label class="task-text" for="t47_1">Convert your capstone ETL into a full Airflow DAG with 5 tasks: extract → validate → load → quality_checks → notify. Add retries=3 with retry_delay=timedelta(minutes=5). You're done when a full DAG run completes in the Airflow UI and every task log shows the expected structured log entries.</label>
+          <span class="task-min">convert at least the extract and load steps of your capstone into Airflow tasks and confirm both complete successfully in the UI</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t47_2">
+        <div class="task-body">
+          <label class="task-text" for="t47_2">Open the Zoomcamp Week 2 repo and list 3 things their DAG structure has that yours doesn't. Write what an Airflow Sensor is and when you'd use one. This is your pre-reading for the Zoomcamp.</label>
+          <span class="task-min">open the Zoomcamp repo and write down at least 1 difference between their DAG and yours, plus a one-line definition of an Airflow Sensor</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://airflow.apache.org" target="_blank">↗ airflow.apache.org</a>
+        <a class="resource-link" href="https://github.com/DataTalksClub/data-engineering-zoomcamp" target="_blank">↗ Zoomcamp Week 2</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 48 -->
+  <div class="day-card" id="day48">
+    <div class="day-header" onclick="toggleDay('day48')">
+      <div class="day-check" id="dc_day48" onclick="event.stopPropagation();markDay('day48')"></div>
+      <span class="day-date">Sat Jun 20</span><span class="day-topic">BigQuery sandbox — first queries</span>
+      <span class="type-badge type-tools">Tools</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t48_1">
+        <div class="task-body">
+          <label class="task-text" for="t48_1">Load your capstone data into BigQuery sandbox, run your window function and star schema queries, and note the SQL dialect differences vs PostgreSQL. You're done when at least 2 queries run successfully in BigQuery and you've documented at least one syntax difference in your notes.</label>
+          <span class="task-min">get your BigQuery sandbox project set up and run at least one query on any dataset — confirm you can use the BigQuery console</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t48_2">
+        <div class="task-body">
+          <label class="task-text" for="t48_2">Run the same GROUP BY query in Supabase and in BigQuery, compare the query plans, and add to your cheat sheet: why BigQuery has no traditional row-level indexes and why it doesn't need them at petabyte scale — columnar storage + massively parallel processing + partition/cluster pruning.</label>
+          <span class="task-min">write your own explanation of why BigQuery doesn't use traditional indexes — one sentence is enough</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://cloud.google.com/bigquery/docs/sandbox" target="_blank">↗ BigQuery sandbox (free)</a>
+        <a class="resource-link" href="https://www.cloudskillsboost.google" target="_blank">↗ Google Cloud Skills Boost</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 49 -->
+  <div class="day-card" id="day49">
+    <div class="day-header" onclick="toggleDay('day49')">
+      <div class="day-check" id="dc_day49" onclick="event.stopPropagation();markDay('day49')"></div>
+      <span class="day-date">Sun Jun 21</span><span class="day-topic">Review week 7 + LeetCode streak</span>
+      <span class="type-badge type-project">Review</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t49_1">
+        <div class="task-body">
+          <label class="task-text" for="t49_1">Solve LeetCode SQL 50 problems 36–45 — all submitted. You're done when all 10 are attempted and you've reviewed every solution. Six days from Zoomcamp — solid foundations compound.</label>
+          <span class="task-min">solve at least 7 of the 10 problems and submit all 10 — note the patterns you missed</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t49_2">
+        <div class="task-body">
+          <label class="task-text" for="t49_2">Re-read dbt Learn and Airflow docs for any concepts that felt unclear this week. Update your cheat sheet. Identify the single most important thing you want to understand more deeply before the Zoomcamp.</label>
+          <span class="task-min">update your cheat sheet with at least one concept from this week that deserves more attention — write what you'd do to fill that gap</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://leetcode.com/studyplan/top-sql-50/" target="_blank">↗ LeetCode — Top SQL 50</a>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="week-label" data-week="8">Week 8 — Jun 22–28</div>
+
+  <!-- Day 50 -->
+  <div class="day-card" id="day50">
+    <div class="day-header" onclick="toggleDay('day50')">
+      <div class="day-check" id="dc_day50" onclick="event.stopPropagation();markDay('day50')"></div>
+      <span class="day-date">Mon Jun 22</span><span class="day-topic">BigQuery — partitioning &amp; clustering</span>
+      <span class="type-badge type-tools">Tools</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t50_1">
+        <div class="task-body">
+          <label class="task-text" for="t50_1">Create two identical BigQuery tables — one unpartitioned, one partitioned by DATE — and run the same WHERE event_date = '2024-01-01' query on both. You're done when you can see and record the exact bytes-processed ratio between the two queries.</label>
+          <span class="task-min">create a date-partitioned BigQuery table and run at least one query with a partition filter — confirm the query details show fewer bytes scanned than without</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t50_2">
+        <div class="task-body">
+          <label class="task-text" for="t50_2">Commit the partition rule to memory: always include a partition filter in every BigQuery query. Without it, you scan the entire table — in a 10 TB table that's a real cost on the billing cycle. Add it as a permanent rule in your cheat sheet.</label>
+          <span class="task-min">add the partition filter rule to your cheat sheet — one sentence stating the consequence of omitting it</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://www.cloudskillsboost.google" target="_blank">↗ Google Cloud Skills Boost</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 51 -->
+  <div class="day-card" id="day51">
+    <div class="day-header" onclick="toggleDay('day51')">
+      <div class="day-check" id="dc_day51" onclick="event.stopPropagation();markDay('day51')"></div>
+      <span class="day-date">Tue Jun 23</span><span class="day-topic">Terraform — infrastructure as code</span>
+      <span class="type-badge type-tools">Tools</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t51_1">
+        <div class="task-body">
+          <label class="task-text" for="t51_1">Write a Terraform config that provisions a GCS bucket on GCP free tier, run terraform plan and terraform apply, and confirm the bucket appears in the GCP console. You're done when the bucket exists and you can see it in GCP — the full init/plan/apply/destroy cycle completed.</label>
+          <span class="task-min">write a Terraform config that passes terraform plan without errors — even if apply requires extra GCP setup</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t51_2">
+        <div class="task-body">
+          <label class="task-text" for="t51_2">Run terraform destroy, then apply again from scratch in under 60 seconds. Add the 3-rule IaC contract to your cheat sheet: no manual console changes, all infrastructure in git, destroy-and-recreate is a valid test.</label>
+          <span class="task-min">run terraform destroy at least once and write the 3-rule IaC contract in your notes</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://github.com/DataTalksClub/data-engineering-zoomcamp" target="_blank">↗ Zoomcamp Week 1 — Terraform</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 52 -->
+  <div class="day-card" id="day52">
+    <div class="day-header" onclick="toggleDay('day52')">
+      <div class="day-check" id="dc_day52" onclick="event.stopPropagation();markDay('day52')"></div>
+      <span class="day-date">Wed Jun 24</span><span class="day-topic">Batch vs streaming — Kafka intro</span>
+      <span class="type-badge type-tools">Tools</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t52_1">
+        <div class="task-body">
+          <label class="task-text" for="t52_1">Run a Kafka producer + consumer demo locally using Docker Compose from the Zoomcamp repo. Produce 10 messages manually and observe them consumed in real time. You're done when you've seen at least 3 messages flow from producer to consumer and appear in the consumer output.</label>
+          <span class="task-min">get the Kafka Docker Compose stack running and produce at least one message — even if just following the Zoomcamp README step by step</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t52_2">
+        <div class="task-body">
+          <label class="task-text" for="t52_2">Draw the batch vs streaming comparison in your cheat sheet: batch ETL (nightly extract → transform → load) vs streaming (producer → Kafka topic → consumer → sink). For each: typical latency and one concrete use case.</label>
+          <span class="task-min">write one concrete use case for batch and one for streaming in your notes — the kind of business problem each solves</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://github.com/DataTalksClub/data-engineering-zoomcamp" target="_blank">↗ Zoomcamp repo — Streaming</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 53 -->
+  <div class="day-card" id="day53">
+    <div class="day-header" onclick="toggleDay('day53')">
+      <div class="day-check" id="dc_day53" onclick="event.stopPropagation();markDay('day53')"></div>
+      <span class="day-date">Thu Jun 25</span><span class="day-topic">Portfolio polish &amp; LinkedIn</span>
+      <span class="type-badge type-project">Project</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t53_1">
+        <div class="task-body">
+          <label class="task-text" for="t53_1">Review all GitHub projects — SQL star schema, Python ETL, capstone pipeline, dbt models, Airflow DAG. Every repo must have a README with a Quick Start, an architecture diagram, and zero credentials. You're done when all repos pass your own 90-second stranger test.</label>
+          <span class="task-min">review your two highest-priority repos (capstone and Python ETL) and confirm they each have a Quick Start section and no hardcoded credentials</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t53_2">
+        <div class="task-body">
+          <label class="task-text" for="t53_2">Write a 2-sentence "what I built and why it matters" description for each project and add them to LinkedIn. Pin the capstone and ETL repos to your GitHub profile. You're done when your GitHub profile shows pinned repos and LinkedIn shows the projects section updated.</label>
+          <span class="task-min">write and publish the LinkedIn description for at least the capstone project and pin it to your GitHub profile</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 54 -->
+  <div class="day-card" id="day54">
+    <div class="day-header" onclick="toggleDay('day54')">
+      <div class="day-check" id="dc_day54" onclick="event.stopPropagation();markDay('day54')"></div>
+      <span class="day-date">Fri Jun 26</span><span class="day-topic">Mock SQL interview — full simulation</span>
+      <span class="type-badge type-sql">SQL</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t54_1">
+        <div class="task-body">
+          <label class="task-text" for="t54_1">Complete the final mock screen: LeetCode SQL 50 problems 46–50 (all Hard, 10 minutes each, no hints) + 2 DataLemur Hard problems. You're done when all 7 are submitted and you've reviewed every solution — correct or not.</label>
+          <span class="task-min">attempt all 7 problems without hints and submit every one — review every solution regardless of the outcome</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t54_2">
+        <div class="task-body">
+          <label class="task-text" for="t54_2">Review all 7 solutions and write out every pattern you missed across the entire 8 weeks. This final gap list is your last targeted revision — fill every gap in your cheat sheet before tomorrow.</label>
+          <span class="task-min">identify and add at least 2 patterns you've seen across the 8 weeks but still find hard — write the correct approach next to each</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://leetcode.com/studyplan/top-sql-50/" target="_blank">↗ LeetCode SQL 50 (final)</a>
+        <a class="resource-link" href="https://datalemur.com/questions" target="_blank">↗ DataLemur Hard</a>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 55 -->
+  <div class="day-card" id="day55">
+    <div class="day-header" onclick="toggleDay('day55')">
+      <div class="day-check" id="dc_day55" onclick="event.stopPropagation();markDay('day55')"></div>
+      <span class="day-date">Sat Jun 27</span><span class="day-topic">Mock Python interview — full simulation</span>
+      <span class="type-badge type-python">Python</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t55_1">
+        <div class="task-body">
+          <label class="task-text" for="t55_1">Solve 2 Python DE interview problems timed — (1) flatten nested JSON to a flat DataFrame handling missing keys; (2) detect schema drift between two DataFrames and raise a descriptive error. You're done when both solutions are correct, clean, commented, and committed to code_samples/.</label>
+          <span class="task-min">solve at least 1 of the 2 problems to a working, committed solution — even if the second is partially complete</span>
+        </div>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t55_2">
+        <div class="task-body">
+          <label class="task-text" for="t55_2">Review and critically refactor both solutions. Ask yourself: is every variable name clear? Is every edge case handled? Would a stranger know exactly what this code does? Clean code is a signal — commit the best version.</label>
+          <span class="task-min">review at least one solution and make at least one improvement to clarity — a better variable name, a comment, or handling one more edge case</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Day 56 — MILESTONE -->
+  <div class="day-card milestone" id="day56">
+    <div class="day-header" onclick="toggleDay('day56')">
+      <div class="day-check" id="dc_day56" onclick="event.stopPropagation();markDay('day56')"></div>
+      <span class="day-date">Sun Jun 28</span><span class="day-topic">🎯 Zoomcamp Kickoff — you are ready</span>
+      <span class="type-badge type-project">Milestone</span><span class="expand-icon">▾</span>
+    </div>
+    <div class="day-body"><div class="day-body-inner">
+      <div class="outcome-note">goals for today</div>
+      <div class="task-item">
+        <input type="checkbox" class="task-check" id="t56_1">
+        <div class="task-body">
+          <label class="task-text" for="t56_1">Fork and clone the DataTalks DE Zoomcamp repo. Complete Week 1 environment setup: GCP project, service account, Terraform for GCS + BigQuery, and the local Docker Compose stack. You're done when the Week 1 README is fully completed, the environment is running, and you recognise every tool in the stack from the past 8 weeks.</label>
+          <span class="task-min">fork the Zoomcamp repo, set up the GCP project, and run terraform init successfully — even if the full stack isn't connected yet</span>
+        </div>
+      </div>
+      <div class="resource-links">
+        <a class="resource-link primary" href="https://github.com/DataTalksClub/data-engineering-zoomcamp" target="_blank">↗ DataTalks DE Zoomcamp (free)</a>
+      </div>
+    </div></div>
+  </div>
+</div><!-- /phase p5 -->
+
+<!-- ═══════════════ COURSES ═══════════════ -->
+<div class="courses-section" data-phase="courses">
+  <div class="courses-title">All free resources</div>
+  <div class="courses-subtitle">// Every resource in this plan is free or free to audit. Total cost: $0.</div>
+  <div class="course-grid">
+    <div class="course-card highlight"><div class="course-name">SQLBolt <span class="course-free-tag">FREE</span></div><a class="course-url" href="https://sqlbolt.com" target="_blank">sqlbolt.com</a><div class="course-desc">Fast, interactive SQL lessons. Best starting point — no signup required, instant feedback on every exercise.</div><span class="course-phase type-sql type-badge">Weeks 1–2</span></div>
+    <div class="course-card highlight"><div class="course-name">CS50 SQL — Harvard <span class="course-free-tag">FREE</span></div><a class="course-url" href="https://cs50.harvard.edu/sql/2024/" target="_blank">cs50.harvard.edu/sql/2024</a><div class="course-desc">Rigorous 7-week course. Schema design, indexes, query planning, views, transactions. The best free SQL course available.</div><span class="course-phase type-sql type-badge">Weeks 1–3</span></div>
+    <div class="course-card"><div class="course-name">pgexercises.com <span class="course-free-tag">FREE</span></div><a class="course-url" href="https://pgexercises.com" target="_blank">pgexercises.com</a><div class="course-desc">PostgreSQL-specific drills from basic to advanced. Daily practice engine throughout Phases 1–2. No setup needed.</div><span class="course-phase type-sql type-badge">Weeks 1–3</span></div>
+    <div class="course-card"><div class="course-name">DataLemur SQL Tutorial <span class="course-free-tag">FREE</span></div><a class="course-url" href="https://datalemur.com/sql-tutorial" target="_blank">datalemur.com/sql-tutorial</a><div class="course-desc">Best free resource for advanced SQL: window functions, CTEs, LEAD/LAG, pivoting. Real interview problems from FAANG companies.</div><span class="course-phase type-sql type-badge">Weeks 2–4</span></div>
+    <div class="course-card highlight"><div class="course-name">LeetCode — Top SQL 50 <span class="course-free-tag">FREE TIER</span></div><a class="course-url" href="https://leetcode.com/studyplan/top-sql-50/" target="_blank">leetcode.com — Top SQL 50</a><div class="course-desc">The 50 most important SQL interview problems. Structured study plan used weekly throughout all 8 weeks of this plan.</div><span class="course-phase type-sql type-badge">Weeks 1–8</span></div>
+    <div class="course-card highlight"><div class="course-name">IBM DE Certificate — Coursera <span class="course-audit-tag">AUDIT FREE</span></div><a class="course-url" href="https://www.coursera.org/professional-certificates/ibm-data-engineer" target="_blank">coursera.org — IBM Data Engineer</a><div class="course-desc">Full DE curriculum: SQL, databases, data warehousing, NoSQL, big data. Audit = watch all content for free. Skip graded assignments.</div><span class="course-phase type-sql type-badge">Weeks 3–4</span></div>
+    <div class="course-card highlight"><div class="course-name">DeepLearning.AI Data Engineering <span class="course-audit-tag">AUDIT FREE</span></div><a class="course-url" href="https://www.coursera.org/professional-certificates/data-engineering" target="_blank">coursera.org — DeepLearning.AI DE</a><div class="course-desc">Professional Certificate covering data pipelines, ETL systems, data modelling, cloud platforms (AWS), and modern DE workflows.</div><span class="course-phase type-python type-badge">Weeks 4–6</span></div>
+    <div class="course-card"><div class="course-name">Real Python <span class="course-free-tag">FREE</span></div><a class="course-url" href="https://realpython.com" target="_blank">realpython.com</a><div class="course-desc">Best free Python articles for DE patterns. Search: Python ETL, SQLAlchemy, pandas, logging, pytest, requests. Precise and practical.</div><span class="course-phase type-python type-badge">Weeks 4–6</span></div>
+    <div class="course-card"><div class="course-name">Docker — Get Started <span class="course-free-tag">FREE</span></div><a class="course-url" href="https://docs.docker.com/get-started" target="_blank">docs.docker.com/get-started</a><div class="course-desc">Official Docker tutorial. Dockerfile + Compose for running Postgres and Python together locally. Essential DE skill.</div><span class="course-phase type-python type-badge">Week 5</span></div>
+    <div class="course-card highlight"><div class="course-name">dbt Learn — dbt Fundamentals <span class="course-free-tag">FREE</span></div><a class="course-url" href="https://learn.getdbt.com" target="_blank">learn.getdbt.com</a><div class="course-desc">dbt Labs' official free self-paced course (~5 hours). Models, sources, tests, and docs. The best dbt intro available. Essential.</div><span class="course-phase type-tools type-badge">Week 7</span></div>
+    <div class="course-card"><div class="course-name">Apache Airflow Tutorial <span class="course-free-tag">FREE</span></div><a class="course-url" href="https://airflow.apache.org/docs/apache-airflow/stable/tutorial/index.html" target="_blank">airflow.apache.org/tutorial</a><div class="course-desc">Official tutorial for your first DAG. Pair with Zoomcamp Week 2 materials to build a fully orchestrated pipeline.</div><span class="course-phase type-tools type-badge">Week 7</span></div>
+    <div class="course-card"><div class="course-name">Google Cloud Skills Boost <span class="course-free-tag">FREE</span></div><a class="course-url" href="https://www.cloudskillsboost.google" target="_blank">cloudskillsboost.google</a><div class="course-desc">Free GCP hands-on labs. Focus on: BigQuery fundamentals, partitioning, Cloud Storage, IAM. Aligns directly with Zoomcamp GCP content.</div><span class="course-phase type-tools type-badge">Weeks 7–8</span></div>
+    <div class="course-card highlight"><div class="course-name">DataTalks DE Zoomcamp <span class="course-free-tag">FREE</span></div><a class="course-url" href="https://github.com/DataTalksClub/data-engineering-zoomcamp" target="_blank">github.com/DataTalksClub</a><div class="course-desc">Your destination after 56 days. Free on GitHub. Covers GCP, Terraform, Airflow, dbt, Spark, Kafka, and a full capstone. The best free DE bootcamp.</div><span class="course-phase type-tools type-badge">After week 8</span></div>
+    <div class="course-card"><div class="course-name">pydantic.dev <span class="course-free-tag">FREE</span></div><a class="course-url" href="https://docs.pydantic.dev" target="_blank">docs.pydantic.dev</a><div class="course-desc">Official Pydantic v2 docs. Data validation for your ETL ingestion layer. Fast, type-safe, and the standard in modern Python DE.</div><span class="course-phase type-python type-badge">Week 5</span></div>
+    <div class="course-card"><div class="course-name">Snowflake Free Trial <span class="course-free-tag">30 DAYS FREE</span></div><a class="course-url" href="https://signup.snowflake.com" target="_blank">signup.snowflake.com</a><div class="course-desc">Save for after the Zoomcamp. 30-day free trial with $400 credits. Snowflake is everywhere in modern DE stacks — worth exploring after June.</div><span class="course-phase type-tools type-badge">Post-Zoomcamp</span></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+/* ═══════════════════════════════════════════
+   STATE & STORAGE
+═══════════════════════════════════════════ */
+const TOTAL = 56;
+const STORAGE_KEY = 'de_plan_v3';
+let STATE = {};
+
+let DAY_DATES = {
+  day1:'2026-05-04',  day2:'2026-05-05',  day3:'2026-05-06',  day4:'2026-05-07',
+  day5:'2026-05-08',  day6:'2026-05-09',  day7:'2026-05-10',  day8:'2026-05-11',
+  day9:'2026-05-12',  day10:'2026-05-13', day11:'2026-05-14', day12:'2026-05-15',
+  day13:'2026-05-16', day14:'2026-05-17', day15:'2026-05-18', day16:'2026-05-19',
+  day17:'2026-05-20', day18:'2026-05-21', day19:'2026-05-22', day20:'2026-05-23',
+  day21:'2026-05-24', day22:'2026-05-25', day23:'2026-05-26', day24:'2026-05-27',
+  day25:'2026-05-28', day26:'2026-05-29', day27:'2026-05-30', day28:'2026-05-31',
+  day29:'2026-06-01', day30:'2026-06-02', day31:'2026-06-03', day32:'2026-06-04',
+  day33:'2026-06-05', day34:'2026-06-06', day35:'2026-06-07', day36:'2026-06-08',
+  day37:'2026-06-09', day38:'2026-06-10', day39:'2026-06-11', day40:'2026-06-12',
+  day41:'2026-06-13', day42:'2026-06-14', day43:'2026-06-15', day44:'2026-06-16',
+  day45:'2026-06-17', day46:'2026-06-18', day47:'2026-06-19', day48:'2026-06-20',
+  day49:'2026-06-21', day50:'2026-06-22', day51:'2026-06-23', day52:'2026-06-24',
+  day53:'2026-06-25', day54:'2026-06-26', day55:'2026-06-27', day56:'2026-06-28'
+};
+
+function loadState() {
+  try { const r = localStorage.getItem(STORAGE_KEY); STATE = r ? JSON.parse(r) : {}; }
+  catch(e) { STATE = {}; }
+}
+function persist() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); } catch(e) {} }
+
+/* ═══════════════════════════════════════════
+   DATE MANAGEMENT
+═══════════════════════════════════════════ */
+const STORAGE_KEY_START = 'de_plan_v3_start';
+const DEFAULT_START = '2026-05-04';
+const DAY_NAMES_S = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MON_NAMES_S = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function fmtDayLabel(d) { return DAY_NAMES_S[d.getDay()] + ' ' + MON_NAMES_S[d.getMonth()] + ' ' + d.getDate(); }
+function fmtMonDay(d)   { return MON_NAMES_S[d.getMonth()] + ' ' + d.getDate(); }
+function fmtISO(d)      { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function addDays(base, n) { const d = new Date(base); d.setDate(d.getDate() + n); return d; }
+function fmtWeekRange(sd, ed) {
+  const sm = MON_NAMES_S[sd.getMonth()], em = MON_NAMES_S[ed.getMonth()];
+  return sm === em ? sm + ' ' + sd.getDate() + '–' + ed.getDate() : sm + ' ' + sd.getDate() + ' – ' + em + ' ' + ed.getDate();
+}
+
+function getStartDate() { try { return localStorage.getItem(STORAGE_KEY_START) || DEFAULT_START; } catch(e) { return DEFAULT_START; } }
+
+function setStartDate(s) {
+  if (!s) return;
+  try { localStorage.setItem(STORAGE_KEY_START, s); } catch(e) {}
+  recalculateDates(s);
+  updateProgress();
+}
+
+function recalculateDates(startStr) {
+  const start = new Date(startStr + 'T00:00:00');
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = addDays(start, i - 1);
+    DAY_DATES['day' + i] = fmtISO(d);
+    const card = document.getElementById('day' + i);
+    if (card) { const el = card.querySelector('.day-date'); if (el) el.textContent = fmtDayLabel(d); }
+  }
+  const weekOffsets = [0, 7, 14, 21, 28, 35, 42, 49];
+  document.querySelectorAll('.week-label[data-week]').forEach(el => {
+    const w = parseInt(el.dataset.week, 10);
+    const sd = addDays(start, weekOffsets[w - 1]);
+    const ed = addDays(start, weekOffsets[w - 1] + 6);
+    el.textContent = 'Week ' + w + ' \u2014 ' + fmtWeekRange(sd, ed);
+  });
+  const phaseOffsets = { p1:[0,6], p2:[7,20], p3:[21,34], p4:[35,41], p5:[42,55] };
+  document.querySelectorAll('.phase-weeks[data-phase]').forEach(el => {
+    const [s, e] = phaseOffsets[el.dataset.phase];
+    el.textContent = fmtMonDay(addDays(start, s)) + ' \u2013 ' + fmtMonDay(addDays(start, e));
+  });
+  const end = addDays(start, TOTAL - 1);
+  const sub = document.getElementById('headerSub');
+  if (sub) sub.textContent = fmtMonDay(start) + ', ' + start.getFullYear() + ' \u2192 ' + fmtMonDay(end) + ', ' + end.getFullYear() + ' \u00b7 1 hr/day \u00b7 56 days \u00b7 100% free';
+  const inp = document.getElementById('startDateInput');
+  if (inp) inp.value = startStr;
+  document.querySelectorAll('.day-card.today').forEach(c => { c.classList.remove('today'); const b = c.querySelector('.today-badge'); if (b) b.remove(); });
+  applyTodayHighlight();
+}
+
+/* ═══════════════════════════════════════════
+   PROGRESS & STREAK
+═══════════════════════════════════════════ */
+function getTodayISO() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function getCompletedCount() { let done = 0; for (let i = 1; i <= TOTAL; i++) { if (STATE['day'+i]===true) done++; } return done; }
+function getStreak() {
+  const today = getTodayISO(); let streak = 0;
+  for (let i = 1; i <= TOTAL; i++) {
+    const dayId = 'day'+i, dayDate = DAY_DATES[dayId];
+    if (!dayDate || dayDate > today) break;
+    if (dayDate === today && !STATE[dayId]) break;
+    if (STATE[dayId]===true) { streak++; } else { streak = 0; }
+  }
+  return streak;
+}
+function getDaysLeft() {
+  const today = getTodayISO(); let left = 0;
+  for (let i = 1; i <= TOTAL; i++) { const d = DAY_DATES['day'+i]; if (d && d >= today && !STATE['day'+i]) left++; }
+  return left;
+}
+function updateProgress() {
+  const done = getCompletedCount(), pct = Math.round((done/TOTAL)*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = done+' / '+TOTAL+' days · '+pct+'%';
+  const streak = getStreak();
+  const streakEl = document.getElementById('streakLabel');
+  if (streakEl) streakEl.textContent = '🔥 '+streak+'-day streak';
+  const left = getDaysLeft();
+  const leftEl = document.getElementById('daysLeft');
+  if (leftEl) leftEl.textContent = left > 0 ? left+' days remaining' : (done===TOTAL ? '✓ complete' : '');
+}
+
+/* ═══════════════════════════════════════════
+   DAY CARD LOGIC
+═══════════════════════════════════════════ */
+function applyDayVisual(id) {
+  const card = document.getElementById(id), check = document.getElementById('dc_'+id);
+  if (!card || !check) return;
+  const done = STATE[id]===true;
+  card.classList.toggle('completed', done);
+  check.classList.toggle('checked', done);
+}
+function syncDayFromTasks(dayId) {
+  const card = document.getElementById(dayId); if (!card) return;
+  const checks = Array.from(card.querySelectorAll('input.task-check'));
+  if (checks.length===0) return;
+  const allChecked = checks.every(c => c.checked);
+  if (allChecked !== (STATE[dayId]===true)) { STATE[dayId] = allChecked; persist(); applyDayVisual(dayId); updateProgress(); }
+}
+function markDay(id) {
+  const newState = !(STATE[id]===true); STATE[id] = newState;
+  if (!newState) {
+    const card = document.getElementById(id);
+    if (card) { card.querySelectorAll('input.task-check').forEach(cb => { cb.checked=false; STATE['task_'+cb.id]=false; const lbl=document.querySelector('label[for="'+cb.id+'"]'); if(lbl) lbl.classList.remove('done'); }); }
+  }
+  persist(); applyDayVisual(id); updateProgress();
+}
+function toggleDay(id) { const card = document.getElementById(id); if (card) card.classList.toggle('open'); }
+
+/* ═══════════════════════════════════════════
+   PHASE NAV
+═══════════════════════════════════════════ */
+function showPhase(phase, btn) {
+  document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const freeStack = document.querySelector('[data-phase="stack"]');
+  const courses   = document.querySelector('[data-phase="courses"]');
+  const phaseBlocks = document.querySelectorAll('.phase-block');
+  if (phase==='all') { phaseBlocks.forEach(b=>b.style.display=''); if(freeStack) freeStack.style.display=''; if(courses) courses.style.display='none'; }
+  else if (phase==='courses') { phaseBlocks.forEach(b=>b.style.display='none'); if(freeStack) freeStack.style.display='none'; if(courses) courses.style.display=''; }
+  else if (phase==='stack') { phaseBlocks.forEach(b=>b.style.display='none'); if(freeStack) freeStack.style.display=''; if(courses) courses.style.display='none'; }
+  else { phaseBlocks.forEach(b=>{ b.style.display=b.dataset.phase===phase?'':'none'; }); if(freeStack) freeStack.style.display='none'; if(courses) courses.style.display='none'; }
+}
+
+/* ═══════════════════════════════════════════
+   TODAY HELPERS
+═══════════════════════════════════════════ */
+function scrollToToday() {
+  const today = getTodayISO();
+  for (const [id, date] of Object.entries(DAY_DATES)) {
+    if (date===today) {
+      const activeBtn = document.querySelector('.phase-btn.active');
+      if (activeBtn && activeBtn.textContent.trim()!=='All phases') showPhase('all', document.querySelector('.phase-btn'));
+      const card = document.getElementById(id);
+      if (card) { if (!card.classList.contains('open')) card.classList.add('open'); setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'center'}),80); }
+      return;
+    }
+  }
+}
+function applyTodayHighlight() {
+  const today = getTodayISO();
+  for (const [id, date] of Object.entries(DAY_DATES)) {
+    if (date===today) {
+      const card = document.getElementById(id); if (!card) break;
+      card.classList.add('today');
+      const expandIcon = card.querySelector('.day-header .expand-icon');
+      if (expandIcon && !card.querySelector('.today-badge')) {
+        const badge = document.createElement('span'); badge.className='today-badge'; badge.textContent='TODAY'; expandIcon.before(badge);
+      }
+      if (!STATE[id]) card.classList.add('open');
+      break;
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════ */
+function resetAll() {
+  if (confirm('Reset all progress? This cannot be undone.')) {
+    STATE = {};
+    try { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(STORAGE_KEY_START); } catch(e) {}
+    location.reload();
+  }
+}
+
+/* ═══════════════════════════════════════════
+   POMODORO TIMER
+═══════════════════════════════════════════ */
+const CIRC = 2 * Math.PI * 22;
+let timerInterval = null;
+let timerRunning  = false;
+let timerSecsLeft  = 30 * 60;
+let timerTotalSecs = 30 * 60;
+let timerMode      = 'work';
+let pomoCount      = 0;
+
+function timerFmt(secs) { return String(Math.floor(secs/60)).padStart(2,'0') + ':' + String(secs%60).padStart(2,'0'); }
+
+function timerRenderRing() {
+  const progress = timerTotalSecs > 0 ? timerSecsLeft / timerTotalSecs : 0;
+  const offset = CIRC * (1 - progress);
+  const ring = document.getElementById('ringFill');
+  if (ring) ring.style.strokeDashoffset = offset;
+}
+
+function timerRender() {
+  const el = document.getElementById('timerTime');
+  if (el) el.textContent = timerFmt(timerSecsLeft);
+  timerRenderRing();
+  if (timerRunning) document.title = timerFmt(timerSecsLeft) + ' — DE Study Plan';
+}
+
+function timerBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.25, 0.5].forEach(offset => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 660; osc.type = 'sine';
+      gain.gain.setValueAtTime(0, ctx.currentTime + offset);
+      gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + offset + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.18);
+      osc.start(ctx.currentTime + offset); osc.stop(ctx.currentTime + offset + 0.2);
+    });
+  } catch(e) {}
+}
+
+function updatePomodoroDots() {
+  for (let i = 1; i <= 4; i++) { const dot = document.getElementById('pd' + i); if (dot) dot.classList.toggle('done', i <= pomoCount); }
+}
+
+function timerSetStatus(label, isBreak) {
+  const el = document.getElementById('timerStatus');
+  if (!el) return;
+  el.textContent = label;
+  el.className = 'timer-status ' + (isBreak ? 'break-mode' : 'work-mode');
+}
+
+function timerToggle() {
+  if (timerRunning) {
+    clearInterval(timerInterval); timerRunning = false;
+    const btn = document.getElementById('timerStartBtn');
+    if (btn) { btn.textContent = 'RESUME'; btn.classList.remove('running','break-running'); }
+    document.title = 'Data Engineering Study Plan';
+  } else {
+    timerRunning = true;
+    const btn = document.getElementById('timerStartBtn');
+    if (btn) { btn.textContent = 'PAUSE'; btn.classList.remove('running','break-running'); btn.classList.add(timerMode==='work'?'running':'break-running'); }
+    timerInterval = setInterval(() => {
+      timerSecsLeft = Math.max(0, timerSecsLeft - 1);
+      timerRender();
+      if (timerSecsLeft <= 0) {
+        clearInterval(timerInterval); timerRunning = false; timerBeep(); document.title = 'Data Engineering Study Plan';
+        const btn2 = document.getElementById('timerStartBtn');
+        if (btn2) { btn2.textContent = 'START'; btn2.classList.remove('running','break-running'); }
+        if (timerMode === 'work') {
+          pomoCount = Math.min(4, pomoCount + 1); updatePomodoroDots();
+          if (pomoCount >= 4) { setTimeout(() => { alert('🎉 4 pomodoros complete! Take a long break.'); pomoCount = 0; updatePomodoroDots(); }, 100); }
+        }
+      }
+    }, 1000);
+  }
+}
+
+function timerReset() {
+  clearInterval(timerInterval); timerRunning = false; timerSecsLeft = timerTotalSecs;
+  const btn = document.getElementById('timerStartBtn');
+  if (btn) { btn.textContent = 'START'; btn.classList.remove('running','break-running'); }
+  document.title = 'Data Engineering Study Plan'; timerRender();
+}
+
+function setMode(mode, minutes, el) {
+  clearInterval(timerInterval); timerRunning = false; timerMode = mode;
+  timerTotalSecs = minutes * 60; timerSecsLeft = timerTotalSecs;
+  document.getElementById('timerMinInput').value = minutes;
+  document.querySelectorAll('.tmode-btn').forEach(b => b.classList.remove('active','break'));
+  if (el) { el.classList.add('active'); if (mode !== 'work') el.classList.add('break'); }
+  const ring = document.getElementById('ringFill');
+  if (ring) ring.classList.toggle('break-mode', mode !== 'work');
+  const labels = { work:'FOCUS', short:'SHORT BREAK', long:'LONG BREAK' };
+  timerSetStatus(labels[mode] || 'FOCUS', mode !== 'work');
+  const btn = document.getElementById('timerStartBtn');
+  if (btn) { btn.textContent = 'START'; btn.classList.remove('running','break-running'); }
+  document.title = 'Data Engineering Study Plan'; timerRender();
+}
+
+function setCustomDuration(val) {
+  const mins = Math.max(1, Math.min(99, parseInt(val) || 25));
+  document.getElementById('timerMinInput').value = mins;
+  clearInterval(timerInterval); timerRunning = false;
+  timerTotalSecs = mins * 60; timerSecsLeft = timerTotalSecs;
+  document.querySelectorAll('.tmode-btn').forEach(b => b.classList.remove('active','break'));
+  const btn = document.getElementById('timerStartBtn');
+  if (btn) { btn.textContent = 'START'; btn.classList.remove('running','break-running'); }
+  document.title = 'Data Engineering Study Plan'; timerRender();
+}
+
+function toggleTimerBar() {
+  const bar = document.getElementById('timerBar');
+  const btn = document.getElementById('timerToggleBtn');
+  const isOpen = bar.classList.contains('visible');
+  if (isOpen) {
+    bar.classList.remove('visible'); btn.classList.remove('active');
+    document.documentElement.style.setProperty('--timer-h', '0px');
+  } else {
+    bar.classList.add('visible'); btn.classList.add('active');
+    setTimeout(() => {
+      const h = bar.offsetHeight;
+      document.documentElement.style.setProperty('--timer-h', h + 'px');
+    }, 50);
+  }
+  timerRender();
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+function init() {
+  loadState();
+  recalculateDates(getStartDate());
+  for (let i = 1; i <= TOTAL; i++) applyDayVisual('day'+i);
+  document.querySelectorAll('input.task-check').forEach(cb => {
+    const key = 'task_'+cb.id;
+    if (STATE[key]===true) { cb.checked=true; const lbl=document.querySelector('label[for="'+cb.id+'"]'); if(lbl) lbl.classList.add('done'); }
+    cb.addEventListener('change', function() {
+      STATE['task_'+this.id] = this.checked; persist();
+      const lbl = document.querySelector('label[for="'+this.id+'"]'); if(lbl) lbl.classList.toggle('done', this.checked);
+      const card = this.closest('.day-card'); if(card) syncDayFromTasks(card.id);
+    });
+  });
+  const courses = document.querySelector('[data-phase="courses"]');
+  if (courses) courses.style.display = 'none';
+  const header = document.getElementById('mainHeader');
+  if (header) document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+  timerRender(); updatePomodoroDots(); updateProgress();
+}
+
+init();
+</script>
+</body>
+</html>
