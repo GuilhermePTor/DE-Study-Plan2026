@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Active Users (MAU) - SQL Interview Question</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1, h2, h3 {
+            color: #1f4e79;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: Consolas, monospace;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .note {
+            background-color: #fff8dc;
+            border-left: 5px solid #f0ad4e;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .solution {
+            background-color: #f7fbff;
+            border-left: 5px solid #1f4e79;
+            padding: 20px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Monthly Active Users (MAU) - SQL Interview Question</h1>
+
+    <p>
+        This is the same question as Problem #23 in the SQL chapter of
+        <strong>Ace the Data Science Interview</strong>.
+    </p>
+
+    <h2>Problem Statement</h2>
+
+    <p>
+        Assume you're given a table containing information on Facebook user actions.
+        Write a query to obtain the number of monthly active users (MAUs) in
+        <strong>July 2022</strong>, including the month in numerical format
+        (<strong>1, 2, 3...</strong>).
+    </p>
+
+    <h3>Definition of an Active User</h3>
+
+    <p>
+        An active user is defined as a user who has performed actions such as
+        <code>sign-in</code>, <code>like</code>, or <code>comment</code>
+        in both the current month and the previous month.
+    </p>
+
+    <h2>Table Schema</h2>
+
+    <table>
+        <tr>
+            <th>Column Name</th>
+            <th>Type</th>
+        </tr>
+        <tr>
+            <td>user_id</td>
+            <td>integer</td>
+        </tr>
+        <tr>
+            <td>event_id</td>
+            <td>integer</td>
+        </tr>
+        <tr>
+            <td>event_type</td>
+            <td>string</td>
+        </tr>
+        <tr>
+            <td>event_date</td>
+            <td>datetime</td>
+        </tr>
+    </table>
+
+    <h2>Example Input</h2>
+
+    <table>
+        <tr>
+            <th>user_id</th>
+            <th>event_id</th>
+            <th>event_type</th>
+            <th>event_date</th>
+        </tr>
+        <tr>
+            <td>445</td>
+            <td>7765</td>
+            <td>sign-in</td>
+            <td>05/31/2022 12:00:00</td>
+        </tr>
+        <tr>
+            <td>742</td>
+            <td>6458</td>
+            <td>sign-in</td>
+            <td>06/03/2022 12:00:00</td>
+        </tr>
+        <tr>
+            <td>445</td>
+            <td>3634</td>
+            <td>like</td>
+            <td>06/05/2022 12:00:00</td>
+        </tr>
+        <tr>
+            <td>742</td>
+            <td>1374</td>
+            <td>comment</td>
+            <td>06/05/2022 12:00:00</td>
+        </tr>
+        <tr>
+            <td>648</td>
+            <td>3124</td>
+            <td>like</td>
+            <td>06/18/2022 12:00:00</td>
+        </tr>
+    </table>
+
+    <h2>Example Output (for June 2022)</h2>
+
+    <table>
+        <tr>
+            <th>month</th>
+            <th>monthly_active_users</th>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>1</td>
+        </tr>
+    </table>
+
+    <p>
+        In June 2022, there was only one monthly active user (MAU) with
+        <strong>user_id = 445</strong>.
+    </p>
+
+    <div class="note">
+        <strong>Note:</strong>
+        The example output is for June because the sample data only contains
+        activity through that month. Your query should be adapted to calculate
+        MAUs for July 2022.
+    </div>
+
+    <div class="solution">
+        <h2>Solution</h2>
+
+        <p>
+            To calculate monthly active users (MAUs), we need to identify users
+            who were active in both:
+        </p>
+
+        <ol>
+            <li>The current month (July 2022)</li>
+            <li>The previous month (June 2022)</li>
+        </ol>
+
+        <h3>Step 1: Identify Users Active in the Previous Month</h3>
+
+        <p>
+            For every user active in July, check whether the same user also had
+            activity during the previous month.
+        </p>
+
+<pre><code>SELECT last_month.user_id
+FROM user_actions AS last_month
+WHERE last_month.user_id = curr_month.user_id
+  AND EXTRACT(MONTH FROM last_month.event_date) =
+      EXTRACT(MONTH FROM curr_month.event_date - INTERVAL '1 month');
+</code></pre>
+
+        <p>
+            This logic matches users between the current month and the previous
+            month by comparing their user IDs and verifying that the user's
+            activity occurred exactly one month earlier.
+        </p>
+
+        <h3>Step 2: Count Active Users in July 2022</h3>
+
+        <p>
+            Use the <code>EXISTS</code> clause to retain only those July users
+            who also appeared in June. Then count the distinct users.
+        </p>
+
+        <h3>Complete SQL Query</h3>
+
+<pre><code>SELECT
+    EXTRACT(MONTH FROM curr_month.event_date) AS month,
+    COUNT(DISTINCT curr_month.user_id) AS monthly_active_users
+FROM user_actions AS curr_month
+WHERE EXISTS (
+    SELECT last_month.user_id
+    FROM user_actions AS last_month
+    WHERE last_month.user_id = curr_month.user_id
+      AND EXTRACT(MONTH FROM last_month.event_date) =
+          EXTRACT(MONTH FROM curr_month.event_date - INTERVAL '1 month')
+)
+  AND EXTRACT(MONTH FROM curr_month.event_date) = 7
+  AND EXTRACT(YEAR FROM curr_month.event_date) = 2022
+GROUP BY EXTRACT(MONTH FROM curr_month.event_date);
+</code></pre>
+
+        <h3>Expected Result</h3>
+
+        <table>
+            <tr>
+                <th>month</th>
+                <th>monthly_active_users</th>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>2</td>
+            </tr>
+        </table>
+
+        <h3>Explanation</h3>
+
+        <p>
+            The query filters activity records to July 2022 and checks whether
+            each user also had activity during June 2022. Only users who were
+            active in both months are counted.
+        </p>
+
+        <p>
+            Therefore, the result shows that there were
+            <strong>2 monthly active users</strong> in July 2022.
+        </p>
+    </div>
+
+    <h2>PostgreSQL Setup for Testing</h2>
+
+<p>
+    Use the following SQL statements to create the table and insert sample
+    data into PostgreSQL. This dataset is designed so that the correct
+    solution returns <strong>2 monthly active users for July 2022</strong>.
+</p>
+
+<h3>Create Table</h3>
+
+<pre><code>DROP TABLE IF EXISTS user_actions;
+
+CREATE TABLE user_actions (
+    user_id INTEGER,
+    event_id INTEGER PRIMARY KEY,
+    event_type VARCHAR(20),
+    event_date TIMESTAMP
+);
+</code></pre>
+
+<h3>Insert Sample Data</h3>
+
+<pre><code>INSERT INTO user_actions
+(user_id, event_id, event_type, event_date)
+VALUES
+-- May Activity
+(445, 7765, 'sign-in', '2022-05-31 12:00:00'),
+
+-- June Activity
+(742, 6458, 'sign-in', '2022-06-03 12:00:00'),
+(445, 3634, 'like',    '2022-06-05 12:00:00'),
+(742, 1374, 'comment', '2022-06-05 12:00:00'),
+(648, 3124, 'like',    '2022-06-18 12:00:00'),
+
+-- July Activity
+(445, 8001, 'sign-in', '2022-07-02 09:00:00'),
+(742, 8002, 'like',    '2022-07-10 14:30:00'),
+(648, 8003, 'comment', '2022-07-12 16:15:00'),
+(999, 8004, 'sign-in', '2022-07-15 08:00:00');
+</code></pre>
+
+<h3>Verify the Data</h3>
+
+<pre><code>SELECT *
+FROM user_actions
+ORDER BY event_date;
+</code></pre>
+
+<h3>Expected Monthly Activity</h3>
+
+<table>
+    <tr>
+        <th>User ID</th>
+        <th>June Activity?</th>
+        <th>July Activity?</th>
+        <th>MAU for July?</th>
+    </tr>
+    <tr>
+        <td>445</td>
+        <td>Yes</td>
+        <td>Yes</td>
+        <td>✅ Yes</td>
+    </tr>
+    <tr>
+        <td>742</td>
+        <td>Yes</td>
+        <td>Yes</td>
+        <td>✅ Yes</td>
+    </tr>
+    <tr>
+        <td>648</td>
+        <td>Yes</td>
+        <td>Yes</td>
+        <td>✅ Yes</td>
+    </tr>
+    <tr>
+        <td>999</td>
+        <td>No</td>
+        <td>Yes</td>
+        <td>❌ No</td>
+    </tr>
+</table>
+
+<p>
+
+</body>
+</html>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Incremental Models, SCD Type 1, and SCD Type 2 - Beginner Guide</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.7;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px;
+        color: #222;
+        background: #fafafa;
+    }
+
+    h1, h2, h3 {
+        color: #1d4ed8;
+    }
+
+    h1 {
+        border-bottom: 3px solid #1d4ed8;
+        padding-bottom: 10px;
+    }
+
+    .box {
+        background: white;
+        padding: 20px;
+        margin: 20px 0;
+        border-left: 5px solid #1d4ed8;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    code {
+        background: #eee;
+        padding: 2px 5px;
+        border-radius: 4px;
+    }
+
+    pre {
+        background: #1e293b;
+        color: white;
+        padding: 15px;
+        overflow-x: auto;
+        border-radius: 8px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        background: white;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background: #1d4ed8;
+        color: white;
+    }
+
+    .important {
+        background: #fef3c7;
+        border-left: 5px solid #f59e0b;
+        padding: 15px;
+        margin: 20px 0;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Incremental Models, SCD Type 1, and SCD Type 2</h1>
+
+<p>
+This guide assumes you have never worked with dbt before.
+The goal is to understand the mental model behind incremental processing and slowly changing dimensions (SCDs).
+</p>
+
+<div class="box">
+<h2>What Problem Are We Solving?</h2>
+
+<p>
+Imagine a table with 100 million customers.
+Rebuilding the entire table every time new data arrives would be expensive and slow.
+</p>
+
+<p>
+Instead, we want to process only:
+</p>
+
+<ul>
+<li>New records</li>
+<li>Changed records</li>
+<li>Deleted records (if needed)</li>
+</ul>
+
+<p>
+This is the purpose of <strong>incremental models</strong>.
+</p>
+</div>
+
+<hr>
+
+<h2>Part 1: Understanding Incremental Models</h2>
+
+<p>
+An incremental model means:
+</p>
+
+<blockquote>
+When the model runs again, don't rebuild everything.
+Only process what changed since the last run.
+</blockquote>
+
+<h3>Full Refresh</h3>
+
+<pre>
+DROP TABLE customers;
+
+CREATE TABLE customers AS
+SELECT *
+FROM source_customers;
+</pre>
+
+<p>
+Everything is rebuilt.
+</p>
+
+<h3>Incremental Refresh</h3>
+
+<pre>
+INSERT INTO customers
+SELECT *
+FROM source_customers
+WHERE updated_at > last_run_time;
+</pre>
+
+<p>
+Only new or changed rows are processed.
+</p>
+
+<div class="important">
+<strong>Key idea:</strong>
+Incremental models save time by touching only changed data.
+</div>
+
+<hr>
+
+<h2>The Importance of a Unique Key</h2>
+
+<p>
+A unique key identifies exactly one business entity.
+</p>
+
+Examples:
+</p>
+
+<table>
+<tr>
+<th>Table</th>
+<th>Unique Key</th>
+</tr>
+<tr>
+<td>Customers</td>
+<td>customer_id</td>
+</tr>
+<tr>
+<td>Orders</td>
+<td>order_id</td>
+</tr>
+<tr>
+<td>Products</td>
+<td>product_id</td>
+</tr>
+</table>
+
+<p>
+Without a unique key, the system cannot determine:
+</p>
+
+<ul>
+<li>Which row already exists</li>
+<li>Which row changed</li>
+<li>Which row should be updated</li>
+</ul>
+
+<p>
+The unique key is the foundation for everything else in this document.
+</p>
+
+<hr>
+
+<h2>Incremental Strategy #1: Append</h2>
+
+<p>
+Simplest approach:
+</p>
+
+<pre>
+INSERT INTO customers
+SELECT *
+FROM source_customers;
+</pre>
+
+<p>
+New rows are added.
+No updates happen.
+</p>
+
+<p>
+Problem:
+If customer 123 changes their email address, you now have duplicate records.
+</p>
+
+<table>
+<tr>
+<th>customer_id</th>
+<th>email</th>
+</tr>
+<tr>
+<td>123</td>
+<td>old@email.com</td>
+</tr>
+<tr>
+<td>123</td>
+<td>new@email.com</td>
+</tr>
+</table>
+
+<p>
+Usually not desirable.
+</p>
+
+<hr>
+
+<h2>Incremental Strategy #2: Delete + Insert</h2>
+
+<p>
+This strategy says:
+</p>
+
+<blockquote>
+If a row already exists, delete it first, then insert the newest version.
+</blockquote>
+
+<h3>Example</h3>
+
+Existing table:
+
+<table>
+<tr>
+<th>customer_id</th>
+<th>name</th>
+</tr>
+<tr>
+<td>1</td>
+<td>John</td>
+</tr>
+</table>
+
+New incoming data:
+
+<table>
+<tr>
+<th>customer_id</th>
+<th>name</th>
+</tr>
+<tr>
+<td>1</td>
+<td>John Smith</td>
+</tr>
+</table>
+
+Process:
+
+<pre>
+DELETE FROM customers
+WHERE customer_id = 1;
+
+INSERT INTO customers
+VALUES (1, 'John Smith');
+</pre>
+
+Result:
+
+<table>
+<tr>
+<th>customer_id</th>
+<th>name</th>
+</tr>
+<tr>
+<td>1</td>
+<td>John Smith</td>
+</tr>
+</table>
+
+<h3>Mental Model</h3>
+
+<p>
+"Throw away the old version and replace it with the new one."
+</p>
+
+<hr>
+
+<h2>Incremental Strategy #3: Merge</h2>
+
+<p>
+Merge is generally smarter and more efficient.
+</p>
+
+<p>
+Instead of deleting and inserting, it decides:
+</p>
+
+<ul>
+<li>If the row exists → UPDATE it</li>
+<li>If the row doesn't exist → INSERT it</li>
+</ul>
+
+<h3>Pseudo Logic</h3>
+
+<pre>
+IF customer exists
+    UPDATE customer
+ELSE
+    INSERT customer
+</pre>
+
+<h3>SQL Example</h3>
+
+<pre>
+MERGE INTO customers target
+USING incoming_customers source
+
+ON target.customer_id = source.customer_id
+
+WHEN MATCHED THEN
+    UPDATE SET
+        name = source.name
+
+WHEN NOT MATCHED THEN
+    INSERT (customer_id, name)
+    VALUES (source.customer_id, source.name);
+</pre>
+
+<div class="important">
+Most modern data warehouses prefer MERGE because it is efficient and easier to maintain.
+</div>
+
+<hr>
+
+<h2>How Incremental Strategies Relate to SCDs</h2>
+
+<p>
+Now we move to dimensional modeling.
+</p>
+
+<p>
+The question becomes:
+</p>
+
+<blockquote>
+What should happen when an attribute changes?
+</blockquote>
+
+Example:
+
+<table>
+<tr>
+<th>customer_id</th>
+<th>city</th>
+</tr>
+<tr>
+<td>1</td>
+<td>Lisbon</td>
+</tr>
+</table>
+
+Tomorrow:
+
+<table>
+<tr>
+<th>customer_id</th>
+<th>city</th>
+</tr>
+<tr>
+<td>1</td>
+<td>Porto</td>
+</tr>
+</table>
+
+Do we:
+<ul>
+<li>Overwrite Lisbon?</li>
+<li>Keep Lisbon and Porto?</li>
+</ul>
+
+Those are SCD decisions.
+</ul>
+
+<hr>
+
+<h2>SCD Type 1</h2>
+
+<h3>Definition</h3>
+
+<p>
+SCD Type 1 overwrites old values.
+History is not preserved.
+</p>
+
+<h3>Example</h3>
+
+Before:
+
+<table>
+<tr>
+<th>customer_id</th>
+<th>city</th>
+</tr>
+<tr>
+<td>1</td>
+<td>Lisbon</td>
+</tr>
+</table>
+
+After change:
+
+<table>
+<tr>
+<th>customer_id</th>
+<th>city</th>
+</tr>
+<tr>
+<td>1</td>
+<td>Porto</td>
+</tr>
+</table>
+
+<p>
+The Lisbon value is gone forever.
+</p>
+
+<h3>Typical Implementation</h3>
+
+PostgreSQL:
+
+<pre>
+INSERT INTO dim_customer (
+    customer_id,
+    customer_name,
+    city
+)
+VALUES (
+    1,
+    'John',
+    'Porto'
+)
+
+ON CONFLICT (customer_id)
+
+DO UPDATE SET
+    customer_name = EXCLUDED.customer_name,
+    city = EXCLUDED.city;
+</pre>
+
+<h3>Mental Model</h3>
+
+<blockquote>
+Always keep the latest truth.
+Forget the past.
+</blockquote>
+
+<hr>
+
+<h2>SCD Type 2</h2>
+
+<h3>Definition</h3>
+
+<p>
+SCD Type 2 preserves history.
+Every change creates a new version.
+</p>
+
+<h3>Goal</h3>
+
+<p>
+We want answers like:
+</p>
+
+<ul>
+<li>Where did the customer live today?</li>
+<li>Where did they live last year?</li>
+<li>What was true on a specific date?</li>
+</ul>
+
+<hr>
+
+<h2>Columns Used in SCD Type 2</h2>
+
+<table>
+<tr>
+<th>Column</th>
+<th>Purpose</th>
+</tr>
+<tr>
+<td>valid_from</td>
+<td>Version start date</td>
+</tr>
+<tr>
+<td>valid_to</td>
+<td>Version end date</td>
+</tr>
+<tr>
+<td>is_current</td>
+<td>Current active version</td>
+</tr>
+</table>
+
+<hr>
+
+<h2>Example Data</h2>
+
+<h3>Initial State</h3>
+
+<table>
+<tr>
+<th>customer_id</th>
+<th>city</th>
+<th>valid_from</th>
+<th>valid_to</th>
+<th>is_current</th>
+</tr>
+<tr>
+<td>1</td>
+<td>Lisbon</td>
+<td>2025-01-01</td>
+<td>NULL</td>
+<td>true</td>
+</tr>
+</table>
+
+<hr>
+
+<h3>Customer Moves to Porto</h3>
+
+Instead of updating the row:
+
+<h4>Step 1: Close Current Version</h4>
+
+<pre>
+UPDATE dim_customer
+SET
+    valid_to = CURRENT_DATE,
+    is_current = false
+WHERE customer_id = 1
+AND is_current = true;
+</pre>
+
+<h4>Step 2: Create New Version</h4>
+
+<pre>
+INSERT INTO dim_customer (
+    customer_id,
+    city,
+    valid_from,
+    valid_to,
+    is_current
+)
+VALUES (
+    1,
+    'Porto',
+    CURRENT_DATE,
+    NULL,
+    true
+);
+</pre>
+
+<hr>
+
+<h2>Result</h2>
+
+<table>
+<tr>
+<th>customer_id</th>
+<th>city</th>
+<th>valid_from</th>
+<th>valid_to</th>
+<th>is_current</th>
+</tr>
+
+<tr>
+<td>1</td>
+<td>Lisbon</td>
+<td>2025-01-01</td>
+<td>2025-08-01</td>
+<td>false</td>
+</tr>
+
+<tr>
+<td>1</td>
+<td>Porto</td>
+<td>2025-08-01</td>
+<td>NULL</td>
+<td>true</td>
+</tr>
+</table>
+
+<h3>What Happened?</h3>
+
+<p>
+Nothing was overwritten.
+</p>
+
+<p>
+We preserved the old version and added a new one.
+</p>
+
+<hr>
+
+<h2>SCD Type 1 vs Type 2</h2>
+
+<table>
+<tr>
+<th>Feature</th>
+<th>SCD Type 1</th>
+<th>SCD Type 2</th>
+</tr>
+
+<tr>
+<td>Stores history</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+
+<tr>
+<td>Updates existing row</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+
+<tr>
+<td>Creates new version</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+
+<tr>
+<td>Current state available</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+
+<tr>
+<td>Past state available</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+</table>
+
+<hr>
+
+<h2>The Big Picture</h2>
+
+<div class="box">
+<h3>Remember These 4 Ideas</h3>
+
+<ol>
+<li>
+<strong>Incremental Models</strong><br>
+Process only changed data instead of rebuilding everything.
+</li>
+
+<li>
+<strong>Unique Key</strong><br>
+Identifies exactly one business entity.
+</li>
+
+<li>
+<strong>Delete+Insert and Merge</strong><br>
+Ways to keep incremental tables synchronized with source data.
+</li>
+
+<li>
+<strong>SCD Type 1 vs Type 2</strong><br>
+Type 1 overwrites history.<br>
+Type 2 preserves history using valid_from, valid_to, and is_current.
+</li>
+</ol>
+</div>
+
+<h2>One-Sentence Summary</h2>
+
+<p>
+Incremental models determine <strong>how data is loaded efficiently</strong>, while SCD Type 1 and Type 2 determine <strong>how changes to existing records are stored over time</strong>.
+</p>
+
+</body>
+</html>
