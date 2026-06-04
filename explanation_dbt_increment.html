@@ -1,706 +1,1390 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Incremental Models, SCD Type 1, and SCD Type 2 - Beginner Guide</title>
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Load Strategy Concepts — Feynman Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        line-height: 1.7;
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 40px;
-        color: #222;
-        background: #fafafa;
-    }
+:root {
+  --bg:        #f8f5f0;
+  --surface:   #ffffff;
+  --border:    #e5ddd4;
+  --border-hi: #d6c9b8;
+  --text:      #1c1917;
+  --muted:     #78716c;
+  --subtle:    #a8a29e;
+  --accent:    #b45309;
+  --accent-lt: #fef3c7;
+  --amber:     #d97706;
+  --green:     #065f46;
+  --green-lt:  #ecfdf5;
+  --blue:      #1e40af;
+  --blue-lt:   #eff6ff;
+  --red:       #991b1b;
+  --red-lt:    #fef2f2;
+  --purple:    #5b21b6;
+  --purple-lt: #f5f3ff;
+  --code-bg:   #161b27;
+  --kw:        #c792ea;
+  --fn:        #82aaff;
+  --str:       #c3e88d;
+  --num:       #f78c6c;
+  --cmt:       #546e7a;
+  --tbl:       #89ddff;
+  --nav-h:     64px;
+}
 
-    h1, h2, h3 {
-        color: #1d4ed8;
-    }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
 
-    h1 {
-        border-bottom: 3px solid #1d4ed8;
-        padding-bottom: 10px;
-    }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  line-height: 1.75;
+}
 
-    .box {
-        background: white;
-        padding: 20px;
-        margin: 20px 0;
-        border-left: 5px solid #1d4ed8;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
+/* ── PROGRESS BAR ── */
+#progress {
+  position: fixed; top: 0; left: 0; z-index: 100;
+  height: 3px; width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--amber));
+  transition: width .1s linear;
+}
 
-    code {
-        background: #eee;
-        padding: 2px 5px;
-        border-radius: 4px;
-    }
+/* ── TOP NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 90;
+  height: var(--nav-h);
+  background: rgba(248,245,240,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 32px;
+  gap: 28px;
+}
 
-    pre {
-        background: #1e293b;
-        color: white;
-        padding: 15px;
-        overflow-x: auto;
-        border-radius: 8px;
-    }
+.nav-logo {
+  font-family: 'Lora', serif;
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+  margin-right: 12px;
+}
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 20px 0;
-        background: white;
-    }
+.nav-links {
+  display: flex; gap: 6px;
+  overflow-x: auto; list-style: none;
+  scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
 
-    th, td {
-        border: 1px solid #ddd;
-        padding: 10px;
-        text-align: left;
-    }
+.nav-links a {
+  font-size: .78rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+.nav-links a:hover,
+.nav-links a.active {
+  background: var(--accent-lt);
+  color: var(--accent);
+}
 
-    th {
-        background: #1d4ed8;
-        color: white;
-    }
+/* ── LAYOUT ── */
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 24px 120px;
+}
 
-    .important {
-        background: #fef3c7;
-        border-left: 5px solid #f59e0b;
-        padding: 15px;
-        margin: 20px 0;
-    }
+/* ── HERO ── */
+.hero {
+  padding: 72px 0 56px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 64px;
+  animation: fadeUp .7s ease both;
+}
+
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+.hero-tag span {
+  display: inline-block;
+  width: 28px; height: 1px;
+  background: var(--accent);
+}
+
+h1 {
+  font-family: 'Lora', serif;
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -.02em;
+  color: var(--text);
+  margin-bottom: 18px;
+}
+
+h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-desc {
+  font-size: 1.05rem;
+  font-weight: 300;
+  color: var(--muted);
+  max-width: 580px;
+  margin-bottom: 28px;
+  line-height: 1.7;
+}
+
+.hero-pills {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+
+.pill {
+  font-size: .75rem;
+  font-weight: 500;
+  padding: 5px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--border-hi);
+  color: var(--muted);
+  background: var(--surface);
+}
+
+/* ── PART DIVIDERS ── */
+.part-header {
+  display: flex; align-items: center; gap: 16px;
+  margin: 72px 0 48px;
+}
+.part-line { flex: 1; height: 1px; background: var(--border); }
+.part-label {
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--subtle);
+  white-space: nowrap;
+}
+
+/* ── SECTION ── */
+.section {
+  margin-bottom: 80px;
+  animation: fadeUp .5s ease both;
+  opacity: 0;
+}
+.section.visible { opacity: 1; }
+
+.section-num {
+  font-family: 'Lora', serif;
+  font-size: 5rem;
+  font-weight: 700;
+  color: var(--border-hi);
+  line-height: 1;
+  margin-bottom: -12px;
+  user-select: none;
+}
+
+h2 {
+  font-family: 'Lora', serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.25;
+}
+
+.section-subtitle {
+  font-size: .88rem;
+  color: var(--subtle);
+  margin-bottom: 28px;
+  font-style: italic;
+}
+
+h3 {
+  font-family: 'Lora', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 32px 0 10px;
+}
+
+h4 {
+  font-size: .85rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 24px 0 8px;
+}
+
+p {
+  color: #44403c;
+  margin-bottom: 14px;
+  font-size: 1rem;
+}
+
+p:last-child { margin-bottom: 0; }
+
+strong { color: var(--text); font-weight: 600; }
+em { color: var(--muted); }
+
+/* ── CALLOUT BOXES ── */
+.box {
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin: 24px 0;
+  border-left: 4px solid;
+}
+
+.box-label {
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.box p, .box ul { margin-bottom: 10px; }
+.box p:last-child, .box ul:last-child { margin-bottom: 0; }
+.box ul { padding-left: 18px; }
+.box li { margin-bottom: 5px; }
+
+.box-analogy {
+  background: #fffbeb;
+  border-color: var(--amber);
+}
+.box-analogy .box-label { color: #92400e; }
+.box-analogy p, .box-analogy li { color: #78350f; }
+
+.box-insight {
+  background: var(--blue-lt);
+  border-color: #3b82f6;
+}
+.box-insight .box-label { color: var(--blue); }
+.box-insight p, .box-insight li { color: #1e3a8a; }
+
+.box-warning {
+  background: var(--red-lt);
+  border-color: #ef4444;
+}
+.box-warning .box-label { color: var(--red); }
+.box-warning p, .box-warning li { color: #7f1d1d; }
+
+.box-remember {
+  background: var(--green-lt);
+  border-color: #10b981;
+}
+.box-remember .box-label { color: var(--green); }
+.box-remember p, .box-remember li { color: #064e3b; }
+
+.box-concept {
+  background: var(--purple-lt);
+  border-color: #7c3aed;
+}
+.box-concept .box-label { color: var(--purple); }
+.box-concept p, .box-concept li { color: #3b0764; }
+
+/* ── CODE BLOCKS ── */
+.code-wrap {
+  background: var(--code-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 20px 0;
+  border: 1px solid #2a2f45;
+}
+.code-header {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #2a2f45;
+  background: rgba(255,255,255,.03);
+}
+.code-dots { display: flex; gap: 6px; }
+.code-dots span { width: 10px; height: 10px; border-radius: 50%; }
+.code-dots span:nth-child(1) { background: #f87171; }
+.code-dots span:nth-child(2) { background: #fbbf24; }
+.code-dots span:nth-child(3) { background: #34d399; }
+.code-fname {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem;
+  color: #546e7a;
+  letter-spacing: .05em;
+}
+pre {
+  padding: 22px 24px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82rem;
+  line-height: 1.85;
+  color: #cdd3de;
+}
+.kw  { color: #c792ea; font-weight: 500; }
+.fn  { color: #82aaff; }
+.str { color: #c3e88d; }
+.num { color: #f78c6c; }
+.cm  { color: #546e7a; font-style: italic; }
+.tbl { color: #89ddff; }
+
+/* ── INLINE CODE ── */
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82em;
+  background: #ede9e3;
+  border: 1px solid var(--border-hi);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: #92400e;
+}
+
+/* ── TABLES ── */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin: 20px 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .88rem;
+  background: var(--surface);
+}
+thead tr {
+  background: #f5f0e8;
+  border-bottom: 1px solid var(--border-hi);
+}
+th {
+  padding: 11px 16px;
+  text-align: left;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: .72rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap;
+  font-weight: 600;
+}
+td {
+  padding: 11px 16px;
+  color: #44403c;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #faf7f2; }
+td strong { color: var(--text); }
+td code { font-size: .8em; }
+
+/* ── COMPARISON SPLIT ── */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+@media(max-width:640px){ .split { grid-template-columns:1fr; } }
+
+.split-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.split-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.split-card.green::before { background: #10b981; }
+.split-card.amber::before { background: var(--amber); }
+.split-card.red::before   { background: #ef4444; }
+.split-card.blue::before  { background: #3b82f6; }
+
+.split-card h4 {
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: 'Lora', serif;
+  font-size: 1rem;
+  color: var(--text);
+  margin-top: 4px; margin-bottom: 10px;
+}
+.split-card p { font-size: .9rem; margin-bottom: 8px; }
+.split-card ul { padding-left: 16px; }
+.split-card li { font-size: .9rem; color: #44403c; margin-bottom: 4px; }
+
+/* ── TIMELINE / STEPS ── */
+.timeline { margin: 20px 0; }
+.tl-step {
+  display: flex; gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tl-step:last-child { border-bottom: none; }
+.tl-num {
+  flex-shrink: 0;
+  width: 30px; height: 30px;
+  background: var(--accent-lt);
+  border: 1.5px solid #fcd34d;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Lora', serif;
+  font-weight: 700;
+  font-size: .85rem;
+  color: var(--accent);
+}
+.tl-body { padding-top: 4px; }
+.tl-body strong { display: block; margin-bottom: 3px; font-size: .95rem; }
+.tl-body p { font-size: .9rem; margin-bottom: 0; }
+
+/* ── DEFINITION ── */
+.definition {
+  background: var(--surface);
+  border: 1px solid var(--border-hi);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin: 24px 0;
+  position: relative;
+}
+.definition::before {
+  content: '"';
+  position: absolute;
+  top: -14px; left: 20px;
+  font-family: 'Lora', serif;
+  font-size: 4rem;
+  color: var(--accent);
+  line-height: 1;
+}
+.definition p {
+  font-family: 'Lora', serif;
+  font-size: 1.08rem;
+  font-style: italic;
+  color: var(--text);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ── EXAMPLE TRACE ── */
+.trace {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.trace-title {
+  background: #f5f0e8;
+  padding: 10px 18px;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+.trace-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.trace-row:last-child { border-bottom: none; }
+.trace-icon {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .8rem;
+  margin-top: 2px;
+}
+.ti-ok   { background: #dcfce7; color: #16a34a; }
+.ti-bad  { background: #fee2e2; color: #dc2626; }
+.ti-warn { background: #fef3c7; color: #d97706; }
+.ti-info { background: #dbeafe; color: #2563eb; }
+.trace-text { font-size: .9rem; color: #44403c; }
+.trace-text strong { color: var(--text); }
+
+/* ── CHECKLIST ── */
+.checklist { list-style: none; margin: 16px 0; }
+.checklist li {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .95rem;
+  color: #44403c;
+}
+.checklist li:last-child { border-bottom: none; }
+.check-box {
+  flex-shrink: 0;
+  width: 20px; height: 20px;
+  border: 2px solid var(--border-hi);
+  border-radius: 5px;
+  margin-top: 2px;
+  background: var(--surface);
+}
+
+/* ── FOOTER ── */
+footer {
+  text-align: center;
+  color: var(--subtle);
+  font-size: .8rem;
+  margin-top: 72px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.section { transition: opacity .5s ease, transform .5s ease; transform: translateY(16px); }
+.section.visible { opacity: 1; transform: translateY(0); }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 3px; }
 </style>
 </head>
-
 <body>
 
-<h1>Incremental Models, SCD Type 1, and SCD Type 2</h1>
+<div id="progress"></div>
 
-<p>
-This guide assumes you have never worked with dbt before.
-The goal is to understand the mental model behind incremental processing and slowly changing dimensions (SCDs).
-</p>
+<nav>
+  <div class="nav-logo">Load Strategies</div>
+  <ul class="nav-links">
+    <li><a href="#incremental">Incremental Models</a></li>
+    <li><a href="#scd1">SCD Type 1</a></li>
+    <li><a href="#scd2">SCD Type 2</a></li>
+    <li><a href="#comparison">Full vs Incremental</a></li>
+    <li><a href="#idempotency">Idempotency</a></li>
+    <li><a href="#checklist">Checklist</a></li>
+  </ul>
+</nav>
 
-<div class="box">
-<h2>What Problem Are We Solving?</h2>
+<div class="page">
 
-<p>
-Imagine a table with 100 million customers.
-Rebuilding the entire table every time new data arrives would be expensive and slow.
-</p>
+<!-- ══════════════ HERO ══════════════ -->
+<header class="hero">
+  <div class="hero-tag"><span></span> Feynman Edition <span></span></div>
+  <h1>Data Load Strategies<br><em>explained simply</em></h1>
+  <p class="hero-desc">Incremental models, SCD Type 1 &amp; 2, Full Refresh vs Incremental, and Idempotency — explained so clearly you could teach them to someone who has never written a SQL query.</p>
+  <div class="hero-pills">
+    <span class="pill">SQL</span>
+    <span class="pill">dbt</span>
+    <span class="pill">Data Modelling</span>
+    <span class="pill">Data Engineering</span>
+    <span class="pill">Feynman Technique</span>
+  </div>
+</header>
 
-<p>
-Instead, we want to process only:
-</p>
 
-<ul>
-<li>New records</li>
-<li>Changed records</li>
-<li>Deleted records (if needed)</li>
-</ul>
-
-<p>
-This is the purpose of <strong>incremental models</strong>.
-</p>
+<!-- ══════════════ PART I ══════════════ -->
+<div class="part-header">
+  <div class="part-line"></div>
+  <div class="part-label">Part I — Core Concepts</div>
+  <div class="part-line"></div>
 </div>
 
-<hr>
-
-<h2>Part 1: Understanding Incremental Models</h2>
-
-<p>
-An incremental model means:
-</p>
-
-<blockquote>
-When the model runs again, don't rebuild everything.
-Only process what changed since the last run.
-</blockquote>
-
-<h3>Full Refresh</h3>
-
-<pre>
-DROP TABLE customers;
-
-CREATE TABLE customers AS
-SELECT *
-FROM source_customers;
-</pre>
-
-<p>
-Everything is rebuilt.
-</p>
-
-<h3>Incremental Refresh</h3>
-
-<pre>
-INSERT INTO customers
-SELECT *
-FROM source_customers
-WHERE updated_at > last_run_time;
-</pre>
-
-<p>
-Only new or changed rows are processed.
-</p>
-
-<div class="important">
-<strong>Key idea:</strong>
-Incremental models save time by touching only changed data.
-</div>
-
-<hr>
-
-<h2>The Importance of a Unique Key</h2>
-
-<p>
-A unique key identifies exactly one business entity.
-</p>
-
-Examples:
-</p>
-
-<table>
-<tr>
-<th>Table</th>
-<th>Unique Key</th>
-</tr>
-<tr>
-<td>Customers</td>
-<td>customer_id</td>
-</tr>
-<tr>
-<td>Orders</td>
-<td>order_id</td>
-</tr>
-<tr>
-<td>Products</td>
-<td>product_id</td>
-</tr>
-</table>
-
-<p>
-Without a unique key, the system cannot determine:
-</p>
-
-<ul>
-<li>Which row already exists</li>
-<li>Which row changed</li>
-<li>Which row should be updated</li>
-</ul>
-
-<p>
-The unique key is the foundation for everything else in this document.
-</p>
-
-<hr>
-
-<h2>Incremental Strategy #1: Append</h2>
-
-<p>
-Simplest approach:
-</p>
-
-<pre>
-INSERT INTO customers
-SELECT *
-FROM source_customers;
-</pre>
-
-<p>
-New rows are added.
-No updates happen.
-</p>
-
-<p>
-Problem:
-If customer 123 changes their email address, you now have duplicate records.
-</p>
-
-<table>
-<tr>
-<th>customer_id</th>
-<th>email</th>
-</tr>
-<tr>
-<td>123</td>
-<td>old@email.com</td>
-</tr>
-<tr>
-<td>123</td>
-<td>new@email.com</td>
-</tr>
-</table>
-
-<p>
-Usually not desirable.
-</p>
-
-<hr>
-
-<h2>Incremental Strategy #2: Delete + Insert</h2>
-
-<p>
-This strategy says:
-</p>
-
-<blockquote>
-If a row already exists, delete it first, then insert the newest version.
-</blockquote>
-
-<h3>Example</h3>
-
-Existing table:
-
-<table>
-<tr>
-<th>customer_id</th>
-<th>name</th>
-</tr>
-<tr>
-<td>1</td>
-<td>John</td>
-</tr>
-</table>
-
-New incoming data:
-
-<table>
-<tr>
-<th>customer_id</th>
-<th>name</th>
-</tr>
-<tr>
-<td>1</td>
-<td>John Smith</td>
-</tr>
-</table>
-
-Process:
-
-<pre>
-DELETE FROM customers
-WHERE customer_id = 1;
-
-INSERT INTO customers
-VALUES (1, 'John Smith');
-</pre>
-
-Result:
-
-<table>
-<tr>
-<th>customer_id</th>
-<th>name</th>
-</tr>
-<tr>
-<td>1</td>
-<td>John Smith</td>
-</tr>
-</table>
-
-<h3>Mental Model</h3>
-
-<p>
-"Throw away the old version and replace it with the new one."
-</p>
-
-<hr>
-
-<h2>Incremental Strategy #3: Merge</h2>
-
-<p>
-Merge is generally smarter and more efficient.
-</p>
-
-<p>
-Instead of deleting and inserting, it decides:
-</p>
-
-<ul>
-<li>If the row exists → UPDATE it</li>
-<li>If the row doesn't exist → INSERT it</li>
-</ul>
-
-<h3>Pseudo Logic</h3>
-
-<pre>
-IF customer exists
-    UPDATE customer
-ELSE
-    INSERT customer
-</pre>
-
-<h3>SQL Example</h3>
-
-<pre>
-MERGE INTO customers target
-USING incoming_customers source
-
-ON target.customer_id = source.customer_id
-
-WHEN MATCHED THEN
-    UPDATE SET
-        name = source.name
-
-WHEN NOT MATCHED THEN
-    INSERT (customer_id, name)
-    VALUES (source.customer_id, source.name);
-</pre>
-
-<div class="important">
-Most modern data warehouses prefer MERGE because it is efficient and easier to maintain.
-</div>
-
-<hr>
-
-<h2>How Incremental Strategies Relate to SCDs</h2>
-
-<p>
-Now we move to dimensional modeling.
-</p>
-
-<p>
-The question becomes:
-</p>
-
-<blockquote>
-What should happen when an attribute changes?
-</blockquote>
-
-Example:
-
-<table>
-<tr>
-<th>customer_id</th>
-<th>city</th>
-</tr>
-<tr>
-<td>1</td>
-<td>Lisbon</td>
-</tr>
-</table>
-
-Tomorrow:
-
-<table>
-<tr>
-<th>customer_id</th>
-<th>city</th>
-</tr>
-<tr>
-<td>1</td>
-<td>Porto</td>
-</tr>
-</table>
-
-Do we:
-<ul>
-<li>Overwrite Lisbon?</li>
-<li>Keep Lisbon and Porto?</li>
-</ul>
-
-Those are SCD decisions.
-</ul>
-
-<hr>
-
-<h2>SCD Type 1</h2>
-
-<h3>Definition</h3>
-
-<p>
-SCD Type 1 overwrites old values.
-History is not preserved.
-</p>
-
-<h3>Example</h3>
-
-Before:
-
-<table>
-<tr>
-<th>customer_id</th>
-<th>city</th>
-</tr>
-<tr>
-<td>1</td>
-<td>Lisbon</td>
-</tr>
-</table>
-
-After change:
-
-<table>
-<tr>
-<th>customer_id</th>
-<th>city</th>
-</tr>
-<tr>
-<td>1</td>
-<td>Porto</td>
-</tr>
-</table>
-
-<p>
-The Lisbon value is gone forever.
-</p>
-
-<h3>Typical Implementation</h3>
-
-PostgreSQL:
-
-<pre>
-INSERT INTO dim_customer (
-    customer_id,
-    customer_name,
-    city
+
+<!-- ══ SECTION 1: INCREMENTAL MODELS ══ -->
+<section class="section" id="incremental">
+  <div class="section-num">01</div>
+  <h2>Incremental Models</h2>
+  <p class="section-subtitle">Only process what changed — not everything that exists</p>
+
+  <h3>The simplest possible explanation</h3>
+  <p>Imagine you work at a library with one million books. Every week, 500 new books arrive. Your job is to keep the library's catalogue up to date.</p>
+  <p>You have two options. <strong>Option A:</strong> every week, take every single book off every shelf, scan it, and put it back. One million scans per week. <strong>Option B:</strong> only scan the 500 new arrivals. Five hundred scans per week.</p>
+  <p>Option B is what an incremental model does. It only processes the rows that are <em>new or changed since the last run</em>. Option A is a full refresh — correct and simple, but wasteful at scale.</p>
+
+  <div class="box box-analogy">
+    <div class="box-label">📬 Analogy — The Email Inbox</div>
+    <p>You have 12,000 emails. You read them all last Friday. Today is Monday. Three new emails arrived over the weekend.</p>
+    <p>Do you re-read all 12,000 to "catch up"? No — you read the 3 new ones. The timestamp of the last email you read on Friday is your <strong>watermark</strong>. Everything after that watermark is new. That's incremental loading.</p>
+  </div>
+
+  <h3>The three components every incremental model needs</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Component</th><th>What it does</th><th>Concrete example</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Watermark</strong></td>
+          <td>The "last seen" boundary. Rows after this timestamp get picked up on the next run.</td>
+          <td><code>MAX(updated_at)</code> stored from the previous successful run</td>
+        </tr>
+        <tr>
+          <td><strong>Filter</strong></td>
+          <td>Applies the watermark to the source query — only fetches the delta.</td>
+          <td><code>WHERE updated_at &gt; '2024-07-14 23:59:59'</code></td>
+        </tr>
+        <tr>
+          <td><strong>Write strategy</strong></td>
+          <td>How new and changed rows land in the target table.</td>
+          <td><code>MERGE</code> (upsert), <code>INSERT</code>, or partition overwrite</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>The watermark in depth</h3>
+  <p>The watermark is the most important concept in incremental loading. Think of it as a bookmark in a book. When you stop reading, you leave a bookmark. Next time you open the book, you start from the bookmark — not from page 1.</p>
+  <p>In SQL, the watermark is typically the <strong>maximum value of a timestamp column</strong> — usually <code>updated_at</code> or <code>event_date</code> — from the last successful run. It gets saved somewhere: a metadata table, an Airflow variable, a dbt state file. The next run reads it, uses it as a filter, and after finishing successfully, updates it to the new maximum.</p>
+
+  <div class="box box-warning">
+    <div class="box-label">⚠️ The watermark trap</div>
+    <p>The watermark must only be updated <strong>after</strong> the load succeeds. If you update it first and then the load crashes, the next run will skip the rows that were never actually loaded — and you'll have a silent data gap. Always: load first, update watermark second.</p>
+  </div>
+
+  <h3>The SQL pattern</h3>
+
+  <div class="code-wrap">
+    <div class="code-header"><div class="code-dots"><span></span><span></span><span></span></div><div class="code-fname">incremental_load.sql</div></div>
+    <pre><span class="cm">-- Step 1: find the watermark from the last successful run</span>
+<span class="kw">SELECT</span> <span class="fn">MAX</span>(<span class="tbl">updated_at</span>) <span class="kw">AS</span> last_watermark
+<span class="kw">FROM</span>   target_events;
+<span class="cm">-- returns: '2024-07-14 23:59:59'</span>
+
+<span class="cm">-- Step 2: load only new/changed rows</span>
+<span class="kw">INSERT INTO</span> target_events
+<span class="kw">SELECT</span> event_id, user_id, event_type, event_date, updated_at
+<span class="kw">FROM</span>   source_events
+<span class="kw">WHERE</span>  updated_at &gt; <span class="str">'2024-07-14 23:59:59'</span>;
+
+<span class="cm">-- Step 3 (ONLY after Step 2 succeeds): update the stored watermark</span>
+<span class="kw">UPDATE</span> pipeline_metadata
+<span class="kw">SET</span>    last_watermark = <span class="fn">NOW</span>()
+<span class="kw">WHERE</span>  pipeline_name  = <span class="str">'target_events_load'</span>;</pre>
+  </div>
+
+  <h3>The dbt version</h3>
+  <p>In dbt, incremental models are a first-class feature. dbt handles the watermark automatically using the <code>is_incremental()</code> macro and the model's own existing data:</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><div class="code-dots"><span></span><span></span><span></span></div><div class="code-fname">models/stg_events.sql</div></div>
+    <pre><span class="cm">-- Tell dbt: build this as an incremental table, deduplicate on event_id</span>
+{{ config(
+    materialized=<span class="str">'incremental'</span>,
+    unique_key=<span class="str">'event_id'</span>
+) }}
+
+<span class="kw">SELECT</span>
+    event_id,
+    user_id,
+    event_type,
+    event_date,
+    updated_at
+<span class="kw">FROM</span> {{ source(<span class="str">'raw'</span>, <span class="str">'events'</span>) }}
+
+<span class="cm">-- This block only runs on the 2nd+ run (not the first full load)</span>
+{% if is_incremental() %}
+  <span class="kw">WHERE</span> updated_at &gt; (<span class="kw">SELECT</span> <span class="fn">MAX</span>(updated_at) <span class="kw">FROM</span> {{ this }})
+{% endif %}</pre>
+  </div>
+
+  <div class="box box-insight">
+    <div class="box-label">💡 What dbt does under the hood</div>
+    <p>On the <strong>first run</strong>, <code>is_incremental()</code> is false — dbt builds the entire table from scratch (like a full refresh). On every subsequent run, it's true — dbt runs the filtered query and merges the results into the existing table using the <code>unique_key</code> to decide: "does this row already exist? Update it. Does it not exist? Insert it."</p>
+  </div>
+
+  <h3>When to use incremental — and when not to</h3>
+  <div class="split">
+    <div class="split-card green">
+      <h4>✅ Good candidate for incremental</h4>
+      <ul>
+        <li>Table has tens of millions of rows or more</li>
+        <li>Source has a reliable <code>updated_at</code> or <code>created_at</code> timestamp</li>
+        <li>Only a small fraction of rows change per run</li>
+        <li>Load runs hourly or more frequently</li>
+        <li>Compute cost is billed per byte scanned (BigQuery, Snowflake)</li>
+      </ul>
+    </div>
+    <div class="split-card red">
+      <h4>❌ Stick with full refresh</h4>
+      <ul>
+        <li>Table is small (&lt; 5 million rows)</li>
+        <li>Source has no reliable timestamp to filter on</li>
+        <li>Source deletes rows (incremental won't catch deletions)</li>
+        <li>You need guaranteed correctness and can afford the cost</li>
+        <li>The transformation logic is complex and hard to partition</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box box-remember">
+    <div class="box-label">✓ The one sentence to remember</div>
+    <p>An incremental model says: <em>"I already have most of the data — just give me what changed since last time."</em> The watermark is the bookmark. The MERGE is what keeps it safe to re-run.</p>
+  </div>
+</section>
+
+
+<!-- ══ SECTION 2: SCD TYPE 1 ══ -->
+<section class="section" id="scd1">
+  <div class="section-num">02</div>
+  <h2>SCD Type 1</h2>
+  <p class="section-subtitle">When a value changes, overwrite it — and forget the past</p>
+
+  <h3>What is a Slowly Changing Dimension?</h3>
+  <p>Before explaining Type 1, let's understand the parent concept. In data warehousing, facts are the measurements you record — sales amounts, meter readings, clicks. <strong>Dimensions</strong> are the context around those facts — the customer who made the sale, the product that was sold, the device that was clicked.</p>
+  <p>Dimensions "change slowly" — they don't update with every transaction, but they do change over time. A customer moves cities. A product changes its price. An employee changes departments. How you <em>handle</em> those changes defines whether you're using Type 1, Type 2, or another strategy.</p>
+
+  <div class="box box-analogy">
+    <div class="box-label">📱 Analogy — The Contacts App</div>
+    <p>You have Alice in your contacts. Her email was <code>alice@oldcompany.com</code>. She changed jobs. You open Contacts, tap Edit, type <code>alice@newcompany.com</code>, and save.</p>
+    <p>The old email is gone. Completely. Your contacts app doesn't remember it ever existed. If someone asked you "what was Alice's old email?" you'd have no idea. <strong>That's SCD Type 1</strong> — overwrite and forget.</p>
+    <p>This is fine for a contacts app. Whether it's fine for a data warehouse depends entirely on whether you ever need to ask "what was Alice's email when X happened?"</p>
+  </div>
+
+  <h3>The formal definition</h3>
+  <div class="definition">
+    <p>SCD Type 1 is a dimension update strategy where changed attribute values are overwritten in place. No history of previous values is preserved. The table always reflects the current, latest state of each record.</p>
+  </div>
+
+  <h3>What it looks like in the table</h3>
+
+  <div class="split">
+    <div class="split-card blue">
+      <h4>Before — Alice's record</h4>
+      <div class="code-wrap" style="margin:8px 0 0">
+        <pre style="font-size:.75rem; padding:12px 14px;">customer_id | email         | city
+1001        | alice@old.com | Porto</pre>
+      </div>
+    </div>
+    <div class="split-card amber">
+      <h4>After Type 1 update</h4>
+      <div class="code-wrap" style="margin:8px 0 0">
+        <pre style="font-size:.75rem; padding:12px 14px;">customer_id | email         | city
+1001        | alice@new.com | Lisbon  ← old values gone</pre>
+      </div>
+    </div>
+  </div>
+
+  <p>One row per customer. Always. The old values are irretrievable unless you have a backup or audit log elsewhere.</p>
+
+  <h3>The SQL pattern</h3>
+  <p>The standard Type 1 implementation uses a <code>MERGE</code> statement — update if the record already exists and something changed, insert if it's brand new:</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><div class="code-dots"><span></span><span></span><span></span></div><div class="code-fname">scd_type1.sql</div></div>
+    <pre><span class="kw">MERGE INTO</span> dim_customers    <span class="kw">AS</span> target
+<span class="kw">USING</span>      stg_customers    <span class="kw">AS</span> source
+<span class="kw">ON</span>         target.customer_id = source.customer_id
+
+<span class="cm">-- Row exists AND at least one attribute changed → overwrite</span>
+<span class="kw">WHEN MATCHED AND</span> (
+    target.email &lt;&gt; source.email <span class="kw">OR</span>
+    target.city  &lt;&gt; source.city
 )
-VALUES (
-    1,
-    'John',
-    'Porto'
+<span class="kw">THEN UPDATE SET</span>
+    target.email      = source.email,
+    target.city       = source.city,
+    target.updated_at = <span class="fn">NOW</span>()
+
+<span class="cm">-- Row doesn't exist yet → insert fresh</span>
+<span class="kw">WHEN NOT MATCHED THEN INSERT</span> (
+    customer_id, email, city, created_at, updated_at
+) <span class="kw">VALUES</span> (
+    source.customer_id, source.email, source.city, <span class="fn">NOW</span>(), <span class="fn">NOW</span>()
+);</pre>
+  </div>
+
+  <div class="box box-insight">
+    <div class="box-label">💡 Why the change-guard matters</div>
+    <p>Notice the <code>WHEN MATCHED AND (target.email &lt;&gt; source.email OR ...)</code> condition. Without it, every single existing row gets an UPDATE statement on every run — even rows where nothing changed. That wastes I/O, inflates <code>updated_at</code> timestamps falsely, and can break incremental downstream models that use <code>updated_at</code> as a watermark. Only write what actually changed.</p>
+  </div>
+
+  <h3>When Type 1 is the right choice — and when it destroys your data</h3>
+
+  <div class="split">
+    <div class="split-card green">
+      <h4>✅ Type 1 is fine when...</h4>
+      <ul>
+        <li>You're correcting a data entry error (typo in a name, wrong postcode)</li>
+        <li>The attribute has no meaningful history (phone number, login email)</li>
+        <li>Downstream reports only ever need current state</li>
+        <li>You have an audit log at the source system level anyway</li>
+      </ul>
+    </div>
+    <div class="split-card red">
+      <h4>❌ Type 1 destroys history when...</h4>
+      <ul>
+        <li>You need to answer "what was X at the time of this transaction?"</li>
+        <li>Customer segmentation or pricing depended on the old value</li>
+        <li>Regulatory compliance requires a full change trail</li>
+        <li>The attribute drives business logic that affects historical fact rows</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box box-warning">
+    <div class="box-label">⚠️ The silent data destruction problem</div>
+    <p>Type 1 is dangerous precisely because nothing breaks when you use it in the wrong place. The query still runs. The dashboard still loads. But the numbers are quietly wrong — because you're now joining historical orders to Alice's <em>current</em> address instead of the address she had when the order was placed. The error is invisible until someone does a deep audit.</p>
+  </div>
+
+  <div class="box box-remember">
+    <div class="box-label">✓ The one sentence to remember</div>
+    <p>SCD Type 1 says: <em>"I only care about what's true right now. The past is irrelevant."</em> Use it when history genuinely doesn't matter. Avoid it when you might ever need to answer a question about the past.</p>
+  </div>
+</section>
+
+
+<!-- ══ SECTION 3: SCD TYPE 2 ══ -->
+<section class="section" id="scd2">
+  <div class="section-num">03</div>
+  <h2>SCD Type 2</h2>
+  <p class="section-subtitle">Keep every version of a record — and travel back in time with a join</p>
+
+  <h3>The problem that Type 2 solves</h3>
+  <p>Let's stay with Alice. She's a customer. She lived in Porto in January, moved to Lisbon in March. She placed an order on January 15th.</p>
+  <p>In April, your finance team runs a report: <em>"Show me all orders, and the city the customer lived in at the time of the order."</em></p>
+  <p>If you used Type 1 and overwrote her address to Lisbon, Alice's January order now shows Lisbon. That's wrong. The free shipping threshold, the tax rate, the delivery zone — all would be wrong. <strong>History is destroyed.</strong></p>
+  <p>SCD Type 2 solves this by keeping every version of Alice's record, each stamped with the dates it was valid. Now you can always reconstruct what her city was on any given date.</p>
+
+  <div class="box box-analogy">
+    <div class="box-label">📅 Analogy — The Passport</div>
+    <p>When you renew a passport, the issuing office doesn't delete your old one from their records. They mark it "expired" and issue a new one. Their database has both: passport #1 valid 2015–2020, passport #2 valid 2020–present.</p>
+    <p>If a border agent checks "was this person legally allowed to travel on July 3rd, 2018?" they can look at the history and find passport #1 — which was valid then. If the old record had been overwritten (Type 1), that question could not be answered. <strong>Type 2 is the passport database approach.</strong></p>
+  </div>
+
+  <h3>What the table looks like</h3>
+
+  <div class="code-wrap">
+    <div class="code-header"><div class="code-dots"><span></span><span></span><span></span></div><div class="code-fname">dim_customers — Type 2 table</div></div>
+    <pre><span class="cm">-- Before Alice moves:</span>
+sk | customer_id | email           | city   | valid_from | valid_to   | is_current
+<span class="num">1</span>  | <span class="num">1001</span>        | alice@new.com   | Porto  | <span class="str">2022-01-01</span> | <span class="str">9999-12-31</span> | <span class="kw">TRUE</span>
+
+<span class="cm">-- After Alice moves to Lisbon (March 15, 2024):</span>
+sk | customer_id | email           | city   | valid_from | valid_to   | is_current
+<span class="num">1</span>  | <span class="num">1001</span>        | alice@new.com   | Porto  | <span class="str">2022-01-01</span> | <span class="str">2024-03-14</span> | <span class="kw">FALSE</span>  <span class="cm">← closed</span>
+<span class="num">2</span>  | <span class="num">1001</span>        | alice@new.com   | Lisbon | <span class="str">2024-03-15</span> | <span class="str">9999-12-31</span> | <span class="kw">TRUE</span>   <span class="cm">← new version</span></pre>
+  </div>
+
+  <h3>The four extra columns — and why each one exists</h3>
+
+  <div class="timeline">
+    <div class="tl-step">
+      <div class="tl-num">sk</div>
+      <div class="tl-body">
+        <strong>Surrogate Key — the most important column</strong>
+        <p>A unique integer (or UUID) assigned to each <em>row</em>, not each <em>customer</em>. This is what your fact table stores as a foreign key. It pins a fact record to the exact version of the dimension that was active when the fact occurred. Without it, you can't do point-in-time joins. More on this below.</p>
+      </div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-num">↑</div>
+      <div class="tl-body">
+        <strong>valid_from — when this version started</strong>
+        <p>The date this version of the record became active. Usually the date the change was processed. For Alice's new row, it's March 15, 2024 — the day she moved.</p>
+      </div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-num">↓</div>
+      <div class="tl-body">
+        <strong>valid_to — when this version ended</strong>
+        <p>The date this version was superseded. A far-future sentinel value — <code>9999-12-31</code> — means "still active." When a record changes, you set the old row's <code>valid_to</code> to yesterday, and insert a new row with <code>valid_to = 9999-12-31</code>.</p>
+      </div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-num">✓</div>
+      <div class="tl-body">
+        <strong>is_current — the shortcut flag</strong>
+        <p>A boolean set to <code>TRUE</code> only on the most recent version. Purely a convenience column — it lets you write <code>WHERE is_current = TRUE</code> instead of <code>WHERE valid_to = '9999-12-31'</code>. Both do the same thing; <code>is_current</code> is just more readable and often faster with an index.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>The surrogate key — the hardest concept to grasp</h3>
+  <p>This is where most people get confused. Let's slow down.</p>
+  <p>Alice's natural key is <code>customer_id = 1001</code>. She now has two rows in <code>dim_customers</code> — both have <code>customer_id = 1001</code>. So if your orders table stores <code>customer_id = 1001</code>, which row do you join to?</p>
+  <p><strong>You can't know.</strong> That's the problem.</p>
+  <p>The solution: the orders table doesn't store <code>customer_id</code>. It stores <code>customer_sk</code> — the surrogate key. When Alice placed her order in January, her surrogate key was <code>1</code> (the Porto version). That <code>1</code> gets stored on the order. Now when you join, you always land on the right version:</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><div class="code-dots"><span></span><span></span><span></span></div><div class="code-fname">point_in_time_join.sql</div></div>
+    <pre><span class="cm">-- fact_orders stores customer_sk, not customer_id</span>
+<span class="kw">SELECT</span>
+    o.order_id,
+    o.order_date,
+    o.amount,
+    c.city           <span class="kw">AS</span> city_at_time_of_order,  <span class="cm">-- Porto ← correct!</span>
+    c.customer_id,
+    c.email
+<span class="kw">FROM</span>  fact_orders    o
+<span class="kw">JOIN</span>  dim_customers  c
+  <span class="kw">ON</span>  o.customer_sk = c.sk;
+<span class="cm">-- The surrogate key pins the join to the exact version.
+-- No date-range logic needed at query time.</span></pre>
+  </div>
+
+  <div class="box box-insight">
+    <div class="box-label">💡 Why 9999-12-31 and not NULL?</div>
+    <p>You might think: "just use NULL for open-ended records." The problem is that <code>BETWEEN</code> and range comparisons don't work cleanly with NULLs — <code>order_date BETWEEN valid_from AND NULL</code> returns nothing. Using a far-future sentinel like <code>9999-12-31</code> means you can always write <code>WHERE order_date BETWEEN valid_from AND valid_to</code> and get the right answer, because every real date is less than 9999-12-31.</p>
+  </div>
+
+  <h3>The SQL pattern — "close and insert"</h3>
+  <p>Applying a Type 2 change is a two-step operation: first close the old row, then insert the new one.</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><div class="code-dots"><span></span><span></span><span></span></div><div class="code-fname">scd_type2.sql</div></div>
+    <pre><span class="cm">-- ── STEP 1: Close rows that have changed ──────────────────────────────</span>
+<span class="kw">UPDATE</span> dim_customers
+<span class="kw">SET</span>
+    valid_to   = <span class="fn">CURRENT_DATE</span> - <span class="fn">INTERVAL</span> <span class="str">'1 DAY'</span>,
+    is_current = <span class="kw">FALSE</span>
+<span class="kw">WHERE</span> is_current = <span class="kw">TRUE</span>
+  <span class="kw">AND</span> customer_id <span class="kw">IN</span> (<span class="kw">SELECT</span> customer_id <span class="kw">FROM</span> stg_customers)
+  <span class="kw">AND</span> (
+        email &lt;&gt; (<span class="kw">SELECT</span> email <span class="kw">FROM</span> stg_customers s
+                  <span class="kw">WHERE</span> s.customer_id = dim_customers.customer_id)
+     <span class="kw">OR</span> city  &lt;&gt; (<span class="kw">SELECT</span> city  <span class="kw">FROM</span> stg_customers s
+                  <span class="kw">WHERE</span> s.customer_id = dim_customers.customer_id)
+      );
+
+<span class="cm">-- ── STEP 2: Insert new versions (changed + brand-new records) ─────────</span>
+<span class="kw">INSERT INTO</span> dim_customers (
+    customer_id, email, city,
+    valid_from, valid_to, is_current
 )
+<span class="kw">SELECT</span>
+    s.customer_id,
+    s.email,
+    s.city,
+    <span class="fn">CURRENT_DATE</span>       <span class="kw">AS</span> valid_from,
+    <span class="str">'9999-12-31'</span>::date  <span class="kw">AS</span> valid_to,
+    <span class="kw">TRUE</span>               <span class="kw">AS</span> is_current
+<span class="kw">FROM</span> stg_customers s
+<span class="kw">WHERE NOT EXISTS</span> (
+    <span class="cm">-- Skip if an identical current row already exists (no change)</span>
+    <span class="kw">SELECT</span> <span class="num">1</span>
+    <span class="kw">FROM</span>   dim_customers d
+    <span class="kw">WHERE</span>  d.customer_id = s.customer_id
+      <span class="kw">AND</span>  d.is_current  = <span class="kw">TRUE</span>
+      <span class="kw">AND</span>  d.email       = s.email
+      <span class="kw">AND</span>  d.city        = s.city
+);</pre>
+  </div>
 
-ON CONFLICT (customer_id)
+  <h3>Querying a Type 2 dimension</h3>
 
-DO UPDATE SET
-    customer_name = EXCLUDED.customer_name,
-    city = EXCLUDED.city;
-</pre>
+  <div class="code-wrap">
+    <div class="code-header"><div class="code-dots"><span></span><span></span><span></span></div><div class="code-fname">query_patterns.sql</div></div>
+    <pre><span class="cm">-- Get the current state only (most common)</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> dim_customers <span class="kw">WHERE</span> is_current = <span class="kw">TRUE</span>;
 
-<h3>Mental Model</h3>
+<span class="cm">-- Get the state at a specific date (point-in-time)</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> dim_customers
+<span class="kw">WHERE</span> customer_id = <span class="num">1001</span>
+  <span class="kw">AND</span> <span class="str">'2024-01-15'</span> <span class="kw">BETWEEN</span> valid_from <span class="kw">AND</span> valid_to;
+<span class="cm">-- Returns the Porto row — correct for January</span>
 
-<blockquote>
-Always keep the latest truth.
-Forget the past.
-</blockquote>
+<span class="cm">-- Join orders to the version active at order time (via surrogate key)</span>
+<span class="kw">SELECT</span>
+    o.order_id,
+    o.order_date,
+    c.city <span class="kw">AS</span> city_at_time_of_order
+<span class="kw">FROM</span> fact_orders   o
+<span class="kw">JOIN</span> dim_customers c <span class="kw">ON</span> o.customer_sk = c.sk;</pre>
+  </div>
 
-<hr>
+  <h3>Type 1 vs Type 2 — the full comparison</h3>
 
-<h2>SCD Type 2</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Question</th><th>Type 1</th><th>Type 2</th></tr></thead>
+      <tbody>
+        <tr><td><strong>History preserved?</strong></td><td>❌ No — overwritten permanently</td><td>✅ Yes — full version trail forever</td></tr>
+        <tr><td><strong>Rows per entity</strong></td><td>Always 1</td><td>1 per version (grows over time)</td></tr>
+        <tr><td><strong>FK in fact table</strong></td><td>Natural key (<code>customer_id</code>)</td><td>Surrogate key (<code>customer_sk</code>)</td></tr>
+        <tr><td><strong>Query complexity</strong></td><td>Simple — just join on ID</td><td>Needs <code>is_current</code> or date-range filter</td></tr>
+        <tr><td><strong>Point-in-time reporting</strong></td><td>❌ Impossible</td><td>✅ Exact version at any date</td></tr>
+        <tr><td><strong>Storage cost</strong></td><td>Stable</td><td>Grows with change frequency</td></tr>
+        <tr><td><strong>Use when</strong></td><td>Corrections, non-historical attrs</td><td>Any audit, compliance, or time-series need</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-<h3>Definition</h3>
+  <div class="box box-remember">
+    <div class="box-label">✓ The one sentence to remember</div>
+    <p>SCD Type 2 says: <em>"Every version of this record matters — I need to know what it looked like at any point in history."</em> The surrogate key is what makes point-in-time joins work without any date logic at query time.</p>
+  </div>
+</section>
 
-<p>
-SCD Type 2 preserves history.
-Every change creates a new version.
-</p>
 
-<h3>Goal</h3>
-
-<p>
-We want answers like:
-</p>
-
-<ul>
-<li>Where did the customer live today?</li>
-<li>Where did they live last year?</li>
-<li>What was true on a specific date?</li>
-</ul>
-
-<hr>
-
-<h2>Columns Used in SCD Type 2</h2>
-
-<table>
-<tr>
-<th>Column</th>
-<th>Purpose</th>
-</tr>
-<tr>
-<td>valid_from</td>
-<td>Version start date</td>
-</tr>
-<tr>
-<td>valid_to</td>
-<td>Version end date</td>
-</tr>
-<tr>
-<td>is_current</td>
-<td>Current active version</td>
-</tr>
-</table>
-
-<hr>
-
-<h2>Example Data</h2>
-
-<h3>Initial State</h3>
-
-<table>
-<tr>
-<th>customer_id</th>
-<th>city</th>
-<th>valid_from</th>
-<th>valid_to</th>
-<th>is_current</th>
-</tr>
-<tr>
-<td>1</td>
-<td>Lisbon</td>
-<td>2025-01-01</td>
-<td>NULL</td>
-<td>true</td>
-</tr>
-</table>
-
-<hr>
-
-<h3>Customer Moves to Porto</h3>
-
-Instead of updating the row:
-
-<h4>Step 1: Close Current Version</h4>
-
-<pre>
-UPDATE dim_customer
-SET
-    valid_to = CURRENT_DATE,
-    is_current = false
-WHERE customer_id = 1
-AND is_current = true;
-</pre>
-
-<h4>Step 2: Create New Version</h4>
-
-<pre>
-INSERT INTO dim_customer (
-    customer_id,
-    city,
-    valid_from,
-    valid_to,
-    is_current
-)
-VALUES (
-    1,
-    'Porto',
-    CURRENT_DATE,
-    NULL,
-    true
-);
-</pre>
-
-<hr>
-
-<h2>Result</h2>
-
-<table>
-<tr>
-<th>customer_id</th>
-<th>city</th>
-<th>valid_from</th>
-<th>valid_to</th>
-<th>is_current</th>
-</tr>
-
-<tr>
-<td>1</td>
-<td>Lisbon</td>
-<td>2025-01-01</td>
-<td>2025-08-01</td>
-<td>false</td>
-</tr>
-
-<tr>
-<td>1</td>
-<td>Porto</td>
-<td>2025-08-01</td>
-<td>NULL</td>
-<td>true</td>
-</tr>
-</table>
-
-<h3>What Happened?</h3>
-
-<p>
-Nothing was overwritten.
-</p>
-
-<p>
-We preserved the old version and added a new one.
-</p>
-
-<hr>
-
-<h2>SCD Type 1 vs Type 2</h2>
-
-<table>
-<tr>
-<th>Feature</th>
-<th>SCD Type 1</th>
-<th>SCD Type 2</th>
-</tr>
-
-<tr>
-<td>Stores history</td>
-<td>No</td>
-<td>Yes</td>
-</tr>
-
-<tr>
-<td>Updates existing row</td>
-<td>Yes</td>
-<td>No</td>
-</tr>
-
-<tr>
-<td>Creates new version</td>
-<td>No</td>
-<td>Yes</td>
-</tr>
-
-<tr>
-<td>Current state available</td>
-<td>Yes</td>
-<td>Yes</td>
-</tr>
-
-<tr>
-<td>Past state available</td>
-<td>No</td>
-<td>Yes</td>
-</tr>
-</table>
-
-<hr>
-
-<h2>The Big Picture</h2>
-
-<div class="box">
-<h3>Remember These 4 Ideas</h3>
-
-<ol>
-<li>
-<strong>Incremental Models</strong><br>
-Process only changed data instead of rebuilding everything.
-</li>
-
-<li>
-<strong>Unique Key</strong><br>
-Identifies exactly one business entity.
-</li>
-
-<li>
-<strong>Delete+Insert and Merge</strong><br>
-Ways to keep incremental tables synchronized with source data.
-</li>
-
-<li>
-<strong>SCD Type 1 vs Type 2</strong><br>
-Type 1 overwrites history.<br>
-Type 2 preserves history using valid_from, valid_to, and is_current.
-</li>
-</ol>
+<!-- ══════════════ PART II ══════════════ -->
+<div class="part-header">
+  <div class="part-line"></div>
+  <div class="part-label">Part II — Full Refresh vs Incremental</div>
+  <div class="part-line"></div>
 </div>
 
-<h2>One-Sentence Summary</h2>
 
-<p>
-Incremental models determine <strong>how data is loaded efficiently</strong>, while SCD Type 1 and Type 2 determine <strong>how changes to existing records are stored over time</strong>.
-</p>
+<!-- ══ SECTION 4: COMPARISON ══ -->
+<section class="section" id="comparison">
+  <div class="section-num">04</div>
+  <h2>Full Refresh vs Incremental</h2>
+  <p class="section-subtitle">The fundamental trade-off in data loading</p>
 
+  <h3>The core idea</h3>
+
+  <div class="box box-analogy">
+    <div class="box-label">🖊️ Analogy — The Whiteboard</div>
+    <p><strong>Full Refresh</strong> is like erasing the entire whiteboard and rewriting everything from your notes — every single time. The board is always perfect and up to date. But if the board has 10 million items and only 100 changed today, you just did 10 million writes to update 100 things.</p>
+    <p><strong>Incremental</strong> is like only writing the new and changed items. Faster, cheaper — but you need to know exactly what changed. And if you accidentally write a duplicate, you can't just erase the board; you have to find and remove it.</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Dimension</th><th>Full Refresh</th><th>Incremental</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>What it does</strong></td><td>TRUNCATE target, reload all rows from source</td><td>Append or MERGE only new/changed rows</td></tr>
+        <tr><td><strong>Row count threshold</strong></td><td>Irrelevant — always full cost</td><td>Scales with delta size; threshold is a design decision</td></tr>
+        <tr><td><strong>Failure behaviour</strong></td><td>Re-run is safe: TRUNCATE wipes partial state</td><td>Risky without MERGE logic — can double-load rows</td></tr>
+        <tr><td><strong>Re-run behaviour</strong></td><td>Naturally idempotent</td><td>Must be engineered to be idempotent</td></tr>
+        <tr><td><strong>Late-arriving data</strong></td><td>No problem — next full reload picks it up</td><td>Can silently miss rows that fall before the watermark</td></tr>
+        <tr><td><strong>Idempotent by default?</strong></td><td>✅ Yes</td><td>❌ No — requires explicit design</td></tr>
+        <tr><td><strong>Best for</strong></td><td>Small/medium tables, daily snapshots</td><td>Large tables, event streams, hourly loads</td></tr>
+        <tr><td><strong>dbt equivalent</strong></td><td><code>materialized='table'</code></td><td><code>materialized='incremental'</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Row count threshold — where the cost decision happens</h3>
+  <p>A full refresh costs the same whether 1 row changed or 9 million did. Its cost scales with the <strong>total table size</strong>. An incremental load's cost scales with the <strong>delta size</strong> — the number of rows that actually changed.</p>
+  <p>This means there's a crossover point where incremental starts being worth the added complexity:</p>
+
+  <div class="box box-concept">
+    <div class="box-label">📐 Rule of thumb</div>
+    <ul>
+      <li><strong>Under 5M rows, less than daily frequency</strong> — full refresh. Don't bother with incremental complexity.</li>
+      <li><strong>Over 10M rows, or hourly+ frequency</strong> — incremental is worth the investment.</li>
+      <li><strong>5M–10M rows</strong> — profile your actual query cost first. The answer depends on how expensive your compute is and what fraction of rows change per run.</li>
+    </ul>
+  </div>
+
+  <h3>Failure and re-run behaviour</h3>
+
+  <h4>Full Refresh — failure is boring (a compliment)</h4>
+  <p>The full refresh pattern is: <code>TRUNCATE</code>, then <code>INSERT</code>. If it crashes mid-insert, the table is empty or partial until the next run. But the next run <code>TRUNCATE</code>s again (no-op on an empty table) and reloads cleanly. There is <strong>no leftover state from the failed run</strong> to clean up.</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><div class="code-dots"><span></span><span></span><span></span></div><div class="code-fname">full_refresh.sql</div></div>
+    <pre><span class="kw">TRUNCATE</span> target_table;
+<span class="kw">INSERT INTO</span> target_table
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> source_table;
+<span class="cm">-- If this crashes and reruns → TRUNCATE again (safe), INSERT fresh (correct)</span></pre>
+  </div>
+
+  <h4>Incremental — failure leaves a footprint</h4>
+  <p>An incremental crash can leave partial data committed. Whether the re-run is safe depends entirely on your write strategy:</p>
+
+  <div class="trace">
+    <div class="trace-title">Incremental failure scenarios</div>
+    <div class="trace-row">
+      <div class="trace-icon ti-bad">✗</div>
+      <div class="trace-text"><strong>Naive INSERT, no dedup:</strong> 400K of 800K rows committed before crash. Re-run inserts all 800K again. You now have 400K duplicate rows. Reports are inflated.</div>
+    </div>
+    <div class="trace-row">
+      <div class="trace-icon ti-ok">✓</div>
+      <div class="trace-text"><strong>MERGE / upsert on unique key:</strong> Re-run matches existing rows (updates them to same values) and inserts missing ones. Final count = 800K. No duplicates.</div>
+    </div>
+    <div class="trace-row">
+      <div class="trace-icon ti-ok">✓</div>
+      <div class="trace-text"><strong>Staging table + swap:</strong> Write delta to a staging table first, then MERGE into production. A crash in staging leaves production untouched. Re-run re-fills staging and re-merges cleanly.</div>
+    </div>
+  </div>
+
+  <h3>Late-arriving data</h3>
+  <p>"Late-arriving data" means a record whose <em>event happened in the past</em> but only appeared in the source system now — an offline sale that synced hours later, a sensor reading uploaded in a batch at midnight.</p>
+
+  <div class="split">
+    <div class="split-card green">
+      <h4>Full Refresh — no problem</h4>
+      <p>The next full reload reads the entire source table, including the late row. It lands in the target on the next cycle. Worst case: one load window of lag.</p>
+    </div>
+    <div class="split-card red">
+      <h4>Incremental — silently missed</h4>
+      <p>If your watermark is <code>2024-07-15 08:00:00</code> and a late row has <code>updated_at = 2024-07-14 23:55:00</code>, it falls before the watermark. It will never be picked up. No error. No warning. Just a gap.</p>
+    </div>
+  </div>
+
+  <p>The standard mitigations for incremental late arrivals:</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><div class="code-dots"><span></span><span></span><span></span></div><div class="code-fname">late_arrival_mitigation.sql</div></div>
+    <pre><span class="cm">-- Strategy 1: Lookback buffer — always reprocess the last N hours
+-- Catches late arrivals within the buffer window</span>
+<span class="kw">WHERE</span> updated_at &gt;= {last_watermark} - <span class="fn">INTERVAL</span> <span class="str">'3 HOURS'</span>
+
+<span class="cm">-- Strategy 2: Partition by event date, not load date
+-- Re-run only the affected partitions when late data is detected</span>
+<span class="kw">WHERE</span> DATE(event_date) = <span class="str">'2024-07-14'</span>  <span class="cm">-- reprocess entire partition</span>
+
+<span class="cm">-- Strategy 3: Track both timestamps — lets downstream models decide</span>
+<span class="kw">SELECT</span>
+    event_id,
+    event_date,                  <span class="cm">-- when the event actually happened</span>
+    <span class="fn">NOW</span>() <span class="kw">AS</span> loaded_at            <span class="cm">-- when it was loaded into the warehouse</span>
+<span class="kw">FROM</span> source_events;</pre>
+  </div>
+</section>
+
+
+<!-- ══════════════ PART III ══════════════ -->
+<div class="part-header">
+  <div class="part-line"></div>
+  <div class="part-label">Part III — Idempotency</div>
+  <div class="part-line"></div>
+</div>
+
+
+<!-- ══ SECTION 5: IDEMPOTENCY ══ -->
+<section class="section" id="idempotency">
+  <div class="section-num">05</div>
+  <h2>Idempotency</h2>
+  <p class="section-subtitle">The property that lets you retry anything safely</p>
+
+  <h3>The simplest possible explanation</h3>
+  <p>The word "idempotent" comes from Latin: <em>idem</em> (same) + <em>potens</em> (power). In plain English: doing it twice has the same effect as doing it once.</p>
+
+  <div class="box box-analogy">
+    <div class="box-label">🛗 Analogy 1 — The Elevator Button</div>
+    <p>You walk up to an elevator and press the call button. It lights up. You press it again. Nothing changes — it's still lit. Press it 10 more times. Still lit. The state of the world is exactly the same whether you pressed once or a dozen times.</p>
+    <p>Now compare: a vending machine "insert $1" button. Each press inserts another dollar. 10 presses = $10 inserted. <strong>That is not idempotent.</strong> Each press changes the world.</p>
+  </div>
+
+  <div class="box box-analogy">
+    <div class="box-label">📧 Analogy 2 — The Email Send Button</div>
+    <p>You click "Send" on an important email. Your internet drops. Did it send? You're not sure. You click Send again. If clicking Send is idempotent, you'd get one email delivered regardless. If it's not idempotent (which it usually isn't), your recipient gets two identical emails.</p>
+    <p>In data pipelines, the "Send" button is your load job. If it's not idempotent and you re-run it after a failure, your recipient (the target table) gets the data twice.</p>
+  </div>
+
+  <h3>The formal definition</h3>
+  <div class="definition">
+    <p>An operation is idempotent if executing it any number of times produces the same final state as executing it exactly once. The guarantee is about the <em>end state</em>, not what happens during execution. In data loading, this means a re-run after any failure never creates duplicate rows, phantom records, or partial state — the pipeline can be safely retried until it succeeds.</p>
+  </div>
+
+  <h3>Why idempotency is non-negotiable in production</h3>
+  <p>Failures are not exceptional events in data engineering. They are scheduled inconveniences. Network timeouts, database OOM kills, transient connection drops, orchestrator pod restarts — at scale, something fails every day.</p>
+  <p>If your pipeline is not idempotent, every failure creates a manual incident: a human must check what was partially written, delete the duplicates, reset the watermark, and re-run. At high frequency — hourly or sub-hourly — this becomes unmanageable. You spend more time cleaning up failures than building new features.</p>
+
+  <p>Idempotent pipelines enable three things that non-idempotent pipelines can't have:</p>
+
+  <div class="timeline">
+    <div class="tl-step">
+      <div class="tl-num">1</div>
+      <div class="tl-body">
+        <strong>Automated retries</strong>
+        <p>Your orchestrator (Airflow, Prefect, Dagster) can retry failed tasks automatically, with no human involvement and no risk of data corruption. Configure <code>retries=3</code> and go to sleep.</p>
+      </div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-num">2</div>
+      <div class="tl-body">
+        <strong>Safe backfills</strong>
+        <p>Re-running a historical date window to fix a bug or reprocess raw data is only safe if the pipeline is idempotent. Otherwise every backfill doubles your data. With idempotency, you can backfill 90 days without fear.</p>
+      </div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-num">3</div>
+      <div class="tl-body">
+        <strong>Debug with confidence</strong>
+        <p>When a report shows suspicious numbers, you can re-run the pipeline for that date to verify the output — without corrupting the data. A non-idempotent pipeline can't be safely re-run for investigation.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Making a load idempotent — the practical patterns</h3>
+
+  <div class="code-wrap">
+    <div class="code-header"><div class="code-dots"><span></span><span></span><span></span></div><div class="code-fname">idempotent_patterns.sql</div></div>
+    <pre><span class="cm">-- ── Pattern 1: DELETE + INSERT (partition-level idempotency) ──────────
+-- Before inserting, delete all rows for the target partition.
+-- Re-run: deletes (now-clean) partition, inserts fresh — same result.</span>
+<span class="kw">DELETE FROM</span> fact_events <span class="kw">WHERE</span> event_date = <span class="str">'2024-07-15'</span>;
+<span class="kw">INSERT INTO</span> fact_events
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> stg_events <span class="kw">WHERE</span> event_date = <span class="str">'2024-07-15'</span>;
+
+<span class="cm">-- ── Pattern 2: MERGE / UPSERT on a unique key ─────────────────────────
+-- The database itself handles deduplication. Re-run: existing rows are
+-- updated to the same values they already hold. Net change: zero.</span>
+<span class="kw">MERGE INTO</span> fact_events     <span class="kw">AS</span> t
+<span class="kw">USING</span>      stg_events      <span class="kw">AS</span> s
+<span class="kw">ON</span>         t.event_id = s.event_id
+<span class="kw">WHEN MATCHED     THEN UPDATE SET</span> t.volume = s.volume
+<span class="kw">WHEN NOT MATCHED THEN INSERT</span> (event_id, event_date, volume)
+     <span class="kw">VALUES</span> (s.event_id, s.event_date, s.volume);
+
+<span class="cm">-- ── Pattern 3: CREATE OR REPLACE (full refresh idempotency) ───────────
+-- The entire table is atomically replaced. Re-run: same replacement.
+-- No risk of partial state because the swap is atomic.</span>
+<span class="kw">CREATE OR REPLACE TABLE</span> dim_products <span class="kw">AS</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> stg_products;</pre>
+  </div>
+</section>
+
+
+<!-- ══ SECTION 6: FAILURE EXAMPLE ══ -->
+<section class="section" id="failure">
+  <div class="section-num">06</div>
+  <h2>When Non-Idempotency Bites</h2>
+  <p class="section-subtitle">A concrete story of what goes wrong — and how to fix it</p>
+
+  <h3>The setup</h3>
+  <p>You're loading daily meter readings into a fact table. The job runs at 01:00 UTC. It uses a plain <code>INSERT</code> — no deduplication, no MERGE. The assumption is: "this job only runs once per day."</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><div class="code-dots"><span></span><span></span><span></span></div><div class="code-fname">the_naive_load.sql</div></div>
+    <pre><span class="kw">INSERT INTO</span> fact_meter_readings (meter_id, reading_date, volume_m3, loaded_at)
+<span class="kw">SELECT</span>  meter_id, reading_date, volume_m3, <span class="fn">NOW</span>()
+<span class="kw">FROM</span>   stg_meter_readings
+<span class="kw">WHERE</span>  reading_date = <span class="str">'2024-07-15'</span>;
+<span class="cm">-- 820,000 rows to insert</span></pre>
+  </div>
+
+  <div class="trace">
+    <div class="trace-title">What happens, step by step</div>
+    <div class="trace-row">
+      <div class="trace-icon ti-ok">1</div>
+      <div class="trace-text"><strong>01:00 UTC:</strong> Job starts. Begins inserting 820,000 rows in auto-committed batches of 10,000.</div>
+    </div>
+    <div class="trace-row">
+      <div class="trace-icon ti-warn">!</div>
+      <div class="trace-text"><strong>01:04 UTC:</strong> At row 430,000, the database connection drops. 430,000 rows are permanently committed. The job is marked <code>FAILED</code>.</div>
+    </div>
+    <div class="trace-row">
+      <div class="trace-icon ti-warn">!</div>
+      <div class="trace-text"><strong>01:09 UTC:</strong> Airflow triggers an automatic retry. The <code>WHERE reading_date = '2024-07-15'</code> filter returns all 820,000 rows again — it has no memory of what already exists.</div>
+    </div>
+    <div class="trace-row">
+      <div class="trace-icon ti-bad">✗</div>
+      <div class="trace-text"><strong>01:14 UTC:</strong> Retry succeeds. The target table now has <strong>1,250,000 rows</strong> for July 15 — 430,000 duplicates.</div>
+    </div>
+    <div class="trace-row">
+      <div class="trace-icon ti-bad">✗</div>
+      <div class="trace-text"><strong>08:00 UTC:</strong> The daily consumption report runs. Every region shows ~52% more volume for July 15. An anomaly alert pages the on-call engineer.</div>
+    </div>
+    <div class="trace-row">
+      <div class="trace-icon ti-bad">✗</div>
+      <div class="trace-text"><strong>09:30 UTC:</strong> The billing run has already used the inflated data. Some customers are overcharged. The pipeline log shows <code>SUCCESS</code>.</div>
+    </div>
+  </div>
+
+  <div class="box box-warning">
+    <div class="box-label">⚠️ The most dangerous part</div>
+    <p>The orchestrator reports <code>SUCCESS</code>. The pipeline finished cleanly on its second attempt. There is no error, no alert, no red icon. The corruption is invisible until a human compares report numbers to source system totals — which might not happen for days.</p>
+  </div>
+
+  <h3>The fix — one change, total safety</h3>
+  <p>Replace the plain <code>INSERT</code> with a <code>MERGE</code> on the natural composite key (<code>meter_id + reading_date</code>). Now re-runs are safe: the 430,000 rows already committed get updated to the same values they already hold. Net change: zero duplicates.</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><div class="code-dots"><span></span><span></span><span></span></div><div class="code-fname">the_idempotent_fix.sql</div></div>
+    <pre><span class="kw">MERGE INTO</span> fact_meter_readings <span class="kw">AS</span> target
+<span class="kw">USING</span> (
+    <span class="kw">SELECT</span> meter_id, reading_date, volume_m3
+    <span class="kw">FROM</span>   stg_meter_readings
+    <span class="kw">WHERE</span>  reading_date = <span class="str">'2024-07-15'</span>
+) <span class="kw">AS</span> source
+<span class="kw">ON</span>  target.meter_id    = source.meter_id
+<span class="kw">AND</span> target.reading_date = source.reading_date
+
+<span class="cm">-- Row already exists: update it to the same value (safe no-op on retry)</span>
+<span class="kw">WHEN MATCHED THEN</span>
+    <span class="kw">UPDATE SET</span> volume_m3 = source.volume_m3
+
+<span class="cm">-- Row doesn't exist yet: insert it fresh</span>
+<span class="kw">WHEN NOT MATCHED THEN</span>
+    <span class="kw">INSERT</span> (meter_id, reading_date, volume_m3, loaded_at)
+    <span class="kw">VALUES</span> (source.meter_id, source.reading_date, source.volume_m3, <span class="fn">NOW</span>());</pre>
+  </div>
+
+  <div class="box box-remember">
+    <div class="box-label">✓ Result</div>
+    <p>Re-run finds 430,000 rows → updates them to their existing values (no change). Then inserts the remaining 390,000. Final count: <strong>exactly 820,000 rows</strong>. Report is correct. Billing is correct. On-call engineer sleeps through the night. The orchestrator retried automatically with zero human involvement.</p>
+  </div>
+</section>
+
+
+<!-- ══ CHECKLIST ══ -->
+<section class="section" id="checklist">
+  <div class="section-num">07</div>
+  <h2>Pre-Ship Checklist</h2>
+  <p class="section-subtitle">Before any incremental load goes to production</p>
+
+  <ul class="checklist">
+    <li><span class="check-box"></span>The load has a <strong>unique natural key</strong> that a MERGE can use to identify duplicates.</li>
+    <li><span class="check-box"></span>Re-running the pipeline for the <strong>same date or window produces identical row counts</strong> — verified by a test run.</li>
+    <li><span class="check-box"></span>There is a <strong>lookback buffer</strong> sized to the expected late-arrival delay for this source.</li>
+    <li><span class="check-box"></span>The <strong>watermark is updated after</strong> the load commits — never before.</li>
+    <li><span class="check-box"></span>A <strong>staging table</strong> is used for large loads so a mid-run crash doesn't pollute the production target.</li>
+    <li><span class="check-box"></span>The orchestrator is configured to <strong>auto-retry on transient failure</strong> — safe because the load is idempotent.</li>
+    <li><span class="check-box"></span>If using SCD Type 2, the fact table stores a <strong>surrogate key</strong> — not the natural key — as the FK.</li>
+    <li><span class="check-box"></span>If using SCD Type 1, confirm that <strong>no downstream report needs point-in-time history</strong> for the attributes being overwritten.</li>
+    <li><span class="check-box"></span>Source deletions are handled — either via soft-delete flags, CDC, or a periodic full-refresh reconciliation.</li>
+    <li><span class="check-box"></span>A <strong>row count check</strong> is in place — alert if the delta is unusually large or zero (indicates a source issue).</li>
+  </ul>
+</section>
+
+<footer>
+  Notes for DE self-study · Feynman Edition · Cross-reference: dbt docs, Kimball's <em>Data Warehouse Toolkit</em>, DataTalks DE Zoomcamp Week 4
+</footer>
+
+</div><!-- /page -->
+
+<script>
+// ── Reading progress bar ──
+const bar = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+  bar.style.width = pct + '%';
+});
+
+// ── Intersection Observer: fade-in sections ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.06 });
+
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+// ── Active nav link on scroll ──
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-40% 0px -55% 0px' });
+
+sections.forEach(s => navObserver.observe(s));
+</script>
 </body>
 </html>
+HTMLEOF
+echo "Done — $(wc -l < /mnt/user-data/outputs/load_strategy_concepts.html) lines"
