@@ -1,354 +1,643 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monthly Active Users (MAU) - SQL Interview Question</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.7;
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 20px;
-            color: #333;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Monthly Active Users — SQL Walkthrough</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #13161e;
+      --border:    #1e2230;
+      --border-hi: #2a2f45;
+      --accent:    #f5a623;
+      --accent-dim:#c07d10;
+      --green:     #3dd68c;
+      --blue:      #5b9cf6;
+      --purple:    #a78bfa;
+      --red:       #f87171;
+      --text:      #e2e5f0;
+      --muted:     #7a82a0;
+      --code-bg:   #0a0c11;
+    }
 
-        h1, h2, h3 {
-            color: #1f4e79;
-        }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        pre {
-            background: #f4f4f4;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
+    html { scroll-behavior: smooth; }
 
-        code {
-            font-family: Consolas, monospace;
-        }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 20px 0;
-        }
+    /* ── background grid ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: .35;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-        table, th, td {
-            border: 1px solid #ccc;
-        }
+    /* ── glow blob ── */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -180px; left: 50%;
+      transform: translateX(-50%);
+      width: 900px; height: 500px;
+      background: radial-gradient(ellipse at center, rgba(245,166,35,.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-        th {
-            background-color: #f0f0f0;
-        }
+    /* ── wrapper ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 64px 24px 100px;
+    }
 
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
+    /* ── header ── */
+    header {
+      margin-bottom: 56px;
+      animation: fadeUp .6s ease both;
+    }
 
-        .note {
-            background-color: #fff8dc;
-            border-left: 5px solid #f0ad4e;
-            padding: 15px;
-            margin: 20px 0;
-        }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
+      color: var(--accent);
+      border: 1px solid rgba(245,166,35,.3);
+      padding: 5px 12px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+      letter-spacing: .04em;
+    }
 
-        .solution {
-            background-color: #f7fbff;
-            border-left: 5px solid #1f4e79;
-            padding: 20px;
-            margin-top: 30px;
-        }
-    </style>
+    .badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 2.9rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -.02em;
+      margin-bottom: 14px;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 300;
+      max-width: 540px;
+    }
+
+    .datalemur-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 22px;
+      font-size: .85rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+      text-decoration: none;
+      border: 1px solid rgba(245,166,35,.25);
+      padding: 9px 18px;
+      border-radius: 8px;
+      background: rgba(245,166,35,.05);
+      transition: background .2s, border-color .2s, transform .15s;
+    }
+    .datalemur-link:hover {
+      background: rgba(245,166,35,.12);
+      border-color: rgba(245,166,35,.55);
+      transform: translateY(-2px);
+    }
+    .datalemur-link svg { flex-shrink: 0; }
+
+    /* ── section headings ── */
+    .section { margin-bottom: 44px; animation: fadeUp .6s ease both; }
+    .section:nth-child(2) { animation-delay: .08s; }
+    .section:nth-child(3) { animation-delay: .14s; }
+    .section:nth-child(4) { animation-delay: .20s; }
+    .section:nth-child(5) { animation-delay: .26s; }
+    .section:nth-child(6) { animation-delay: .32s; }
+    .section:nth-child(7) { animation-delay: .38s; }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      letter-spacing: -.01em;
+    }
+
+    h2 .accent { color: var(--accent); }
+
+    p { color: #b0b8d0; margin-bottom: 12px; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── highlight box ── */
+    .highlight-box {
+      background: rgba(245,166,35,.06);
+      border: 1px solid rgba(245,166,35,.22);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      font-size: .95rem;
+      color: #d4aa6c;
+    }
+
+    .highlight-box strong { color: var(--accent); }
+
+    /* ── steps ── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      transition: border-color .2s;
+    }
+
+    .step:hover { border-color: var(--border-hi); }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(245,166,35,.12);
+      border: 1px solid rgba(245,166,35,.35);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .step-text { font-size: .93rem; color: #b0b8d0; padding-top: 3px; }
+    .step-text strong { color: var(--text); }
+
+    /* ── code block ── */
+    .code-wrap {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+    }
+
+    .code-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
+      color: var(--muted);
+      letter-spacing: .06em;
+    }
+
+    .code-dots { display: flex; gap: 6px; }
+    .code-dots span {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .code-dots span:nth-child(1) { background: #f87171; }
+    .code-dots span:nth-child(2) { background: #fbbf24; }
+    .code-dots span:nth-child(3) { background: #34d399; }
+
+    pre {
+      padding: 22px 24px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .83rem;
+      line-height: 1.8;
+    }
+
+    /* SQL syntax colours */
+    .kw  { color: #c792ea; font-weight: 500; } /* keywords */
+    .fn  { color: #82aaff; }                    /* functions */
+    .str { color: #c3e88d; }                    /* strings */
+    .num { color: #f78c6c; }                    /* numbers */
+    .cmt { color: #546e7a; font-style: italic; }/* comments */
+    .tbl { color: #89ddff; }                    /* table names */
+    .col { color: var(--text); }                /* columns */
+
+    /* ── table ── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .88rem;
+    }
+
+    thead tr {
+      background: rgba(245,166,35,.07);
+      border-bottom: 1px solid var(--border-hi);
+    }
+
+    th {
+      padding: 12px 18px;
+      text-align: left;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
+      letter-spacing: .08em;
+      color: var(--accent);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 11px 18px;
+      color: #b0b8d0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,.025); }
+
+    td code, p code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .82em;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--border-hi);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: #89ddff;
+    }
+
+    /* ── why-each-part cards ── */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 12px;
+    }
+
+    .why-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      transition: border-color .2s, transform .15s;
+    }
+
+    .why-card:hover {
+      border-color: var(--border-hi);
+      transform: translateY(-2px);
+    }
+
+    .why-card .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      color: var(--blue);
+      margin-bottom: 7px;
+      display: block;
+    }
+
+    .why-card p {
+      font-size: .88rem;
+      margin: 0;
+    }
+
+    /* ── trace ── */
+    .trace {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px 24px;
+    }
+
+    .trace-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .trace-row:last-child { border-bottom: none; }
+
+    .trace-icon {
+      flex-shrink: 0;
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .95rem;
+    }
+
+    .trace-icon.ok  { background: rgba(61,214,140,.1);  color: var(--green); }
+    .trace-icon.no  { background: rgba(248,113,113,.1); color: var(--red);   }
+    .trace-icon.res { background: rgba(245,166,35,.1);  color: var(--accent);}
+
+    .trace-text { font-size: .9rem; color: #b0b8d0; padding-top: 5px; }
+    .trace-text strong { color: var(--text); }
+
+    /* ── output pill ── */
+    .output-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(61,214,140,.07);
+      border: 1px solid rgba(61,214,140,.25);
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .82rem;
+      color: var(--green);
+      margin-top: 16px;
+    }
+
+    /* ── footer ── */
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: .78rem;
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      animation: fadeUp .6s .4s ease both;
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50%      { opacity: .4; }
+    }
+
+    /* ── scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 3px; }
+
+    @media (max-width: 560px) {
+      .why-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
+<div class="page">
 
-    <h1>Monthly Active Users (MAU) - SQL Interview Question</h1>
+  <!-- ── HEADER ── -->
+  <header>
+    <div class="badge">SQL · Problem #23 · Ace the Data Science Interview</div>
+    <h1>Monthly <em>Active Users</em><br>in SQL</h1>
+    <p class="subtitle">A step-by-step walkthrough of the User Retention problem — finding MAUs for July 2022 using self-join and CTE patterns.</p>
+    <a class="datalemur-link" href="https://datalemur.com/questions/user-retention" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Practice on DataLemur
+    </a>
+  </header>
 
-    <p>
-        This is the same question as Problem #23 in the SQL chapter of
-        <strong>Ace the Data Science Interview</strong>.
-    </p>
-
-    <h2>Problem Statement</h2>
-
-    <p>
-        Assume you're given a table containing information on Facebook user actions.
-        Write a query to obtain the number of monthly active users (MAUs) in
-        <strong>July 2022</strong>, including the month in numerical format
-        (<strong>1, 2, 3...</strong>).
-    </p>
-
-    <h3>Definition of an Active User</h3>
-
-    <p>
-        An active user is defined as a user who has performed actions such as
-        <code>sign-in</code>, <code>like</code>, or <code>comment</code>
-        in both the current month and the previous month.
-    </p>
-
-    <h2>Table Schema</h2>
-
-    <table>
-        <tr>
-            <th>Column Name</th>
+  <!-- ── SECTION 1: SCHEMA ── -->
+  <div class="section">
+    <div class="section-label">01 — Schema</div>
+    <h2>The <span class="accent">user_actions</span> Table</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Column</th>
             <th>Type</th>
-        </tr>
-        <tr>
-            <td>user_id</td>
-            <td>integer</td>
-        </tr>
-        <tr>
-            <td>event_id</td>
-            <td>integer</td>
-        </tr>
-        <tr>
-            <td>event_type</td>
-            <td>string</td>
-        </tr>
-        <tr>
-            <td>event_date</td>
-            <td>datetime</td>
-        </tr>
-    </table>
-
-    <h2>Example Input</h2>
-
-    <table>
-        <tr>
-            <th>user_id</th>
-            <th>event_id</th>
-            <th>event_type</th>
-            <th>event_date</th>
-        </tr>
-        <tr>
-            <td>445</td>
-            <td>7765</td>
-            <td>sign-in</td>
-            <td>05/31/2022 12:00:00</td>
-        </tr>
-        <tr>
-            <td>742</td>
-            <td>6458</td>
-            <td>sign-in</td>
-            <td>06/03/2022 12:00:00</td>
-        </tr>
-        <tr>
-            <td>445</td>
-            <td>3634</td>
-            <td>like</td>
-            <td>06/05/2022 12:00:00</td>
-        </tr>
-        <tr>
-            <td>742</td>
-            <td>1374</td>
-            <td>comment</td>
-            <td>06/05/2022 12:00:00</td>
-        </tr>
-        <tr>
-            <td>648</td>
-            <td>3124</td>
-            <td>like</td>
-            <td>06/18/2022 12:00:00</td>
-        </tr>
-    </table>
-
-    <h2>Example Output (for June 2022)</h2>
-
-    <table>
-        <tr>
-            <th>month</th>
-            <th>monthly_active_users</th>
-        </tr>
-        <tr>
-            <td>6</td>
-            <td>1</td>
-        </tr>
-    </table>
-
-    <p>
-        In June 2022, there was only one monthly active user (MAU) with
-        <strong>user_id = 445</strong>.
-    </p>
-
-    <div class="note">
-        <strong>Note:</strong>
-        The example output is for June because the sample data only contains
-        activity through that month. Your query should be adapted to calculate
-        MAUs for July 2022.
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>user_id</code></td><td>integer</td><td>Unique user identifier</td></tr>
+          <tr><td><code>event_id</code></td><td>integer</td><td>Unique event identifier</td></tr>
+          <tr><td><code>event_type</code></td><td>string</td><td><code>sign-in</code>, <code>like</code>, <code>comment</code></td></tr>
+          <tr><td><code>event_date</code></td><td>datetime</td><td>Timestamp of the action</td></tr>
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    <div class="solution">
-        <h2>Solution</h2>
+  <!-- ── SECTION 2: PROBLEM ── -->
+  <div class="section">
+    <div class="section-label">02 — Problem Breakdown</div>
+    <h2>What does <span class="accent">"Active"</span> mean?</h2>
+    <div class="highlight-box">
+      <strong>Definition:</strong> A user is considered a Monthly Active User (MAU) only if they performed at least one action in <strong>both the current month (July 2022)</strong> and <strong>the previous month (June 2022)</strong>.
+    </div>
+    <p>This means you can't just count users in July — you need to verify their presence in June too. That two-set intersection is the whole game.</p>
+  </div>
 
-        <p>
-            To calculate monthly active users (MAUs), we need to identify users
-            who were active in both:
-        </p>
+  <!-- ── SECTION 3: STRATEGY ── -->
+  <div class="section">
+    <div class="section-label">03 — Strategy</div>
+    <h2>Three-step <span class="accent">approach</span></h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Get the <strong>distinct users who acted in July 2022</strong> — our candidate MAU set.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">Get the <strong>distinct users who acted in June 2022</strong> — the lookback set.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text"><strong>INNER JOIN</strong> the two sets on <code>user_id</code> — only users in both survive. Count them.</div>
+      </div>
+    </div>
+  </div>
 
-        <ol>
-            <li>The current month (July 2022)</li>
-            <li>The previous month (June 2022)</li>
-        </ol>
+  <!-- ── SECTION 4: SOLUTION (CTE) ── -->
+  <div class="section">
+    <div class="section-label">04 — Solution</div>
+    <h2>CTE approach <span class="accent">(recommended)</span></h2>
 
-        <h3>Step 1: Identify Users Active in the Previous Month</h3>
+    <div class="code-wrap">
+      <div class="code-header">
+        <div class="code-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="code-title">solution.sql</div>
+      </div>
+      <pre><span class="cmt">-- Step 1: users active in July 2022</span>
+<span class="kw">WITH</span> july_users <span class="kw">AS</span> (
+    <span class="kw">SELECT DISTINCT</span> <span class="col">user_id</span>
+    <span class="kw">FROM</span>   <span class="tbl">user_actions</span>
+    <span class="kw">WHERE</span>  <span class="fn">EXTRACT</span>(<span class="kw">MONTH FROM</span> <span class="col">event_date</span>) = <span class="num">7</span>
+      <span class="kw">AND</span>  <span class="fn">EXTRACT</span>(<span class="kw">YEAR  FROM</span> <span class="col">event_date</span>) = <span class="num">2022</span>
+),
 
-        <p>
-            For every user active in July, check whether the same user also had
-            activity during the previous month.
-        </p>
-
-<pre><code>SELECT last_month.user_id
-FROM user_actions AS last_month
-WHERE last_month.user_id = curr_month.user_id
-  AND EXTRACT(MONTH FROM last_month.event_date) =
-      EXTRACT(MONTH FROM curr_month.event_date - INTERVAL '1 month');
-</code></pre>
-
-        <p>
-            This logic matches users between the current month and the previous
-            month by comparing their user IDs and verifying that the user's
-            activity occurred exactly one month earlier.
-        </p>
-
-        <h3>Step 2: Count Active Users in July 2022</h3>
-
-        <p>
-            Use the <code>EXISTS</code> clause to retain only those July users
-            who also appeared in June. Then count the distinct users.
-        </p>
-
-        <h3>Complete SQL Query</h3>
-
-<pre><code>SELECT
-    EXTRACT(MONTH FROM curr_month.event_date) AS month,
-    COUNT(DISTINCT curr_month.user_id) AS monthly_active_users
-FROM user_actions AS curr_month
-WHERE EXISTS (
-    SELECT last_month.user_id
-    FROM user_actions AS last_month
-    WHERE last_month.user_id = curr_month.user_id
-      AND EXTRACT(MONTH FROM last_month.event_date) =
-          EXTRACT(MONTH FROM curr_month.event_date - INTERVAL '1 month')
+<span class="cmt">-- Step 2: users active in June 2022 (the lookback month)</span>
+june_users <span class="kw">AS</span> (
+    <span class="kw">SELECT DISTINCT</span> <span class="col">user_id</span>
+    <span class="kw">FROM</span>   <span class="tbl">user_actions</span>
+    <span class="kw">WHERE</span>  <span class="fn">EXTRACT</span>(<span class="kw">MONTH FROM</span> <span class="col">event_date</span>) = <span class="num">6</span>
+      <span class="kw">AND</span>  <span class="fn">EXTRACT</span>(<span class="kw">YEAR  FROM</span> <span class="col">event_date</span>) = <span class="num">2022</span>
 )
-  AND EXTRACT(MONTH FROM curr_month.event_date) = 7
-  AND EXTRACT(YEAR FROM curr_month.event_date) = 2022
-GROUP BY EXTRACT(MONTH FROM curr_month.event_date);
-</code></pre>
 
-        <h3>Expected Result</h3>
-
-        <table>
-            <tr>
-                <th>month</th>
-                <th>monthly_active_users</th>
-            </tr>
-            <tr>
-                <td>7</td>
-                <td>2</td>
-            </tr>
-        </table>
-
-        <h3>Explanation</h3>
-
-        <p>
-            The query filters activity records to July 2022 and checks whether
-            each user also had activity during June 2022. Only users who were
-            active in both months are counted.
-        </p>
-
-        <p>
-            Therefore, the result shows that there were
-            <strong>2 monthly active users</strong> in July 2022.
-        </p>
+<span class="cmt">-- Step 3: intersect and count</span>
+<span class="kw">SELECT</span>
+    <span class="num">7</span>                   <span class="kw">AS</span> <span class="col">month</span>,
+    <span class="fn">COUNT</span>(<span class="col">j.user_id</span>)   <span class="kw">AS</span> <span class="col">monthly_active_users</span>
+<span class="kw">FROM</span>  july_users j
+<span class="kw">INNER JOIN</span> june_users jn
+    <span class="kw">ON</span> j.<span class="col">user_id</span> = jn.<span class="col">user_id</span>;</pre>
     </div>
+  </div>
 
-    <h2>PostgreSQL Setup for Testing</h2>
+  <!-- ── SECTION 5: ALTERNATIVE ── -->
+  <div class="section">
+    <div class="section-label">05 — Alternative</div>
+    <h2>Subquery approach <span class="accent">(compact)</span></h2>
+    <p>Equivalent result, fewer lines — useful in environments that don't support CTEs.</p>
 
-<p>
-    Use the following SQL statements to create the table and insert sample
-    data into PostgreSQL. This dataset is designed so that the correct
-    solution returns <strong>2 monthly active users for July 2022</strong>.
-</p>
+    <div class="code-wrap">
+      <div class="code-header">
+        <div class="code-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="code-title">alternative.sql</div>
+      </div>
+      <pre><span class="kw">SELECT</span>
+    <span class="num">7</span>                       <span class="kw">AS</span> <span class="col">month</span>,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> <span class="col">user_id</span>) <span class="kw">AS</span> <span class="col">monthly_active_users</span>
+<span class="kw">FROM</span>  <span class="tbl">user_actions</span>
+<span class="kw">WHERE</span> <span class="fn">EXTRACT</span>(<span class="kw">MONTH FROM</span> <span class="col">event_date</span>) = <span class="num">7</span>
+  <span class="kw">AND</span> <span class="fn">EXTRACT</span>(<span class="kw">YEAR  FROM</span> <span class="col">event_date</span>) = <span class="num">2022</span>
+  <span class="kw">AND</span> <span class="col">user_id</span> <span class="kw">IN</span> (
+      <span class="kw">SELECT DISTINCT</span> <span class="col">user_id</span>
+      <span class="kw">FROM</span>   <span class="tbl">user_actions</span>
+      <span class="kw">WHERE</span>  <span class="fn">EXTRACT</span>(<span class="kw">MONTH FROM</span> <span class="col">event_date</span>) = <span class="num">6</span>
+        <span class="kw">AND</span>  <span class="fn">EXTRACT</span>(<span class="kw">YEAR  FROM</span> <span class="col">event_date</span>) = <span class="num">2022</span>
+  );</pre>
+    </div>
+  </div>
 
-<h3>Create Table</h3>
+  <!-- ── SECTION 6: WHY EACH PART ── -->
+  <div class="section">
+    <div class="section-label">06 — Explanation</div>
+    <h2>Why each part <span class="accent">matters</span></h2>
+    <div class="why-grid">
+      <div class="why-card">
+        <span class="label">DISTINCT user_id</span>
+        <p>One row per user per CTE — prevents a user with 10 actions in a month from counting as 10.</p>
+      </div>
+      <div class="why-card">
+        <span class="label">INNER JOIN</span>
+        <p>Only keeps users present in <em>both</em> months — directly encodes the MAU definition.</p>
+      </div>
+      <div class="why-card">
+        <span class="label">COUNT(j.user_id)</span>
+        <p>After the join, each row is one unique MAU. No extra <code>DISTINCT</code> needed here.</p>
+      </div>
+      <div class="why-card">
+        <span class="label">Hardcoded 7 AS month</span>
+        <p>The question asks for the numerical month in the output. No aggregation needed since we target exactly one month.</p>
+      </div>
+      <div class="why-card">
+        <span class="label">EXTRACT(MONTH / YEAR)</span>
+        <p>Safely slices by month without being tripped up by time components in the datetime column.</p>
+      </div>
+      <div class="why-card">
+        <span class="label">Two CTEs</span>
+        <p>Separating July and June into named sets makes the logic readable and debuggable — inspect each CTE independently.</p>
+      </div>
+    </div>
+  </div>
 
-<pre><code>DROP TABLE IF EXISTS user_actions;
+  <!-- ── SECTION 7: TRACE ── -->
+  <div class="section">
+    <div class="section-label">07 — Trace</div>
+    <h2>Walking through the <span class="accent">example</span></h2>
+    <div class="trace">
+      <div class="trace-row">
+        <div class="trace-icon ok">→</div>
+        <div class="trace-text"><strong>User 445</strong> — active in May (05/31) and June (06/05) → qualifies as June MAU. Apply same logic for July window.</div>
+      </div>
+      <div class="trace-row">
+        <div class="trace-icon ok">→</div>
+        <div class="trace-text"><strong>User 742</strong> — only active in June (06/03, 06/05) → <em>not</em> active in May → fails the two-month condition for June MAU.</div>
+      </div>
+      <div class="trace-row">
+        <div class="trace-icon no">✗</div>
+        <div class="trace-text"><strong>User 648</strong> — only active in June (06/18) → no previous month activity → excluded.</div>
+      </div>
+      <div class="trace-row">
+        <div class="trace-icon res">✓</div>
+        <div class="trace-text"><strong>June MAU count = 1</strong> (only user 445 satisfies both months). For July, slide the window: current = July, lookback = June.</div>
+      </div>
+    </div>
+    <div class="output-pill">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Expected output for June 2022: month = 6, monthly_active_users = 1
+    </div>
+  </div>
 
-CREATE TABLE user_actions (
-    user_id INTEGER,
-    event_id INTEGER PRIMARY KEY,
-    event_type VARCHAR(20),
-    event_date TIMESTAMP
-);
-</code></pre>
+  <!-- ── FOOTER ── -->
+  <footer>
+    Problem source: <a href="https://datalemur.com/questions/user-retention" target="_blank" rel="noopener">DataLemur — User Retention</a>
+    &nbsp;·&nbsp; Also in <em>Ace the Data Science Interview</em>, SQL Chapter #23
+  </footer>
 
-<h3>Insert Sample Data</h3>
-
-<pre><code>INSERT INTO user_actions
-(user_id, event_id, event_type, event_date)
-VALUES
--- May Activity
-(445, 7765, 'sign-in', '2022-05-31 12:00:00'),
-
--- June Activity
-(742, 6458, 'sign-in', '2022-06-03 12:00:00'),
-(445, 3634, 'like',    '2022-06-05 12:00:00'),
-(742, 1374, 'comment', '2022-06-05 12:00:00'),
-(648, 3124, 'like',    '2022-06-18 12:00:00'),
-
--- July Activity
-(445, 8001, 'sign-in', '2022-07-02 09:00:00'),
-(742, 8002, 'like',    '2022-07-10 14:30:00'),
-(648, 8003, 'comment', '2022-07-12 16:15:00'),
-(999, 8004, 'sign-in', '2022-07-15 08:00:00');
-</code></pre>
-
-<h3>Verify the Data</h3>
-
-<pre><code>SELECT *
-FROM user_actions
-ORDER BY event_date;
-</code></pre>
-
-<h3>Expected Monthly Activity</h3>
-
-<table>
-    <tr>
-        <th>User ID</th>
-        <th>June Activity?</th>
-        <th>July Activity?</th>
-        <th>MAU for July?</th>
-    </tr>
-    <tr>
-        <td>445</td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>✅ Yes</td>
-    </tr>
-    <tr>
-        <td>742</td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>✅ Yes</td>
-    </tr>
-    <tr>
-        <td>648</td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>✅ Yes</td>
-    </tr>
-    <tr>
-        <td>999</td>
-        <td>No</td>
-        <td>Yes</td>
-        <td>❌ No</td>
-    </tr>
-</table>
-
-<p>
-
+</div>
 </body>
 </html>
