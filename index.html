@@ -1078,7 +1078,7 @@
       <div class="task-item">
         <input type="checkbox" class="task-check" id="t22_1">
         <div class="task-body">
-          <label class="task-text" for="t22_1">Write a script that reads the Kaggle Netflix Movies and TV Shows CSV, applies a transformation (rename columns, cast types), then writes the result to both JSON and Parquet. You're done when all three files exist on disk and a quick print confirms they contain the same data.</label>
+          <label class="task-text" for="t22_1">Write a script that reads the Kaggle Netflix Movies and TV Shows CSV, applies a transformation (rename columns, cast types), then writes the result to both JSON and Parquet. You're done when all three files exist on disk and a quick print confirms they contain the same data.[DO JUPYTER NOTEBOOK]</label>
           <span class="task-min">write a script that reads a CSV and writes it to at least one other format (JSON or Parquet) without errors</span>
         </div>
       </div>
@@ -1094,6 +1094,7 @@
         <a class="resource-link primary" href="data_netflix.csv" download>
           ↧ Netflix Movies and TV Shows Dataset — CSV
         </a>
+        <a class="resource-link primary" href="python_de/netflix_etl_tutorial.ipynb" download>↗ Exercises - jupyter notebook</a>
       </div>
     </div></div>
   </div>
@@ -1110,7 +1111,7 @@
       <div class="task-item">
         <input type="checkbox" class="task-check" id="t23_1">
         <div class="task-body">
-          <label class="task-text" for="t23_1">Apply 5 pandas transformations on a free Kaggle dataset (merge, groupby, fillna, drop_duplicates, astype are good targets), then rewrite the same logic as SQL on Supabase and verify both outputs are identical. You're done when you've confirmed the row counts and values match.</label>
+          <label class="task-text" for="t23_1">Apply 5 pandas transformations on a free Kaggle dataset (merge, groupby, fillna, drop_duplicates, astype are good targets), then rewrite the same logic as SQL on Supabase and verify both outputs are identical. You're done when you've confirmed the row counts and values match.[DO JUPYTER NOTEBOOK]</label>
           <span class="task-min">apply at least 3 pandas operations on any dataset and write one of them as an equivalent SQL query</span>
         </div>
       </div>
@@ -1123,7 +1124,10 @@
       </div>
       <div class="resource-links">
         <a class="resource-link primary" href="https://realpython.com/pandas-dataframe" target="_blank">↗ Real Python — pandas</a>
-        <a class="resource-link" href="https://kaggle.com/datasets" target="_blank">↗ Kaggle datasets (free)</a>
+        <a class="resource-link primary" href="data_netflix.csv" download>
+          ↧ Netflix Movies and TV Shows Dataset — CSV
+        </a>
+        <a class="resource-link primary" href="python_de/netflix_wrangling_tutorial.ipynb" download>↗ Exercises - jupyter notebook</a>
       </div>
     </div></div>
   </div>
@@ -1169,7 +1173,7 @@
       <div class="task-item">
         <input type="checkbox" class="task-check" id="t25_1">
         <div class="task-body">
-          <label class="task-text" for="t25_1">Call the Open Meteo API (free, no API key needed) and extract 30 days of weather data for Lisbon. Insert it into a new table in your Postgres schema. You're done when the data is in the database and you've confirmed the row count via a SELECT COUNT(*).</label>
+          <label class="task-text" for="t25_1">Call the Open Meteo API (free, no API key needed) and extract 30 days of weather data for Lisbon. Insert it into a new table in your Postgres schema. You're done when the data is in the database and you've confirmed the row count via a SELECT COUNT(*).[DO JUPYTER NOTEBOOK]</label>
           <span class="task-min">make a successful GET request to Open Meteo, print the JSON response, and save the raw data to a local file</span>
         </div>
       </div>
@@ -1183,6 +1187,7 @@
       <div class="resource-links">
         <a class="resource-link primary" href="https://open-meteo.com" target="_blank">↗ open-meteo.com (free API)</a>
         <a class="resource-link" href="https://realpython.com/python-requests" target="_blank">↗ Real Python — requests</a>
+        <a class="resource-link primary" href="python_de/openmeteo_api_tutorial.ipynb" download>↗ Exercises - jupyter notebook</a>
       </div>
     </div></div>
   </div>
