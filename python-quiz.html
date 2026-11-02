@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Mastery — Data Engineer Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0c09;
+  --surface: #14150f;
+  --surface2: #1c1d15;
+  --surface3: #1c1d15;
+  --border: #2c2d22;
+  --border2: #1c1d15;
+  --accent: #e8dbb4;
+  --accent-g: #86b86a;
+  --accent-o: #d98c5f;
+  --accent-r: #d9705f;
+  --accent-p: #d9c79a;
+  --accent-y: #e0b84a;
+  --text: #e9e4d2;
+  --text2: #a8a48c;
+  --text3: #6c6a52;
+  --correct: #86b86a;
+  --wrong: #d9574a;
+  --tip: #d98c5f;
+  --mono: 'JetBrains Mono', monospace;
+  --display: 'Syne', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;font-size:14px;line-height:1.6;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(217,199,154,0.07),transparent);pointer-events:none;z-index:0;}
+
+.page{max-width:860px;margin:0 auto;padding:0 20px 60px;position:relative;z-index:1;}
+
+header{padding:28px 0 0;border-bottom:1px solid var(--border);}
+.hd{display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;flex-wrap:wrap;gap:12px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:38px;height:38px;background:linear-gradient(135deg,#d9c79a,#e8dbb4);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.brand-name{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(90deg,#d9c79a,#e8dbb4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.brand-sub{font-size:10px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;display:block;}
+nav{display:flex;gap:4px;}
+.nb{padding:8px 18px;background:transparent;border:1px solid var(--border);border-bottom:none;color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer;border-radius:6px 6px 0 0;transition:all .2s;text-transform:uppercase;}
+.nb:hover,.nb.on{background:var(--surface);color:var(--accent-p);border-color:var(--accent-p);}
+
+.sbar{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 20px;margin:24px 0 20px;flex-wrap:wrap;}
+.si{text-align:center;min-width:44px;}
+.sv{font-size:22px;font-weight:700;color:var(--accent-p);}
+.sl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;}
+.pc{flex:1;min-width:160px;}
+.pl{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}
+.pb{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.pf{height:100%;background:linear-gradient(90deg,var(--accent-p),var(--accent));border-radius:3px;transition:width .5s ease;width:0%;}
+
+.cbadge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border:1px solid;border-radius:20px;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600;}
+.cat-fileio{color:#e8dbb4;border-color:rgba(217,199,154,.3);background:rgba(217,199,154,.07);}
+.cat-csv{color:#86b86a;border-color:rgba(134,184,106,.3);background:rgba(134,184,106,.07);}
+.cat-json{color:#e0b84a;border-color:rgba(224,184,74,.3);background:rgba(224,184,74,.07);}
+.cat-parquet{color:#d98c5f;border-color:rgba(217,140,95,.3);background:rgba(217,140,95,.07);}
+.cat-pandas{color:#d9c79a;border-color:rgba(217,199,154,.3);background:rgba(217,199,154,.07);}
+.cat-db{color:#e8dbb4;border-color:rgba(217,199,154,.3);background:rgba(217,199,154,.07);}
+.cat-api{color:#86b86a;border-color:rgba(134,184,106,.3);background:rgba(134,184,106,.07);}
+.cat-errors{color:#d9705f;border-color:rgba(217,112,95,.3);background:rgba(217,112,95,.07);}
+.cat-pydantic{color:#d9c79a;border-color:rgba(217,199,154,.3);background:rgba(217,199,154,.07);}
+.cat-testing{color:#e0b84a;border-color:rgba(224,184,74,.3);background:rgba(224,184,74,.07);}
+.cat-config{color:#d98c5f;border-color:rgba(217,140,95,.3);background:rgba(217,140,95,.07);}
+.cat-sched{color:#86b86a;border-color:rgba(134,184,106,.3);background:rgba(134,184,106,.07);}
+
+.qcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:14px;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.qnum{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;}
+.qtxt{font-size:15px;font-weight:500;color:var(--text);line-height:1.65;margin-bottom:16px;}
+
+pre.cb{background:#070806;border:1px solid var(--border2);border-left:3px solid var(--accent-p);border-radius:8px;padding:14px 16px;font-size:12px;line-height:1.75;overflow-x:auto;margin:10px 0 18px;font-family:var(--mono);white-space:pre;}
+.kw{color:#d9705f;}.fn{color:#cdb8e6;}.kw2{color:#e8dbb4;}.str{color:#ede3c4;}.cmt{color:#a8a48c;font-style:italic;}.cls{color:#a9d08a;}.num{color:#e8c868;}.dec{color:#d98c5f;}.bi{color:#d98c5f;}
+
+.opts{display:grid;gap:8px;}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;cursor:pointer;text-align:left;font-family:var(--mono);font-size:13px;color:var(--text2);transition:all .18s;line-height:1.5;width:100%;}
+.opt:hover:not(:disabled){border-color:var(--accent-p);color:var(--text);background:rgba(217,199,154,.05);}
+.opt:disabled{cursor:not-allowed;}
+.ol{min-width:22px;height:22px;background:var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text3);flex-shrink:0;margin-top:1px;}
+.opt.correct{border-color:var(--correct);background:rgba(134,184,106,.08);color:var(--correct);}
+.opt.correct .ol{background:var(--correct);color:#000;}
+.opt.wrong{border-color:var(--wrong);background:rgba(217,87,74,.08);color:var(--wrong);}
+.opt.wrong .ol{background:var(--wrong);color:#fff;}
+.opt.revealed{border-color:rgba(134,184,106,.4);background:rgba(134,184,106,.05);color:var(--correct);}
+.opt.revealed .ol{background:rgba(134,184,106,.2);color:var(--correct);}
+
+.fb{margin-top:14px;padding:12px 16px;border-radius:9px;font-size:12.5px;line-height:1.65;display:none;animation:slideIn .28s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:translateY(0);}}
+.fb.ok{background:rgba(134,184,106,.08);border:1px solid rgba(134,184,106,.3);color:#a9d08a;}
+.fb.bad{background:rgba(217,87,74,.08);border:1px solid rgba(217,87,74,.3);color:#e8a095;}
+
+.tip{margin-top:10px;padding:12px 16px;background:rgba(217,140,95,.06);border:1px solid rgba(217,140,95,.25);border-radius:9px;font-size:12px;color:#d9a77c;line-height:1.7;display:none;}
+.tiplabel{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--tip);font-weight:700;margin-bottom:5px;}
+
+.nxtbtn{margin-top:18px;padding:10px 24px;background:linear-gradient(135deg,var(--accent-p),var(--accent));border:none;border-radius:7px;color:#000;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;display:none;transition:opacity .2s,transform .2s;}
+.nxtbtn:hover{opacity:.85;transform:translateY(-1px);}
+
+#results{display:none;text-align:center;padding:48px 24px;background:var(--surface);border:1px solid var(--border);border-radius:14px;}
+.rscore{font-size:70px;font-weight:800;font-family:var(--display);background:linear-gradient(135deg,var(--accent-p),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.rlabel{font-size:12px;color:var(--text3);margin-top:6px;text-transform:uppercase;letter-spacing:2px;}
+.rgrade{font-size:26px;font-family:var(--display);font-weight:700;color:var(--accent-p);margin:20px 0 6px;}
+.rmsg{color:var(--text2);font-size:13px;margin-bottom:28px;line-height:1.65;}
+.rbr{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin:20px 0;text-align:left;}
+.rbi{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;}
+.rbn{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+.rbs{font-size:17px;font-weight:700;color:var(--accent-p);}
+.rbtn{padding:12px 32px;background:linear-gradient(135deg,var(--accent-p),var(--accent));border:none;border-radius:7px;color:#000;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;}
+
+#docs{display:none;padding-top:8px;}
+.dcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;}
+.dh{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid transparent;cursor:pointer;user-select:none;transition:background .2s;}
+.dh:hover{background:var(--surface2);}
+.dh.open{border-bottom-color:var(--border);}
+.di{font-size:18px;flex-shrink:0;}
+.dt{font-family:var(--display);font-size:15px;font-weight:700;color:var(--text);flex:1;}
+.dtag{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;padding:3px 10px;border-radius:12px;font-weight:700;}
+.tag-fileio{background:rgba(217,199,154,.15);color:#e8dbb4;}
+.tag-data{background:rgba(134,184,106,.15);color:#86b86a;}
+.tag-pandas{background:rgba(217,199,154,.15);color:#d9c79a;}
+.tag-db{background:rgba(217,199,154,.15);color:#e8dbb4;}
+.tag-api{background:rgba(134,184,106,.15);color:#86b86a;}
+.tag-err{background:rgba(217,112,95,.15);color:#d9705f;}
+.tag-val{background:rgba(217,199,154,.15);color:#d9c79a;}
+.tag-test{background:rgba(224,184,74,.15);color:#e0b84a;}
+.tag-config{background:rgba(217,140,95,.15);color:#d98c5f;}
+.tag-sched{background:rgba(134,184,106,.15);color:#86b86a;}
+.tog{color:var(--text3);font-size:11px;transition:transform .3s;}
+.tog.open{transform:rotate(180deg);}
+.db{display:none;padding:18px 20px;}
+.db.open{display:block;}
+.db p{color:var(--text2);font-size:13px;line-height:1.8;margin-bottom:12px;}
+.db h4{font-size:10px;color:var(--accent-p);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 6px;font-weight:600;}
+.db ul{padding-left:18px;color:var(--text2);font-size:13px;line-height:1.8;margin-bottom:12px;}
+.db li{margin-bottom:2px;}
+.db pre.cb{margin:10px 0;}
+
+.fbar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px;}
+.fc{padding:5px 13px;background:var(--surface);border:1px solid var(--border);border-radius:20px;font-size:10px;color:var(--text3);cursor:pointer;font-family:var(--mono);transition:all .2s;text-transform:uppercase;letter-spacing:1px;}
+.fc:hover,.fc.on{background:rgba(217,199,154,.1);border-color:var(--accent-p);color:var(--accent-p);}
+
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Lora&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/png;base64,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">
+<style>
+/* ── military design (from de_study_military_plan) ── */
+.mil-hero{display:flex;flex-direction:column;align-items:center;gap:.6rem;padding:1.6rem 2rem 1.2rem;background:#14150f;text-align:center;border-bottom:1px solid #2c2d22}
+.mil-logo{width:150px;height:auto;flex-shrink:0;filter:drop-shadow(0 4px 14px rgba(0,0,0,.55))}
+.mil-ttl{font:700 22px Syne,sans-serif;color:#e9e4d2}.mil-ttl span{color:#d9c79a}
+.mil-sub{font:12.5px 'JetBrains Mono',monospace;color:#6c6a52;letter-spacing:.08em}
+@media(max-width:640px){.mil-hero{padding:1.2rem 1rem .8rem}.mil-logo{width:110px}}
+header{padding-top:12px;border-bottom:1px solid var(--border)}.hd{justify-content:center;padding-bottom:0}.page{max-width:900px}body{font-family:var(--mono)}</style>
+</head>
+<body>
+<div class="page">
+<header class="mil-hero"><img class="mil-logo" src="data:image/png;base64,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" alt="Python Mastery Data Engineer Quiz"><span class="mil-ttl">Python Mastery <span>Data Engineer Quiz</span></span><span class="mil-sub">OPERATION · PYTHON · 36 QUESTIONS</span></header>
+<header>
+  <div class="hd">
+    <nav>
+      <button class="nb on" onclick="showSection('quiz')">🎯 Quiz</button>
+      <button class="nb" onclick="showSection('docs')">📚 Concepts</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div id="quiz">
+  <div class="sbar">
+    <div class="si"><div class="sv" id="scoreVal">0</div><div class="sl">Score</div></div>
+    <div class="si"><div class="sv" id="correctVal">0</div><div class="sl">Correct</div></div>
+    <div class="pc">
+      <div class="pl"><span>Progress</span><span id="progTxt">0 / 36</span></div>
+      <div class="pb"><div class="pf" id="progFill"></div></div>
+    </div>
+    <div class="si"><div class="sv" id="streakVal">0</div><div class="sl">Streak 🔥</div></div>
+  </div>
+
+  <div id="qarea">
+    <div class="qcard" id="qcard">
+      <div class="qnum" id="qnum">Question 1 of 36</div>
+      <div class="cbadge" id="qbadge"></div>
+      <div class="qtxt" id="qtxt"></div>
+      <pre class="cb" id="qcode" style="display:none"></pre>
+      <div class="opts" id="opts"></div>
+      <div class="fb" id="fb"></div>
+      <div class="tip" id="tip"><div class="tiplabel">💡 Pro Tip</div><div id="tipTxt"></div></div>
+      <button class="nxtbtn" id="nxtbtn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </div>
+
+  <div id="results">
+    <div class="rscore" id="rScore"></div>
+    <div class="rlabel">Final Score</div>
+    <div class="rgrade" id="rGrade"></div>
+    <div class="rmsg" id="rMsg"></div>
+    <div class="rbr" id="rBreak"></div>
+    <button class="rbtn" onclick="restartQuiz()">↺ Restart Quiz</button>
+  </div>
+</div>
+
+<div id="docs">
+  <div id="docContent"></div>
+</div>
+</main>
+</div>
+
+<script>
+const QUESTIONS = [
+  /* ── File I/O ── */
+  {cat:"File I/O",q:"What is the safest and most idiomatic way to open a file in Python?",
+  code:`with open('data.txt', 'r', encoding='utf-8') as f:\n    content = f.read()`,
+  opts:["f = open('data.txt'); content = f.read(); f.close()","Using the with statement so the file is automatically closed even if an exception occurs","Using try/finally and manually calling f.close()","Files in Python close automatically when the variable goes out of scope"],
+  ans:1,exp:"The with statement (context manager) guarantees the file is closed via __exit__, even if an exception occurs mid-read. It's idiomatic, readable, and exception-safe.",tip:"Always specify encoding='utf-8' explicitly. The default encoding is platform-dependent and will cause bugs when moving code between Windows and Linux."},
+
+  {cat:"File I/O",q:"What is the difference between open() modes 'w' and 'a'?",
+  code:null,
+  opts:["'w' appends to the file; 'a' overwrites it","'w' truncates (overwrites) the file from the start; 'a' opens for appending to the end","'w' is for binary files; 'a' is for text files","They are identical — both create the file if it doesn't exist"],
+  ans:1,exp:"Mode 'w' truncates the file to zero length before writing, destroying existing content. Mode 'a' positions the pointer at the end, preserving existing data and appending new content.",tip:"Use 'x' mode to create a file and fail if it already exists — great for preventing accidental overwrites in pipelines. Use 'r+' or 'w+' for read+write."},
+
+  {cat:"File I/O",q:"Which method reads a file line by line without loading the entire file into memory?",
+  code:`with open('big_log.txt', 'r') as f:\n    for line in f:\n        process(line.strip())`,
+  opts:["f.read().split('\\n')","f.readlines()","Iterating directly over the file object (for line in f)","f.readline() inside a while True loop"],
+  ans:2,exp:"Iterating over the file object is a lazy generator — it reads one line at a time. f.read() and f.readlines() load the entire file into memory, which fails for large files.",tip:"This pattern is essential for data engineering with large log files or CSVs. Combine with generators to build memory-efficient pipelines: (process(line) for line in f)."},
+
+  /* ── CSV ── */
+  {cat:"CSV",q:"What does csv.DictReader return for each row?",
+  code:`import csv\nwith open('sales.csv') as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        print(row['amount'])`,
+  opts:["A list of values in column order","An OrderedDict (Python 3.7- ) or dict (3.8+) mapping header names to values","A tuple of (column_name, value) pairs","A raw CSV string for the row"],
+  ans:1,exp:"csv.DictReader uses the first row as keys and yields each subsequent row as a dict. In Python 3.8+ it's a regular dict; before that, an OrderedDict. This is far more readable than index-based csv.reader.",tip:"Always open CSV files with newline='' (empty string) per the csv module docs: open('file.csv', newline=''). This prevents the csv module from mishandling line endings on Windows."},
+
+  {cat:"CSV",q:"What happens when you use csv.writer with the default dialect on a field that contains a comma?",
+  code:`import csv\nwith open('out.csv', 'w', newline='') as f:\n    writer = csv.writer(f)\n    writer.writerow(['Alice', 'New York, NY', 29])`,
+  opts:["The comma inside the field is escaped with a backslash","The field is automatically quoted with double-quotes: \"New York, NY\"","The field is split into two columns, breaking the row","An exception is raised for invalid CSV data"],
+  ans:1,exp:"The csv module automatically wraps fields containing the delimiter (comma), quotes, or newlines in double-quotes. So 'New York, NY' becomes \"New York, NY\" in the output, preserving the single-field semantics.",tip:"Use csv.writer(f, quoting=csv.QUOTE_ALL) to force-quote every field. Use csv.QUOTE_NONNUMERIC to quote all non-numeric fields — great for ensuring consistent output across databases."},
+
+  /* ── JSON ── */
+  {cat:"JSON",q:"What is the difference between json.dumps() and json.dump()?",
+  code:null,
+  opts:["json.dumps() is for dicts only; json.dump() works on any type","json.dumps() serialises to a string; json.dump() writes directly to a file-like object","json.dump() is faster for large objects; json.dumps() is for small ones","They are identical — both return a JSON string"],
+  ans:1,exp:"json.dumps() (dump-string) returns a JSON-encoded string. json.dump() writes directly to a file object. Think: 's' = string. The same pattern applies to json.loads() vs json.load().",tip:"Use json.dumps(obj, indent=2, default=str) in pipelines — indent=2 for pretty printing and default=str to handle non-serialisable types like datetime objects automatically."},
+
+  {cat:"JSON",q:"What does this code do with the datetime object?",
+  code:`import json\nfrom datetime import datetime\n\ndef serialiser(obj):\n    if isinstance(obj, datetime):\n        return obj.isoformat()\n    raise TypeError(f'Not serialisable: {type(obj)}')\n\njson.dumps({'ts': datetime.now()}, default=serialiser)`,
+  opts:["Raises a TypeError because datetime is not JSON-serialisable by default","Converts datetime to an ISO 8601 string via the custom default function","Converts datetime to a Unix timestamp integer","Skips the datetime field and returns the rest of the dict"],
+  ans:1,exp:"json.dumps raises TypeError for non-serialisable types. The default= parameter accepts a function called for those types. Here, datetime is converted to its ISO 8601 string representation.",tip:"For data engineering, build a reusable default serialiser that handles datetime, Decimal, UUID, and numpy types. Pass it everywhere you call json.dumps to avoid scattered try/except blocks."},
+
+  /* ── Parquet ── */
+  {cat:"Parquet",q:"Why is Parquet preferred over CSV for large-scale data engineering pipelines?",
+  code:null,
+  opts:["Parquet is human-readable text, making debugging easier","Parquet is columnar, compressed, typed, and supports predicate pushdown — making it faster and smaller than CSV","Parquet files can be opened in Excel, unlike CSVs with large row counts","Parquet does not require a schema, making it more flexible than CSV"],
+  ans:1,exp:"Parquet is a columnar binary format. Columns compress far better than rows (similar values together). It stores schema and types, supports predicate pushdown (read only needed rows/columns), and is splittable for distributed processing.",tip:"Snappy compression (default in many tools) gives a good speed/ratio trade-off. Use zstd for better compression ratios in cold storage. Always prefer Parquet over CSV for any file > 1 MB in production pipelines."},
+
+  {cat:"Parquet",q:"What does this code accomplish?",
+  code:`import pyarrow.parquet as pq\n\ntable = pq.read_table(\n    'orders.parquet',\n    columns=['order_id', 'amount'],\n    filters=[('amount', '>', 1000)]\n)`,
+  opts:["Reads all columns then filters in Python memory after loading","Uses predicate pushdown to read only the specified columns and rows matching the filter at the file level","Raises an error — Parquet does not support row-level filters via the API","Creates an in-memory index on the amount column for faster future queries"],
+  ans:1,exp:"PyArrow supports predicate pushdown: the filters parameter is applied at the Parquet reader level, skipping row groups that don't match. Combined with column selection, this dramatically reduces I/O and memory use.",tip:"Partition your Parquet datasets by date or region (e.g., year=2024/month=01/) using pq.write_to_dataset(). Partition pruning then skips entire directory trees, making filters even faster at scale."},
+
+  /* ── Pandas ── */
+  {cat:"Pandas",q:"What is the difference between .loc[] and .iloc[] in pandas?",
+  code:`df.loc[0:3, 'name']    # label-based\ndf.iloc[0:3, 0]        # integer position-based`,
+  opts:["They are identical — both select by integer row index","loc uses label-based indexing (index values, column names); iloc uses integer position-based indexing","iloc is deprecated; use loc with integer labels instead","loc only works on MultiIndex DataFrames"],
+  ans:1,exp:"loc uses labels — the actual index values and column names. iloc uses integer positions — 0, 1, 2, regardless of the index. When the index is 0-based integers they appear similar, but diverge the moment you filter or reset.",tip:"After filtering a DataFrame the integer positions change but labels don't. Always prefer loc for production code to avoid silent bugs. Use loc[start:end] — note that label slicing with loc is inclusive on both ends, unlike Python slices."},
+
+  {cat:"Pandas",q:"What does this groupby + agg expression compute?",
+  code:`result = df.groupby('region').agg(\n    total_sales=('amount', 'sum'),\n    order_count=('order_id', 'nunique'),\n    avg_amount=('amount', 'mean')\n)`,
+  opts:["Three separate DataFrames, one per aggregation","A single DataFrame with named aggregate columns per region","An error — named aggregation syntax requires pandas >= 2.0","A pivot table with regions as both index and columns"],
+  ans:1,exp:"Named aggregation syntax (column_name=(source_col, func)) was introduced in pandas 0.25. It produces a clean single DataFrame with descriptive column names instead of a MultiIndex, in one pass over the data.",tip:"This is the idiomatic modern pandas pattern. Avoid the older {col: func} dict form — it produces MultiIndex columns and is less readable. Named aggregation also supports custom functions: ('amount', lambda s: s.quantile(0.9))."},
+
+  {cat:"Pandas",q:"What is the most memory-efficient way to read a large CSV with pandas?",
+  code:`for chunk in pd.read_csv('huge.csv', chunksize=100_000):\n    process(chunk)`,
+  opts:["pd.read_csv('huge.csv') — pandas optimises memory automatically","Using chunksize to process the file in iterative chunks rather than loading it all at once","Converting the CSV to a list of dicts first, then creating a DataFrame","Using pd.read_csv with low_memory=True"],
+  ans:1,exp:"chunksize returns a TextFileReader iterator yielding DataFrames of the specified size. Each chunk is processed and discarded before the next is read, keeping memory usage constant regardless of file size.",tip:"Also use dtype={'col': 'int32'} to downcast integer columns, and category dtype for low-cardinality string columns. Combined with chunking, you can process files 10× larger than RAM."},
+
+  {cat:"Pandas",q:"What does df.merge() do differently from pd.concat()?",
+  code:`# merge: join on keys (like SQL JOIN)\nresult = orders.merge(customers, on='customer_id', how='left')\n\n# concat: stack DataFrames (like SQL UNION)\nresult = pd.concat([df_2023, df_2024], ignore_index=True)`,
+  opts:["merge and concat are identical — use either interchangeably","merge joins on column keys (SQL-style); concat stacks DataFrames along an axis (union-style)","concat requires DataFrames with identical columns; merge works with any columns","merge is for row axis; concat is for column axis only"],
+  ans:1,exp:"merge performs database-style joins on matching key columns (like SQL JOIN). concat stacks DataFrames along an axis — rows by default (like UNION ALL). They solve different problems and are not interchangeable.",tip:"Use merge for relational joins, concat for appending or combining datasets. validate='one_to_many' in merge catches accidental fan-outs early. ignore_index=True in concat prevents duplicate index values."},
+
+  /* ── DB / psycopg / SQLAlchemy ── */
+  {cat:"DB / psycopg",q:"Why should you use parameterised queries instead of f-strings with psycopg2?",
+  code:`# DANGEROUS — SQL injection risk\ncur.execute(f"SELECT * FROM users WHERE name = '{user_input}'")\n\n# SAFE — parameterised\ncur.execute("SELECT * FROM users WHERE name = %s", (user_input,))`,
+  opts:["Parameterised queries are faster because psycopg2 caches the query plan","f-strings don't work inside execute() — they cause a SyntaxError","Parameterised queries prevent SQL injection by separating code from data, and let the driver handle type escaping","Parameterised queries automatically commit the transaction"],
+  ans:2,exp:"With f-strings, user input becomes part of the SQL string — an attacker can inject arbitrary SQL. Parameterised queries keep data separate from the query structure. psycopg2 handles quoting, escaping, and type conversion safely.",tip:"Always use %s placeholders with psycopg2 (not Python's %-formatting — that's different). For named params use %(name)s with a dict. Never ever concatenate user input into SQL strings."},
+
+  {cat:"DB / psycopg",q:"What does this SQLAlchemy pattern accomplish?",
+  code:`from sqlalchemy import create_engine, text\n\nengine = create_engine(\n    'postgresql+psycopg2://user:pw@host/db',\n    pool_size=5,\n    max_overflow=10\n)\n\nwith engine.connect() as conn:\n    result = conn.execute(text("SELECT * FROM orders"))`,
+  opts:["Opens a new TCP connection for every query and closes it immediately","Uses a connection pool — borrows a connection, executes the query, and returns the connection to the pool","Requires an explicit conn.commit() after SELECT statements","Creates a persistent dedicated connection that never closes"],
+  ans:1,exp:"SQLAlchemy's connection pool (pool_size=5) maintains open connections. engine.connect() borrows one from the pool and the with block returns it when done. This avoids the overhead of creating a TCP connection per query.",tip:"Use engine.begin() instead of engine.connect() when you need a transaction — it auto-commits on success and rolls back on exception. create_engine is expensive; create it once at application start, not per request."},
+
+  {cat:"DB / psycopg",q:"What is the purpose of execute_values in psycopg2?",
+  code:`from psycopg2.extras import execute_values\n\nexecute_values(\n    cur,\n    "INSERT INTO events (id, ts, value) VALUES %s",\n    [(1, '2024-01-01', 100), (2, '2024-01-02', 200)],\n    page_size=1000\n)`,
+  opts:["It executes multiple SELECT statements in a single round-trip","It inserts multiple rows in a single efficient INSERT statement instead of one INSERT per row","It automatically creates a transaction and commits after all inserts","It validates row types against the table schema before inserting"],
+  ans:1,exp:"execute_values batches multiple rows into a single INSERT...VALUES (...), (...), (...) statement. This is 10–100× faster than calling cur.execute() in a loop because it reduces round-trips and allows PostgreSQL to optimise the multi-row insert.",tip:"For very large bulk loads, consider COPY (psycopg2's copy_expert with StringIO) — it's the fastest way to load data into PostgreSQL, bypassing the WAL for initial loads."},
+
+  /* ── APIs & Requests ── */
+  {cat:"APIs",q:"What does the requests.Session() object provide over plain requests.get()?",
+  code:`import requests\n\nsession = requests.Session()\nsession.headers.update({'Authorization': 'Bearer token'})\nsession.mount('https://', requests.adapters.HTTPAdapter(\n    max_retries=3\n))\nresp = session.get('https://api.example.com/data')`,
+  opts:["Sessions are required for POST requests; get() only works without a session","Sessions persist headers, cookies, and connection pooling across requests; adapters add retry logic","Sessions automatically parse JSON responses","Sessions enforce rate limiting on outbound requests"],
+  ans:1,exp:"Session reuses TCP connections (keep-alive), persists headers/cookies/auth across all requests, and lets you attach adapters with retry policies. This is far more efficient than creating a new connection per request.",tip:"Always use Session with retry adapters in production pipelines. Use urllib3.util.retry.Retry for fine-grained control: retry on 429/503 status codes, with exponential backoff. Never retry on 4xx errors (client errors) except 429."},
+
+  {cat:"APIs",q:"What is the correct way to handle a failed HTTP response with the requests library?",
+  code:`resp = requests.get('https://api.example.com/data', timeout=10)\nresp.raise_for_status()  # <--\ndata = resp.json()`,
+  opts:["Check if resp.status_code == 200 manually and raise a custom exception","Use resp.raise_for_status() — it raises an HTTPError for 4xx and 5xx responses automatically","requests.get() raises an exception automatically for non-200 responses","Check resp.ok and print a warning — non-200 responses can always be ignored"],
+  ans:1,exp:"raise_for_status() raises requests.exceptions.HTTPError for any 4xx or 5xx response. Without it, a 404 or 500 would silently return a response object and your code would fail later with a confusing error. Always call it before accessing .json().",tip:"Wrap in try/except requests.exceptions.RequestException to catch all requests errors (connection errors, timeouts, HTTPError) with a single handler. requests.exceptions.Timeout catches only timeout errors."},
+
+  {cat:"APIs",q:"What does the timeout parameter in requests.get() control?",
+  code:`resp = requests.get(\n    'https://api.example.com/data',\n    timeout=(3.05, 27)  # (connect timeout, read timeout)\n)`,
+  opts:["The maximum total time in seconds before the request is cancelled","The connect timeout only — there is no read timeout","A tuple of (connect timeout, read timeout) — how long to wait for a connection, and how long to wait for data","The number of retry attempts before raising an exception"],
+  ans:2,exp:"timeout=(connect, read): connect is how long to wait to establish the TCP connection; read is how long to wait between bytes of the response. A single number sets both. Without timeout, requests can hang forever — always set it in production.",tip:"3.05 seconds is a common connect timeout (slightly over a TCP retransmit window). Read timeout depends on your API's SLA. Always set timeout — it's one of the most common production bugs when omitted."},
+
+  /* ── Error Handling & Logging ── */
+  {cat:"Error Handling",q:"What is the correct order of except blocks and why?",
+  code:`try:\n    result = 10 / int(user_input)\nexcept ZeroDivisionError:\n    print("Cannot divide by zero")\nexcept ValueError:\n    print("Invalid integer")\nexcept Exception as e:\n    print(f"Unexpected: {e}")`,
+  opts:["Order doesn't matter — Python checks all except blocks","More specific exceptions must come before more general ones — Exception must be last","Exception should always be first to catch everything","You can only have one except block per try statement"],
+  ans:1,exp:"Python matches the first except clause whose type matches the exception. If Exception (the base class) came first, it would catch everything and the specific handlers would be unreachable. Always put the most specific exceptions first.",tip:"Never use a bare except: — it catches SystemExit and KeyboardInterrupt too. Use except Exception as e: as the broadest safe catch. Use logging.exception(e) inside except blocks to automatically include the traceback."},
+
+  {cat:"Error Handling",q:"What does this structured logging setup provide over print() statements?",
+  code:`import logging\nimport json\n\nlogging.basicConfig(\n    level=logging.INFO,\n    format='%(asctime)s %(levelname)s %(name)s %(message)s'\n)\nlogger = logging.getLogger(__name__)\n\nlogger.info("Pipeline started", extra={'job_id': '123', 'rows': 5000})`,
+  opts:["Structured logging is only useful for web servers — print() is fine for data pipelines","Structured logging provides levels (DEBUG/INFO/WARNING/ERROR), timestamps, module names, and machine-parseable output for log aggregation systems","logging is slower than print() for high-throughput pipelines","The extra dict is automatically serialised to JSON in the log output"],
+  ans:1,exp:"logging provides: severity levels for filtering, timestamps, logger hierarchy (__name__ for module-level logs), and integrations with log aggregators (Datadog, Splunk, ELK). print() is fire-and-forget with no metadata.",tip:"Use structlog or python-json-logger for true JSON structured logs. In data pipelines, always log row counts, file paths, and job IDs — these become invaluable when debugging failures at 3am. Use logger.exception() in except blocks to log the full traceback automatically."},
+
+  {cat:"Error Handling",q:"What is the purpose of the 'finally' block?",
+  code:`conn = None\ntry:\n    conn = db.connect()\n    conn.execute(query)\nexcept Exception as e:\n    logger.error(f"Query failed: {e}")\n    raise\nfinally:\n    if conn:\n        conn.close()`,
+  opts:["finally runs only when an exception occurs — it's an alias for except","finally runs only when no exception occurs — it's for success cleanup","finally always runs regardless of whether an exception occurred or was raised","finally suppresses all exceptions raised in the try block"],
+  ans:2,exp:"finally always executes — after the try block if no exception, after the except block if one was caught, and even if an exception is re-raised with raise. It's the guaranteed cleanup code for resources like DB connections, file handles, and locks.",tip:"Context managers (with statement) are the modern alternative to try/finally for resource cleanup. But finally is still essential for pipeline teardown logic that must run regardless of outcome — closing connections, sending completion signals, etc."},
+
+  /* ── Pydantic ── */
+  {cat:"Pydantic",q:"What does this Pydantic model do when it receives invalid data?",
+  code:`from pydantic import BaseModel, Field\nfrom datetime import date\n\nclass Order(BaseModel):\n    order_id: int\n    amount: float = Field(gt=0, description="Must be positive")\n    order_date: date\n\nOrder(order_id='abc', amount=-10, order_date='2024-01-15')`,
+  opts:["Silently coerces 'abc' to 0 and -10 to 10, returning a valid model","Raises a ValidationError listing all field errors: order_id not an int, amount not > 0","Returns None for invalid fields while constructing the rest of the model","Raises a TypeError for the first invalid field and stops validation"],
+  ans:1,exp:"Pydantic validates all fields and collects ALL errors before raising a single ValidationError. It shows the field path, the value received, and the error message. 'abc' cannot be coerced to int; -10 fails the gt=0 constraint.",tip:"Use model.model_validate(dict) or Model(**data) for validation. Call model.model_dump() to get a plain dict back. In v2, Pydantic uses Rust under the hood and is ~17x faster than v1. Use model_config = ConfigDict(strict=True) to disable coercion."},
+
+  {cat:"Pydantic",q:"What does Field(default_factory=list) do in a Pydantic model?",
+  code:`from pydantic import BaseModel, Field\n\nclass Pipeline(BaseModel):\n    name: str\n    tags: list[str] = Field(default_factory=list)\n    metadata: dict = Field(default_factory=dict)`,
+  opts:["It sets the default to an empty list literal — same as tags: list[str] = []","It creates a new empty list for each model instance — preventing the mutable default anti-pattern","It validates that the list contains only str elements and rejects other types","It makes the field optional — tags can be None or omitted"],
+  ans:1,exp:"default_factory=list calls list() for each new instance, creating an independent empty list. Using = [] as a default would share the same list object across all instances — a classic Python mutable default bug. Pydantic enforces this: using a mutable literal as a default raises an error.",tip:"This mirrors Python's anti-pattern of def f(x=[]). In Pydantic, Field(default_factory=list) is the correct solution. You can also use default_factory=lambda: {'key': 'value'} for complex defaults."},
+
+  /* ── Testing with pytest ── */
+  {cat:"Testing",q:"What is the purpose of a pytest fixture?",
+  code:`import pytest\n\n@pytest.fixture\ndef db_connection():\n    conn = create_test_db()\n    yield conn          # test runs here\n    conn.close()        # teardown after test\n\ndef test_insert(db_connection):\n    db_connection.execute("INSERT INTO t VALUES (1)")\n    assert db_connection.fetchone() is not None`,
+  opts:["Fixtures are required for all pytest tests — tests without fixtures are invalid","Fixtures provide reusable setup/teardown logic injected into tests by name, with yield separating setup from teardown","Fixtures replace assert statements with automatic value comparison","Fixtures only work for database tests — use setUp/tearDown for other resources"],
+  ans:1,exp:"Fixtures are dependency-injected by argument name. The yield splits setup (before) from teardown (after). This pattern replaces setUp/tearDown from unittest. Fixtures can be scoped: function (default), class, module, or session.",tip:"Use scope='session' for expensive fixtures like DB connections that can be shared across all tests. Use tmp_path (built-in) for temp file tests. Fixture composition is powerful — a fixture can depend on other fixtures by declaring them as arguments."},
+
+  {cat:"Testing",q:"What does @pytest.mark.parametrize do?",
+  code:`import pytest\n\n@pytest.mark.parametrize("amount,expected", [\n    (100, 10.0),\n    (0,   0.0),\n    (-50, ValueError),\n])\ndef test_calculate_fee(amount, expected):\n    if expected is ValueError:\n        with pytest.raises(ValueError):\n            calculate_fee(amount)\n    else:\n        assert calculate_fee(amount) == expected`,
+  opts:["It runs the test function once with all parameter sets combined into a single call","It runs the test function once per parameter set, treating each as an independent test case","It generates a parametrised class with one method per test case","It marks the test as slow and skips it in fast mode"],
+  ans:1,exp:"parametrize generates N independent test cases from N parameter sets. Each runs separately with its own pass/fail, name, and traceback. This replaces loops inside tests, which would fail on the first error and hide the rest.",tip:"Combine with pytest.mark.parametrize at multiple levels for combinatorial testing. Use ids=['zero','negative','normal'] to give readable names. pytest.raises() is the idiomatic way to assert that an exception is raised."},
+
+  {cat:"Testing",q:"What does unittest.mock.patch() do in a test?",
+  code:`from unittest.mock import patch\n\ndef test_send_email():\n    with patch('myapp.mailer.smtp.sendmail') as mock_send:\n        send_welcome_email('user@example.com')\n        mock_send.assert_called_once_with(\n            'noreply@co.com', 'user@example.com', ANY\n        )`,
+  opts:["patch() executes the real function but records its arguments for later assertion","patch() temporarily replaces the target with a Mock object for the duration of the with block, then restores the original","patch() disables network access to prevent real emails during tests","patch() validates that the function signature matches the mock call"],
+  ans:1,exp:"patch() replaces the named object with a MagicMock for the scope of the with block. The real SMTP call never happens — perfect for testing side effects (emails, HTTP calls, DB writes) without real infrastructure.",tip:"Patch the name where it's used, not where it's defined: patch('myapp.mailer.smtp') not patch('smtplib.SMTP'). Use patch.object(instance, 'method') for instance methods. Use MagicMock(return_value=...) to control what the mock returns."},
+
+  /* ── Env Variables & Config ── */
+  {cat:"Config",q:"What is wrong with this approach to storing credentials?",
+  code:`# config.py\nDB_PASSWORD = "super_secret_password_123"\nAPI_KEY = "sk-abc123xyz"\n\n# This file is committed to git`,
+  opts:["Nothing — passwords in source code are protected by git access controls","Credentials in source code get committed to version control history, exposing them to anyone with repo access — forever","Python files are compiled to .pyc so the passwords are not human-readable","It's only a problem if the repository is public — private repos are safe"],
+  ans:1,exp:"Credentials in code are a critical security vulnerability. Even if deleted later, git history preserves them. Private repos get made public, shared, or breached. Secrets must live in environment variables, secret managers, or .env files (git-ignored).",tip:"Use python-dotenv to load a .env file locally, and real environment variables in production (CI/CD secrets, AWS Secrets Manager, Vault). Add .env to .gitignore immediately. Use git-secrets or pre-commit hooks to prevent accidental commits."},
+
+  {cat:"Config",q:"What does this pydantic-settings pattern accomplish?",
+  code:`from pydantic_settings import BaseSettings\n\nclass Settings(BaseSettings):\n    db_host: str\n    db_port: int = 5432\n    api_key: str\n    debug: bool = False\n\n    model_config = {'env_file': '.env'}\n\nsettings = Settings()  # reads from env vars + .env file`,
+  opts:["It creates a Settings object with hardcoded defaults that cannot be overridden","It reads configuration from environment variables and an optional .env file, validates types, and raises an error if required variables are missing","It encrypts sensitive settings using the system keychain","It merges settings from multiple sources with no type validation"],
+  ans:1,exp:"pydantic-settings reads from environment variables (case-insensitive), with .env as a fallback. It validates types (db_port becomes int, debug becomes bool), provides defaults, and raises ValidationError if required fields are missing.",tip:"Environment variables override .env file values — great for injecting secrets in production while using .env locally. Use SecretStr for sensitive fields: db_password: SecretStr. Access the value with settings.db_password.get_secret_value()."},
+
+  {cat:"Config",q:"What is the recommended way to access environment variables with a fallback default?",
+  code:`import os\n\n# Option A\nport = os.environ['PORT']           # raises KeyError if missing\n\n# Option B  \nport = os.environ.get('PORT', '8080')  # returns '8080' if missing\n\n# Option C\nport = os.getenv('PORT', '8080')       # identical to option B`,
+  opts:["Option A is safest — it fails loudly if the variable is not set","Options B and C are identical — os.getenv is just an alias for os.environ.get","Option A should always be used in production; B and C are for development only","os.environ.get() converts the value to the type of the default; os.getenv() always returns strings"],
+  ans:1,exp:"os.getenv and os.environ.get are functionally identical — os.getenv is literally defined as os.environ.get. Option A (os.environ['PORT']) raises KeyError when the variable is missing, which is desirable for required variables — fail fast is a good pipeline pattern.",tip:"Use os.environ[] for required variables that must exist (fail loudly if missing) and os.getenv('VAR', default) for optional ones. Always remember environment variables are strings — cast explicitly: int(os.getenv('PORT', '8080'))."},
+
+  /* ── Scheduling ── */
+  {cat:"Scheduling",q:"What does this cron expression mean: '0 6 * * 1-5'?",
+  code:`# cron format: minute hour day-of-month month day-of-week\n# 0    6    *            *     1-5\ncrontab -e\n0 6 * * 1-5 /usr/bin/python3 /opt/pipeline/run.py`,
+  opts:["Run every 6 minutes, Monday through Friday","Run at 6:00 AM every day of the week","Run at 6:00 AM, Monday through Friday (weekdays only)","Run at minute 0 of the 6th hour on the first Monday-Friday of the month"],
+  ans:2,exp:"Fields: minute=0, hour=6, day=* (any), month=* (any), weekday=1-5 (Mon-Fri). So: 'at 06:00, on weekdays'. 0 = Sunday or Monday depending on the system (Linux cron: 0=Sunday, 1=Monday).",tip:"Use crontab.guru to visually validate cron expressions. For complex schedules with dependencies, use Airflow or Prefect instead of cron. Always redirect cron output: '>> /var/log/pipeline.log 2>&1' or you'll lose stdout/stderr."},
+
+  {cat:"Scheduling",q:"What does this APScheduler code do?",
+  code:`from apscheduler.schedulers.blocking import BlockingScheduler\n\nscheduler = BlockingScheduler()\n\n@scheduler.scheduled_job('interval', hours=1)\ndef hourly_sync():\n    extract_and_load()\n\n@scheduler.scheduled_job('cron', hour=0, minute=0)\ndef daily_rollup():\n    run_aggregation()\n\nscheduler.start()`,
+  opts:["Runs both jobs once at startup then stops","Schedules hourly_sync to run every hour and daily_rollup at midnight — in-process without a cron daemon","Requires a Redis broker to schedule jobs — it won't run without one","Forks a new process for each job execution"],
+  ans:1,exp:"APScheduler runs jobs in-process on a schedule — no cron daemon or external broker required. BlockingScheduler blocks the main thread (use BackgroundScheduler in web apps). Two trigger types: interval (every N units) and cron (cron-expression).",tip:"For production pipelines prefer dedicated orchestrators (Airflow, Prefect, Dagster) over APScheduler — they provide retries, dependency management, monitoring, and backfill. APScheduler is great for simple single-process scheduled tasks."},
+
+  {cat:"Scheduling",q:"What problem does this pattern solve in a scheduled Python pipeline?",
+  code:`import fcntl\nimport sys\n\nlock_file = open('/tmp/pipeline.lock', 'w')\ntry:\n    fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)\nexcept IOError:\n    print("Pipeline already running — exiting")\n    sys.exit(0)\n\nrun_pipeline()`,
+  opts:["It logs the pipeline start time to a file for audit purposes","It prevents two instances of the pipeline from running simultaneously using a file lock","It checkpoints the pipeline so it can resume from where it left off after a crash","It limits the pipeline to run only once per day regardless of the cron schedule"],
+  ans:1,exp:"LOCK_EX|LOCK_NB tries to acquire an exclusive non-blocking lock. If another process holds the lock, IOError is raised immediately and we exit. This prevents overlapping runs when a pipeline takes longer than its cron interval.",tip:"This is a classic concurrency guard for cron jobs. On Linux, the lock is automatically released when the process dies (even on crash). Alternative: use a database row with a 'running' status column — more robust and gives you a status dashboard."}
+];
+
+const DOCS = [
+  {icon:"📂",title:"Python File I/O",tag:"Foundation",tagClass:"tag-fileio",content:`
+<div class="qlink">📝 Covers Q1 · Q2 · Q3</div>
+<h4>① Why <code>with open()</code> is the only correct way</h4>
+<p>The <strong>with</strong> statement invokes Python's context manager protocol. When the block exits — normally <em>or</em> via an exception — Python calls <code>f.__exit__()</code>, which closes the file and flushes buffers. This is guaranteed, even if your code raises mid-read.</p>
+<pre class="cb"><span class="cmt"># ✅ CORRECT — file closes even if process() raises</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'data.txt'</span>, <span class="str">'r'</span>, encoding=<span class="str">'utf-8'</span>) <span class="kw">as</span> f:
+    content = f.<span class="fn">read</span>()
+
+<span class="cmt"># ❌ WRONG — f.close() is skipped if an exception occurs</span>
+f = <span class="fn">open</span>(<span class="str">'data.txt'</span>)
+content = f.<span class="fn">read</span>()
+f.<span class="fn">close</span>()
+
+<span class="cmt"># ❌ ALSO WRONG — verbose and error-prone</span>
+<span class="kw">try</span>:
+    f = <span class="fn">open</span>(<span class="str">'data.txt'</span>)
+    content = f.<span class="fn">read</span>()
+<span class="kw">finally</span>:
+    f.<span class="fn">close</span>()  <span class="cmt"># with does this automatically</span></pre>
+<p>⚠️ <strong>Always specify <code>encoding='utf-8'</code></strong>. The default encoding is platform-dependent (<code>cp1252</code> on Windows, <code>utf-8</code> on Linux/macOS). Hard-coding <code>utf-8</code> makes your pipeline portable. Files in Python do <strong>NOT</strong> auto-close when the variable goes out of scope — that's a myth.</p>
+
+<h4>② File modes — every mode and its trap</h4>
+<pre class="cb"><span class="str">'r'</span>    read text (default) — raises FileNotFoundError if missing
+<span class="str">'w'</span>    write text — <strong>TRUNCATES TO ZERO BYTES</strong> immediately on open
+<span class="str">'a'</span>    append — preserves existing content, pointer at end
+<span class="str">'x'</span>    exclusive create — raises FileExistsError if already exists
+<span class="str">'r+'</span>   read + write — no truncation, pointer at start
+<span class="str">'rb'</span>   read binary — images, Parquet, Avro, etc.
+<span class="str">'wb'</span>   write binary — truncates, then write bytes</pre>
+<p>🔑 <strong>The critical trap — 'w' vs 'a'</strong>:</p>
+<pre class="cb"><span class="cmt"># 'w' — DESTROYS the file the moment it opens</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'log.txt'</span>, <span class="str">'w'</span>) <span class="kw">as</span> f:   <span class="cmt"># file is now 0 bytes</span>
+    f.<span class="fn">write</span>(<span class="str">'new content'</span>)
+
+<span class="cmt"># 'a' — PRESERVES existing content, appends at the end</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'log.txt'</span>, <span class="str">'a'</span>) <span class="kw">as</span> f:
+    f.<span class="fn">write</span>(<span class="str">'appended line\n'</span>)
+
+<span class="cmt"># 'x' — safe "create-once" mode for pipelines</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'output.csv'</span>, <span class="str">'x'</span>) <span class="kw">as</span> f:  <span class="cmt"># raises if file exists</span>
+    f.<span class="fn">write</span>(<span class="str">'data'</span>)</pre>
+
+<h4>③ Reading strategies — memory is the constraint</h4>
+<pre class="cb"><span class="cmt"># ❌ f.read() — loads the ENTIRE file into one string in RAM</span>
+content = f.<span class="fn">read</span>()           <span class="cmt"># 10 GB file = 10 GB RAM used</span>
+
+<span class="cmt"># ❌ f.readlines() — loads ALL lines into a list in RAM</span>
+lines = f.<span class="fn">readlines</span>()        <span class="cmt"># still 10 GB in RAM</span>
+
+<span class="cmt"># ✅ for line in f — lazy generator, ONE line at a time</span>
+<span class="kw">for</span> line <span class="kw">in</span> f:               <span class="cmt"># constant memory regardless of file size</span>
+    <span class="fn">process</span>(line.<span class="fn">strip</span>())
+
+<span class="cmt"># ✅ Chain generators for zero-copy pipelines</span>
+cleaned = (line.<span class="fn">strip</span>() <span class="kw">for</span> line <span class="kw">in</span> f <span class="kw">if</span> line.<span class="fn">strip</span>())
+<span class="fn">process_all</span>(cleaned)</pre>
+<p>Iterating over the file object is a <strong>lazy iterator</strong>. It reads only as many bytes as needed to fill one line, then discards them before reading the next. This is the correct pattern for logs, large CSVs, and streaming pipelines.</p>
+<h4>④ Quick memory comparison</h4>
+<pre class="cb">Method              | 1 GB file RAM usage
+--------------------|---------------------
+f.read()            | ~1 GB (whole file)
+f.readlines()       | ~1 GB (list of strs)
+for line in f:      | ~few KB (one line)  ✅</pre>`},
+
+  {icon:"📊",title:"CSV & JSON",tag:"Data Formats",tagClass:"tag-data",content:`
+<div class="qlink">📝 Covers Q4 · Q5 · Q6 · Q7</div>
+<h4>① csv.DictReader vs csv.reader — what's returned?</h4>
+<p><code>csv.DictReader</code> uses the <strong>first row as keys</strong> and returns each subsequent row as a <strong>dict</strong> (Python 3.8+). Before 3.8 it was an OrderedDict. <code>csv.reader</code> returns each row as a plain list indexed by position.</p>
+<pre class="cb"><span class="cmt"># csv.DictReader — readable, by column name</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'sales.csv'</span>, newline=<span class="str">''</span>) <span class="kw">as</span> f:
+    <span class="kw">for</span> row <span class="kw">in</span> csv.<span class="fn">DictReader</span>(f):
+        <span class="bi">print</span>(row[<span class="str">'amount'</span>])   <span class="cmt"># → '100' (always a string)</span>
+
+<span class="cmt"># csv.reader — positional, fragile if columns change</span>
+<span class="kw">for</span> row <span class="kw">in</span> csv.<span class="fn">reader</span>(f):
+    <span class="bi">print</span>(row[<span class="num">2</span>])             <span class="cmt"># → '100'</span></pre>
+<p>🔑 <strong>Critical</strong>: always open CSV files with <code>newline=''</code>. Without it, the universal newlines translator and the csv module both process line endings, causing double-processing bugs on Windows (<code>\r\n</code> → <code>\r</code> in the field).</p>
+
+<h4>② csv.writer — automatic quoting rules</h4>
+<p>The csv module automatically wraps fields in double-quotes if the field contains: the delimiter (comma), a double-quote, or a newline. You never manually escape these.</p>
+<pre class="cb">writer.<span class="fn">writerow</span>([<span class="str">'Alice'</span>, <span class="str">'New York, NY'</span>, <span class="num">29</span>])
+<span class="cmt"># → Alice,"New York, NY",29   ← comma inside field: auto-quoted</span>
+
+writer.<span class="fn">writerow</span>([<span class="str">'She said "hi"'</span>, <span class="num">5</span>])
+<span class="cmt"># → "She said ""hi""",5      ← quote inside field: doubled</span></pre>
+<p>Quoting modes you can control:</p>
+<pre class="cb">csv.<span class="fn">writer</span>(f, quoting=csv.QUOTE_ALL)        <span class="cmt"># quote every field</span>
+csv.<span class="fn">writer</span>(f, quoting=csv.QUOTE_NONNUMERIC)  <span class="cmt"># quote all non-numbers</span>
+csv.<span class="fn">writer</span>(f, quoting=csv.QUOTE_MINIMAL)     <span class="cmt"># default: only when needed</span></pre>
+
+<h4>③ JSON — the 4 functions (memorise with "s = string")</h4>
+<pre class="cb">json.<span class="fn">dumps</span>(obj)          <span class="cmt"># → str    (Dump to String)</span>
+json.<span class="fn">dump</span>(obj, f)        <span class="cmt"># → file   (Dump to File)</span>
+json.<span class="fn">loads</span>(s)            <span class="cmt"># ← obj    (Load from String)</span>
+json.<span class="fn">load</span>(f)             <span class="cmt"># ← obj    (Load from File)</span>
+<span class="cmt"># Rule: 's' suffix = works with a string; no 's' = works with a file</span></pre>
+
+<h4>④ Non-serialisable types — the default= parameter</h4>
+<p>By default, <code>json.dumps</code> raises <strong>TypeError</strong> for <code>datetime</code>, <code>Decimal</code>, <code>UUID</code>, numpy types, etc. The <code>default=</code> parameter accepts a callable that is invoked <em>only</em> for types the encoder can't handle.</p>
+<pre class="cb"><span class="cmt"># Quick fix — str() everything non-serialisable</span>
+json.<span class="fn">dumps</span>(obj, default=<span class="bi">str</span>)
+<span class="cmt"># datetime → '2024-01-15T10:30:00', Decimal → '19.99'</span>
+
+<span class="cmt"># Proper custom serialiser</span>
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">from</span> decimal <span class="kw">import</span> Decimal
+
+<span class="kw">def</span> <span class="fn">serialiser</span>(obj):
+    <span class="kw">if</span> <span class="fn">isinstance</span>(obj, datetime):
+        <span class="kw">return</span> obj.<span class="fn">isoformat</span>()       <span class="cmt"># '2024-01-15T10:30:00'</span>
+    <span class="kw">if</span> <span class="fn">isinstance</span>(obj, Decimal):
+        <span class="kw">return</span> <span class="bi">float</span>(obj)             <span class="cmt"># Decimal('19.99') → 19.99</span>
+    <span class="kw">raise</span> <span class="cls">TypeError</span>(<span class="str">f'Not serialisable: {type(obj)}'</span>)
+
+json.<span class="fn">dumps</span>({<span class="str">'ts'</span>: datetime.<span class="fn">now</span>()}, default=serialiser)
+<span class="cmt"># → '{"ts": "2024-01-15T10:30:00.123456"}'</span></pre>
+<p>⚠️ The <code>default</code> function must <strong>raise TypeError</strong> for types it doesn't handle — never return None silently.</p>`},
+
+  {icon:"🪶",title:"Parquet",tag:"Columnar Format",tagClass:"tag-data",content:`
+<div class="qlink">📝 Covers Q8 · Q9</div>
+<h4>① Why Parquet beats CSV — the 4 pillars</h4>
+<ul>
+  <li><strong>Columnar storage</strong> — data is stored column-by-column, not row-by-row. Reading 3 columns from a 100-column file reads ~3% of the data. CSV always reads 100%.</li>
+  <li><strong>Compression</strong> — columns contain similar values (same data type, close range), so algorithms like Snappy and zstd compress them 5–10× better than row-based formats. A 1 GB CSV often becomes 50–150 MB Parquet.</li>
+  <li><strong>Typed schema embedded in file</strong> — Parquet stores the schema (column names, types) in a footer. No silent type casting, no "is 42 an int or a string?" guessing. CSV is always strings.</li>
+  <li><strong>Predicate pushdown</strong> — Parquet stores min/max statistics per row group. The reader can skip entire row groups that can't match a filter <em>before loading data into memory</em>.</li>
+</ul>
+<pre class="cb"><span class="cmt"># CSV: text, uncompressed, no schema, full scan always</span>
+<span class="cmt"># Parquet: binary, compressed, typed, column+row skipping</span>
+<span class="cmt"># Rule: any pipeline file > 1 MB → use Parquet</span></pre>
+
+<h4>② Predicate pushdown + column selection — happens at I/O level</h4>
+<p>This is the most important concept: <code>filters=</code> and <code>columns=</code> are applied <strong>by the file reader before data enters Python memory</strong>. They are not post-load filters. The reader inspects row group statistics and skips non-matching chunks entirely.</p>
+<pre class="cb"><span class="kw">import</span> pyarrow.parquet <span class="kw">as</span> pq
+
+table = pq.<span class="fn">read_table</span>(
+    <span class="str">'orders.parquet'</span>,
+    columns=[<span class="str">'order_id'</span>, <span class="str">'amount'</span>],     <span class="cmt"># ← only these 2 columns read from disk</span>
+    filters=[(<span class="str">'amount'</span>, <span class="str">'>'</span>, <span class="num">1000</span>)]       <span class="cmt"># ← row groups with max≤1000 are skipped</span>
+)
+<span class="cmt"># Both filters applied at I/O level — NOT in Python after loading</span>
+<span class="cmt"># Common misconception: "reads all, then filters" — WRONG</span></pre>
+
+<h4>③ Row groups — how predicate pushdown works internally</h4>
+<p>Parquet files are split into <strong>row groups</strong> (typically 128 MB each). Each row group stores min/max statistics per column. When you apply <code>filters=[('amount', '>', 1000)]</code>, the reader checks: "does this row group's amount column have max ≤ 1000?" If yes, the entire row group is skipped without reading.</p>
+
+<h4>④ Partitioning — directory-level skipping</h4>
+<pre class="cb">pq.<span class="fn">write_to_dataset</span>(
+    table,
+    root_path=<span class="str">'orders/'</span>,
+    partition_cols=[<span class="str">'year'</span>, <span class="str">'month'</span>]
+)
+<span class="cmt"># Creates: orders/year=2024/month=01/part-0.parquet</span>
+<span class="cmt">#          orders/year=2024/month=02/part-0.parquet</span>
+
+<span class="cmt"># Partition pruning: a filter on year=2024 skips all other year dirs</span>
+table = pq.<span class="fn">read_table</span>(<span class="str">'orders/'</span>, filters=[(<span class="str">'year'</span>, <span class="str">'='</span>, <span class="num">2024</span>)])</pre>
+
+<h4>⑤ Compression algorithms</h4>
+<pre class="cb">Snappy  — fast compress/decompress, moderate ratio (default in many tools)
+zstd    — better ratio than Snappy, still fast — best for cold storage
+gzip    — smallest files, slowest — use for archiving only
+lz4     — fastest compression, lowest ratio — use for hot data</pre>`},
+
+  {icon:"🐼",title:"Pandas for Data Engineering",tag:"Core Library",tagClass:"tag-pandas",content:`
+<div class="qlink">📝 Covers Q10 · Q11 · Q12 · Q13</div>
+<h4>① loc vs iloc — label vs position</h4>
+<pre class="cb">df.<span class="fn">loc</span>[row_labels, col_names]   <span class="cmt"># by INDEX VALUE and column NAME</span>
+df.<span class="fn">iloc</span>[row_pos, col_pos]        <span class="cmt"># by INTEGER POSITION (0, 1, 2…)</span>
+
+<span class="cmt"># After filtering, iloc positions shift — loc labels don't</span>
+<span class="cmt"># loc slicing is INCLUSIVE on both ends (unlike Python slices)</span>
+<span class="cmt"># iloc slicing is exclusive on end (standard Python)</span></pre>
+<h4>② Named aggregation — the modern groupby pattern</h4>
+<pre class="cb">df.<span class="fn">groupby</span>(<span class="str">'region'</span>).<span class="fn">agg</span>(
+    total=(<span class="str">'amount'</span>, <span class="str">'sum'</span>),          <span class="cmt"># new_name=(source_col, func)</span>
+    orders=(<span class="str">'id'</span>, <span class="str">'nunique'</span>),
+    avg=(<span class="str">'amount'</span>, <span class="str">'mean'</span>)
+)
+<span class="cmt"># Returns clean DataFrame — no MultiIndex columns</span>
+<span class="cmt"># One pass over the data — efficient</span></pre>
+<h4>③ Large files — chunksize for constant memory</h4>
+<pre class="cb"><span class="kw">for</span> chunk <span class="kw">in</span> pd.<span class="fn">read_csv</span>(<span class="str">'huge.csv'</span>, chunksize=<span class="num">100_000</span>):
+    process(chunk)           <span class="cmt"># each chunk is a DataFrame</span>
+<span class="cmt"># chunksize returns a lazy TextFileReader — NOT a DataFrame</span>
+<span class="cmt"># Memory stays constant regardless of file size</span></pre>
+<h4>④ merge vs concat — JOIN vs UNION</h4>
+<pre class="cb">orders.<span class="fn">merge</span>(customers, on=<span class="str">'id'</span>, how=<span class="str">'left'</span>)
+<span class="cmt"># → SQL-style JOIN — matches rows by key column</span>
+
+pd.<span class="fn">concat</span>([df_jan, df_feb], ignore_index=<span class="kw">True</span>)
+<span class="cmt"># → SQL UNION ALL — stacks rows from multiple DataFrames</span></pre>
+<h4>⑤ dtype optimisation — reduce memory 5–20×</h4>
+<p>Default dtypes waste memory: every integer is <code>int64</code> (8 bytes), every string is <code>object</code> (a Python pointer per element). Choosing smaller types can shrink a DataFrame 5–20×.</p>
+<pre class="cb">df.<span class="fn">info</span>(memory_usage=<span class="str">'deep'</span>)   <span class="cmt"># true memory including strings</span>
+
+<span class="cmt"># Low-cardinality strings → category (highest-impact trick)</span>
+df[<span class="str">'status'</span>] = df[<span class="str">'status'</span>].<span class="fn">astype</span>(<span class="str">'category'</span>)
+<span class="cmt"># 'active','inactive','pending' stored once; rows store integer code</span>
+
+<span class="cmt"># Integer/float downcasting</span>
+df[<span class="str">'age'</span>]   = pd.<span class="fn">to_numeric</span>(df[<span class="str">'age'</span>],   downcast=<span class="str">'integer'</span>)  <span class="cmt"># int64 → int8</span>
+df[<span class="str">'score'</span>] = pd.<span class="fn">to_numeric</span>(df[<span class="str">'score'</span>], downcast=<span class="str">'float'</span>)    <span class="cmt"># float64 → float32</span>
+
+<span class="cmt"># Best: specify dtypes at read time — no extra pass</span>
+df = pd.<span class="fn">read_csv</span>(<span class="str">'file.csv'</span>, dtype={
+    <span class="str">'status'</span>: <span class="str">'category'</span>,
+    <span class="str">'age'</span>:    <span class="str">'int8'</span>,
+    <span class="str">'price'</span>:  <span class="str">'float32'</span>,
+})
+
+<span class="cmt"># Memory comparison (100k rows):</span>
+<span class="cmt"># object series  → ~9.6 MB  |  category series → ~0.1 MB (97% smaller)</span>
+<span class="cmt"># int64 column   → 800 KB   |  int8 column     →  100 KB</span></pre>`},
+
+  {icon:"🐘",title:"Python + PostgreSQL (psycopg2 & SQLAlchemy)",tag:"Databases",tagClass:"tag-db",content:`
+<div class="qlink">📝 Covers Q14 · Q15 · Q16</div>
+<h4>① Parameterised queries — NEVER use f-strings</h4>
+<pre class="cb"><span class="cmt"># ❌ DANGEROUS — user input injected into SQL string</span>
+cur.<span class="fn">execute</span>(<span class="str">f"SELECT * FROM users WHERE name = '{user_input}'"</span>)
+
+<span class="cmt"># ✅ SAFE — data is separate from SQL structure</span>
+cur.<span class="fn">execute</span>(<span class="str">"SELECT * FROM users WHERE name = %s"</span>, (user_input,))
+<span class="cmt"># psycopg2 handles quoting, escaping, and type conversion</span></pre>
+<h4>② SQLAlchemy connection pool — connect vs begin</h4>
+<pre class="cb">engine = <span class="fn">create_engine</span>(<span class="str">'postgresql+psycopg2://...'</span>, pool_size=<span class="num">5</span>)
+<span class="cmt"># engine.connect() — borrows from pool, returns on exit (no auto-commit)</span>
+<span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    conn.<span class="fn">execute</span>(...)
+
+<span class="cmt"># engine.begin() — same but auto-commits on success, rollback on exception</span>
+<span class="kw">with</span> engine.<span class="fn">begin</span>() <span class="kw">as</span> conn:
+    conn.<span class="fn">execute</span>(...)    <span class="cmt"># ← use this for writes</span>
+<span class="cmt"># Connection is returned to the pool, not closed</span></pre>
+<h4>③ execute_values — bulk insert (10–100× faster)</h4>
+<pre class="cb"><span class="cmt"># ❌ Slow — one round-trip per row</span>
+<span class="kw">for</span> row <span class="kw">in</span> rows:
+    cur.<span class="fn">execute</span>(<span class="str">"INSERT INTO t VALUES (%s, %s)"</span>, row)
+
+<span class="cmt"># ✅ Fast — single INSERT with many value tuples</span>
+<span class="fn">execute_values</span>(cur, <span class="str">"INSERT INTO t (a, b) VALUES %s"</span>, rows)
+<span class="cmt"># Batches rows into INSERT ... VALUES (...),(...),(...)</span></pre>
+<h4>④ engine.connect() vs engine.begin() — critical distinction</h4>
+<p><code>engine.connect()</code> is <strong>manual commit mode</strong>: you must call <code>conn.commit()</code> explicitly — forget it and writes are silently rolled back. <code>engine.begin()</code> wraps the block in a transaction that auto-commits on success and auto-rolls back on any exception. Always prefer <code>begin()</code> for writes.</p>
+<pre class="cb"><span class="cmt"># engine.connect() — manual commit</span>
+<span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    conn.<span class="fn">execute</span>(<span class="fn">text</span>(<span class="str">"UPDATE users SET active=1 WHERE id=:id"</span>), {<span class="str">"id"</span>: <span class="num">42</span>})
+    <span class="cmt"># without conn.commit() here: UPDATE is ROLLED BACK silently — no error!</span>
+    conn.<span class="fn">commit</span>()
+
+<span class="cmt"># engine.begin() — auto-commit / auto-rollback (use for all writes)</span>
+<span class="kw">with</span> engine.<span class="fn">begin</span>() <span class="kw">as</span> conn:
+    conn.<span class="fn">execute</span>(<span class="fn">text</span>(<span class="str">"UPDATE users SET active=1 WHERE id=:id"</span>), {<span class="str">"id"</span>: <span class="num">42</span>})
+    conn.<span class="fn">execute</span>(<span class="fn">text</span>(<span class="str">"INSERT INTO audit_log VALUES (:uid, NOW())"</span>), {<span class="str">"uid"</span>: <span class="num">42</span>})
+    <span class="cmt"># ↑ both committed atomically on __exit__; any exception → both rolled back</span>
+
+<span class="cmt"># pool_pre_ping=True: runs "SELECT 1" before use to detect stale connections</span>
+<span class="cmt"># pool_recycle=1800: close & reopen connections idle > 30 min (firewall safe)</span></pre>
+<h4>⑤ SQL injection — how it works</h4>
+<p>The classic payload <code>' OR '1'='1</code> makes a WHERE clause always true. <code>'; DROP TABLE users; --</code> terminates the query and runs a second, destructive one. Parameterised queries are the only safe defence — the driver escapes the data before it ever touches the SQL string.</p>
+<pre class="cb"><span class="cmt"># The attack — f-string injection</span>
+username = <span class="str">"admin' OR '1'='1"</span>
+query = <span class="str">f"SELECT * FROM users WHERE username = '{username}'"</span>
+<span class="cmt"># Executes: WHERE username = 'admin' OR '1'='1'  → returns ALL rows</span>
+
+<span class="cmt"># ✅ Parameterised — driver escapes the value safely</span>
+cursor.<span class="fn">execute</span>(<span class="str">"SELECT * FROM users WHERE username = %s"</span>, (username,))
+<span class="cmt"># If username = "admin' OR '1'='1":</span>
+<span class="cmt"># Executes: WHERE username = 'admin'' OR ''1''=''1'  → no match, fails safely</span></pre>`},
+
+  {icon:"🌐",title:"APIs & the requests Library",tag:"HTTP",tagClass:"tag-api",content:`
+<p>The requests library is the standard for HTTP in Python data engineering — APIs, webhooks, REST integrations.</p>
+<h4>Basic GET with error handling</h4>
+<pre class="cb"><span class="kw">import</span> requests
+
+resp = requests.<span class="fn">get</span>(
+    <span class="str">'https://api.example.com/orders'</span>,
+    params={<span class="str">'page'</span>: <span class="num">1</span>, <span class="str">'limit'</span>: <span class="num">100</span>},
+    headers={<span class="str">'Authorization'</span>: <span class="str">'Bearer token'</span>},
+    timeout=(<span class="num">3.05</span>, <span class="num">27</span>)  <span class="cmt"># (connect, read)</span>
+)
+resp.<span class="fn">raise_for_status</span>()  <span class="cmt"># raises on 4xx/5xx</span>
+data = resp.<span class="fn">json</span>()</pre>
+<h4>Session with retry adapter — production pattern</h4>
+<pre class="cb"><span class="kw">from</span> requests.adapters <span class="kw">import</span> HTTPAdapter
+<span class="kw">from</span> urllib3.util.retry <span class="kw">import</span> Retry
+
+session = requests.<span class="fn">Session</span>()
+retry = <span class="fn">Retry</span>(
+    total=<span class="num">3</span>,
+    backoff_factor=<span class="num">1</span>,
+    status_forcelist=[<span class="num">429</span>, <span class="num">500</span>, <span class="num">502</span>, <span class="num">503</span>]
+)
+session.<span class="fn">mount</span>(<span class="str">'https://'</span>, <span class="fn">HTTPAdapter</span>(max_retries=retry))
+session.headers.<span class="fn">update</span>({<span class="str">'Authorization'</span>: <span class="str">'Bearer token'</span>})</pre>
+<h4>Pagination pattern</h4>
+<pre class="cb"><span class="kw">def</span> <span class="fn">fetch_all_pages</span>(url):
+    results = []
+    page = <span class="num">1</span>
+    <span class="kw">while</span> <span class="kw">True</span>:
+        resp = session.<span class="fn">get</span>(url, params={<span class="str">'page'</span>: page}, timeout=<span class="num">10</span>)
+        resp.<span class="fn">raise_for_status</span>()
+        data = resp.<span class="fn">json</span>()
+        <span class="kw">if</span> <span class="kw">not</span> data[<span class="str">'items'</span>]:
+            <span class="kw">break</span>
+        results.<span class="fn">extend</span>(data[<span class="str">'items'</span>])
+        page += <span class="num">1</span>
+    <span class="kw">return</span> results</pre>
+<h4>Exception hierarchy</h4>
+<ul>
+  <li>requests.exceptions.<strong>Timeout</strong> — connection or read timeout</li>
+  <li>requests.exceptions.<strong>ConnectionError</strong> — DNS, refused connection</li>
+  <li>requests.exceptions.<strong>HTTPError</strong> — raised by raise_for_status()</li>
+  <li>requests.exceptions.<strong>RequestException</strong> — base class for all above</li>
+</ul>
+<h4>Retry adapter — automatic backoff for transient failures</h4>
+<p>Mount an <code>HTTPAdapter</code> with a <code>Retry</code> config on the session so every request through it retries on 429/5xx with exponential backoff — no extra code per request needed.</p>
+<pre class="cb"><span class="kw">from</span> requests.adapters <span class="kw">import</span> HTTPAdapter
+<span class="kw">from</span> urllib3.util.retry <span class="kw">import</span> Retry
+
+retry = <span class="fn">Retry</span>(
+    total=<span class="num">3</span>,
+    backoff_factor=<span class="num">1</span>,                         <span class="cmt"># waits: 1s, 2s, 4s</span>
+    status_forcelist=[<span class="num">429</span>, <span class="num">500</span>, <span class="num">502</span>, <span class="num">503</span>, <span class="num">504</span>],
+    allowed_methods=[<span class="str">"GET"</span>, <span class="str">"POST"</span>],
+)
+session.<span class="fn">mount</span>(<span class="str">"https://"</span>, <span class="fn">HTTPAdapter</span>(max_retries=retry))
+<span class="cmt"># Formula: backoff_factor × (2^(retry_n − 1))  → 1s, 2s, 4s</span>
+<span class="cmt"># Never retry 4xx errors (client bugs) except 429 (rate limit)</span></pre>
+<h4>Full exception hierarchy — catch order matters</h4>
+<pre class="cb"><span class="cmt"># IOError</span>
+<span class="cmt"># └── RequestException          ← catch-all</span>
+<span class="cmt">#     ├── ConnectionError       ← DNS, refused, reset</span>
+<span class="cmt">#     │   ├── ProxyError</span>
+<span class="cmt">#     │   └── SSLError</span>
+<span class="cmt">#     ├── HTTPError             ← raised by raise_for_status() on 4xx/5xx</span>
+<span class="cmt">#     ├── TooManyRedirects</span>
+<span class="cmt">#     └── Timeout               ← parent of both</span>
+<span class="cmt">#         ├── ConnectTimeout    ← TCP connect exceeded</span>
+<span class="cmt">#         └── ReadTimeout       ← waiting for response bytes</span>
+
+<span class="cmt"># Correct catch order: specific → general</span>
+<span class="kw">try</span>:
+    r = session.<span class="fn">get</span>(url, timeout=(<span class="num">3</span>, <span class="num">10</span>))
+    r.<span class="fn">raise_for_status</span>()
+<span class="kw">except</span> requests.exceptions.<span class="cls">ConnectTimeout</span>:
+    logger.<span class="fn">warning</span>(<span class="str">"Connect timeout: %s"</span>, url)
+<span class="kw">except</span> requests.exceptions.<span class="cls">ReadTimeout</span>:
+    logger.<span class="fn">warning</span>(<span class="str">"Read timeout: %s"</span>, url)
+<span class="kw">except</span> requests.exceptions.<span class="cls">HTTPError</span> <span class="kw">as</span> e:
+    logger.<span class="fn">error</span>(<span class="str">"HTTP %s: %s"</span>, e.response.status_code, url)
+<span class="kw">except</span> requests.exceptions.<span class="cls">RequestException</span> <span class="kw">as</span> e:
+    logger.<span class="fn">error</span>(<span class="str">"Request failed: %s"</span>, e)    <span class="cmt"># catch-all last</span></pre>`},
+
+  {icon:"🚨",title:"Error Handling & Structured Logging",tag:"Observability",tagClass:"tag-err",content:`
+<p>Good error handling and logging are what separate production pipelines from scripts.</p>
+<h4>Exception hierarchy</h4>
+<pre class="cb"><span class="kw">try</span>:
+    result = <span class="fn">int</span>(user_input) / divisor
+<span class="kw">except</span> <span class="cls">ZeroDivisionError</span>:
+    logger.<span class="fn">error</span>(<span class="str">"Division by zero"</span>)
+<span class="kw">except</span> <span class="cls">ValueError</span> <span class="kw">as</span> e:
+    logger.<span class="fn">error</span>(<span class="str">f"Invalid input: {e}"</span>)
+<span class="kw">except</span> <span class="cls">Exception</span> <span class="kw">as</span> e:
+    logger.<span class="fn">exception</span>(<span class="str">"Unexpected error"</span>)  <span class="cmt"># logs traceback</span>
+    <span class="kw">raise</span>
+<span class="kw">finally</span>:
+    <span class="fn">cleanup</span>()</pre>
+<h4>Logging setup</h4>
+<pre class="cb"><span class="kw">import</span> logging
+
+logging.<span class="fn">basicConfig</span>(
+    level=logging.INFO,
+    format=<span class="str">'%(asctime)s %(levelname)-8s %(name)s %(message)s'</span>,
+    datefmt=<span class="str">'%Y-%m-%d %H:%M:%S'</span>
+)
+logger = logging.<span class="fn">getLogger</span>(__name__)
+
+logger.<span class="fn">debug</span>(<span class="str">"Verbose detail"</span>)     <span class="cmt"># DEBUG &lt; INFO &lt; WARNING &lt; ERROR &lt; CRITICAL</span>
+logger.<span class="fn">info</span>(<span class="str">"Pipeline started"</span>)
+logger.<span class="fn">warning</span>(<span class="str">"Missing field"</span>)
+logger.<span class="fn">error</span>(<span class="str">"Failed to load"</span>)
+logger.<span class="fn">exception</span>(<span class="str">"Crash"</span>)          <span class="cmt"># error + full traceback</span></pre>
+<h4>JSON structured logging (production)</h4>
+<pre class="cb"><span class="kw">from</span> pythonjsonlogger <span class="kw">import</span> jsonlogger
+
+handler = logging.<span class="fn">StreamHandler</span>()
+handler.<span class="fn">setFormatter</span>(<span class="fn">jsonlogger.JsonFormatter</span>(
+    <span class="str">'%(asctime)s %(name)s %(levelname)s %(message)s'</span>
+))
+logger.<span class="fn">addHandler</span>(handler)
+<span class="cmt"># Output: {"asctime": "2024-01-01", "levelname": "INFO", ...}</span></pre>
+<h4>Custom exceptions</h4>
+<pre class="cb"><span class="kw">class</span> <span class="cls">PipelineError</span>(<span class="cls">Exception</span>):
+    <span class="str">"""Base for all pipeline errors."""</span>
+
+<span class="kw">class</span> <span class="cls">ExtractionError</span>(<span class="cls">PipelineError</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, source, reason):
+        <span class="bi">super</span>().<span class="fn">__init__</span>(<span class="str">f"Failed to extract from {source}: {reason}"</span>)
+        <span class="kw">self</span>.source = source</pre>
+<h4>Bare except — the most dangerous anti-pattern</h4>
+<p>A <code>except:</code> with no type catches <strong>everything</strong> — including <code>SystemExit</code> (<code>sys.exit()</code>) and <code>KeyboardInterrupt</code> (Ctrl+C). Your program becomes impossible to stop. A <code>pass</code> inside any <code>except</code> block is almost always a bug — swallowed exceptions leave no trace.</p>
+<pre class="cb"><span class="cmt"># ❌ TERRIBLE — catches SystemExit and KeyboardInterrupt</span>
+<span class="kw">try</span>:
+    <span class="fn">risky_operation</span>()
+<span class="kw">except</span>:
+    <span class="kw">pass</span>   <span class="cmt"># Ctrl+C now does nothing. sys.exit() does nothing.</span>
+
+<span class="cmt"># ✅ CORRECT — catch specific errors; re-raise unexpected ones</span>
+<span class="kw">try</span>:
+    <span class="fn">risky_operation</span>()
+<span class="kw">except</span> <span class="cls">ValueError</span> <span class="kw">as</span> e:
+    logger.<span class="fn">warning</span>(<span class="str">"Recoverable: %s"</span>, e)     <span class="cmt"># handle it, don't re-raise</span>
+<span class="kw">except</span> <span class="cls">Exception</span>:
+    logger.<span class="fn">exception</span>(<span class="str">"Unexpected error"</span>)     <span class="cmt"># logs full traceback</span>
+    <span class="kw">raise</span>                                    <span class="cmt"># unexpected errors MUST propagate</span></pre>
+<h4>logger.exception() vs logger.error()</h4>
+<p><code>logger.error("msg")</code> logs the message only. <code>logger.exception("msg")</code> logs the message <strong>plus the full traceback</strong> automatically — it reads the current exception from <code>sys.exc_info()</code>, so it only makes sense inside an <code>except</code> block.</p>
+<pre class="cb"><span class="cmt"># logger.error — message only (no traceback)</span>
+<span class="kw">except</span> <span class="cls">ZeroDivisionError</span> <span class="kw">as</span> e:
+    logger.<span class="fn">error</span>(<span class="str">"Division failed: %s"</span>, e)
+<span class="cmt"># Output: ERROR:app:Division failed: division by zero</span>
+
+<span class="cmt"># logger.exception — message + full traceback (preferred for unexpected errors)</span>
+<span class="kw">except</span> <span class="cls">ZeroDivisionError</span>:
+    logger.<span class="fn">exception</span>(<span class="str">"Division failed"</span>)
+<span class="cmt"># Output: ERROR:app:Division failed</span>
+<span class="cmt">#         Traceback ... ZeroDivisionError: division by zero</span>
+
+<span class="cmt"># Rule: exception() for unexpected/debug; error() when traceback is noise</span>
+<span class="cmt"># logger.exception() ≡ logger.error("...", exc_info=True)</span></pre>
+<h4>Logging levels — hierarchy</h4>
+<pre class="cb"><span class="cmt"># DEBUG(10) < INFO(20) < WARNING(30) < ERROR(40) < CRITICAL(50)</span>
+<span class="cmt"># Root logger defaults to WARNING — INFO and DEBUG are invisible until configured</span>
+
+logger.<span class="fn">debug</span>(<span class="str">"Config loaded: %s"</span>, config)     <span class="cmt"># dev only — never in prod</span>
+logger.<span class="fn">info</span>(<span class="str">"Pipeline started, rows=%d"</span>, n)    <span class="cmt"># normal milestones</span>
+logger.<span class="fn">warning</span>(<span class="str">"Retrying after 429: url=%s"</span>, u) <span class="cmt"># unexpected but recoverable</span>
+logger.<span class="fn">error</span>(<span class="str">"DB write failed: order=%s"</span>, oid)  <span class="cmt"># operation failed</span>
+logger.<span class="fn">critical</span>(<span class="str">"Cannot reach DB, aborting"</span>)    <span class="cmt"># system stability at risk</span>
+
+<span class="cmt"># Always use %s, not f-strings — lazy evaluation skips formatting if level disabled</span>
+logger.<span class="fn">debug</span>(<span class="str">"Items: %s"</span>, <span class="fn">len</span>(big_list))   <span class="cmt"># ✅ format only if DEBUG enabled</span>
+logger.<span class="fn">debug</span>(<span class="str">f"Items: {len(big_list)}"</span>)    <span class="cmt"># ❌ always evaluates</span>
+
+<span class="cmt"># Suppress noisy third-party libraries:</span>
+logging.<span class="fn">getLogger</span>(<span class="str">'urllib3'</span>).<span class="fn">setLevel</span>(logging.WARNING)</pre>
+<h4>JSON structured logging — production pattern</h4>
+<pre class="cb"><span class="cmt"># pip install python-json-logger</span>
+<span class="kw">from</span> pythonjsonlogger <span class="kw">import</span> jsonlogger
+
+handler = logging.<span class="fn">StreamHandler</span>()
+handler.<span class="fn">setFormatter</span>(<span class="fn">jsonlogger.JsonFormatter</span>(
+    <span class="str">'%(asctime)s %(name)s %(levelname)s %(message)s'</span>
+))
+logger.<span class="fn">addHandler</span>(handler)
+
+<span class="cmt"># Pass context as extra= dict — each key becomes a top-level JSON field</span>
+logger.<span class="fn">info</span>(<span class="str">"Payment processed"</span>,
+            extra={<span class="str">'user_id'</span>: <span class="num">42</span>, <span class="str">'amount'</span>: <span class="num">99.99</span>, <span class="str">'duration_ms'</span>: <span class="num">87</span>})
+<span class="cmt"># → {"asctime":"2024-01-15","levelname":"INFO","message":"Payment processed",</span>
+<span class="cmt">#     "user_id":42,"amount":99.99,"duration_ms":87}</span>
+<span class="cmt"># Each field is independently filterable in Datadog / CloudWatch / Splunk</span></pre>`},
+
+  {icon:"✅",title:"Pydantic & Data Validation",tag:"Validation",tagClass:"tag-val",content:`
+<p>Pydantic provides runtime data validation using Python type annotations — essential for API responses, configs, and pipeline inputs.</p>
+<h4>Basic model</h4>
+<pre class="cb"><span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, Field, field_validator
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">from</span> typing <span class="kw">import</span> Optional
+
+<span class="kw">class</span> <span class="cls">Order</span>(<span class="cls">BaseModel</span>):
+    order_id: int
+    amount: float = <span class="fn">Field</span>(gt=<span class="num">0</span>, description=<span class="str">"Must be positive"</span>)
+    status: str = <span class="fn">Field</span>(default=<span class="str">'pending'</span>, pattern=<span class="str">r'^(pending|done|failed)$'</span>)
+    created_at: datetime
+    tags: list[str] = <span class="fn">Field</span>(default_factory=list)
+
+    @<span class="fn">field_validator</span>(<span class="str">'amount'</span>)
+    @<span class="fn">classmethod</span>
+    <span class="kw">def</span> <span class="fn">round_amount</span>(cls, v):
+        <span class="kw">return</span> <span class="bi">round</span>(v, <span class="num">2</span>)
+
+order = <span class="fn">Order</span>(order_id=<span class="str">'42'</span>, amount=<span class="str">'99.999'</span>, created_at=<span class="str">'2024-01-15'</span>)
+<span class="cmt"># Pydantic coerces '42' → 42, '99.999' → 100.0, str → datetime</span></pre>
+<h4>Serialisation</h4>
+<pre class="cb">order.<span class="fn">model_dump</span>()                    <span class="cmt"># dict</span>
+order.<span class="fn">model_dump_json</span>()               <span class="cmt"># JSON string</span>
+<span class="cls">Order</span>.<span class="fn">model_validate</span>({<span class="str">'order_id'</span>: <span class="num">1</span>, ...})  <span class="cmt"># from dict</span>
+<span class="cls">Order</span>.<span class="fn">model_validate_json</span>(json_string)      <span class="cmt"># from JSON</span></pre>
+<h4>pydantic-settings for config</h4>
+<pre class="cb"><span class="kw">from</span> pydantic_settings <span class="kw">import</span> BaseSettings
+<span class="kw">from</span> pydantic <span class="kw">import</span> SecretStr
+
+<span class="kw">class</span> <span class="cls">Settings</span>(<span class="cls">BaseSettings</span>):
+    db_host: str
+    db_password: <span class="cls">SecretStr</span>
+    debug: bool = <span class="kw">False</span>
+    model_config = {<span class="str">'env_file'</span>: <span class="str">'.env'</span>}
+
+settings = <span class="fn">Settings</span>()
+<span class="bi">print</span>(settings.db_password.<span class="fn">get_secret_value</span>())  <span class="cmt"># access secret</span></pre>
+<h4>Validation error handling</h4>
+<pre class="cb"><span class="kw">from</span> pydantic <span class="kw">import</span> ValidationError
+
+<span class="kw">try</span>:
+    order = <span class="fn">Order</span>(**raw_data)
+<span class="kw">except</span> <span class="cls">ValidationError</span> <span class="kw">as</span> e:
+    <span class="kw">for</span> err <span class="kw">in</span> e.<span class="fn">errors</span>():
+        logger.<span class="fn">error</span>(<span class="str">f"Field {err['loc']}: {err['msg']}"</span>)</pre>
+<h4>Type coercion — lax vs strict mode</h4>
+<p>Pydantic v2 operates in <strong>lax mode</strong> by default: <code>"42"</code> → <code>42</code>, <code>"true"</code> → <code>True</code>, <code>"3.14"</code> → <code>3.14</code>. Coercion is silent — <code>Order(quantity="5")</code> stores the integer <code>5</code>, not the string <code>"5"</code>. Use <code>ConfigDict(strict=True)</code> to require exact types.</p>
+<pre class="cb"><span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, ConfigDict
+
+<span class="cmt"># Lax mode (default) — coercion succeeds silently</span>
+<span class="kw">class</span> <span class="cls">Order</span>(<span class="cls">BaseModel</span>):
+    quantity: int
+    active: bool
+
+o = <span class="fn">Order</span>(quantity=<span class="str">"5"</span>, active=<span class="str">"true"</span>)
+<span class="bi">print</span>(o.quantity)  <span class="cmt"># 5 (int) — silent coercion</span>
+<span class="fn">Order</span>(quantity=<span class="str">"five"</span>)   <span class="cmt"># → ValidationError: can't coerce "five" → int</span>
+
+<span class="cmt"># Strict mode — no coercion at all</span>
+<span class="kw">class</span> <span class="cls">StrictOrder</span>(<span class="cls">BaseModel</span>):
+    model_config = <span class="fn">ConfigDict</span>(strict=<span class="kw">True</span>)
+    quantity: int
+
+<span class="fn">StrictOrder</span>(quantity=<span class="str">"5"</span>)  <span class="cmt"># → ValidationError in strict mode</span>
+<span class="fn">StrictOrder</span>(quantity=<span class="num">5</span>)   <span class="cmt"># ✅ OK</span></pre>
+<h4>@field_validator — custom validation logic</h4>
+<p>Use <code>@field_validator</code> for constraints that <code>Field()</code> can't express — cross-referencing a database, normalising a value, or comparing to today's date. Runs <em>after</em> type coercion. Return the (possibly transformed) value, or raise <code>ValueError</code>.</p>
+<pre class="cb"><span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, field_validator
+<span class="kw">from</span> datetime <span class="kw">import</span> date
+
+<span class="kw">class</span> <span class="cls">Employee</span>(<span class="cls">BaseModel</span>):
+    username:  str
+    hire_date: date
+    dept:      str
+
+    @<span class="fn">field_validator</span>(<span class="str">'username'</span>)
+    @<span class="fn">classmethod</span>   <span class="cmt"># ← required in v2, forgetting it raises RuntimeError</span>
+    <span class="kw">def</span> <span class="fn">username_alphanumeric</span>(cls, v: str) -> str:
+        <span class="kw">if</span> <span class="kw">not</span> v.<span class="fn">isalnum</span>():
+            <span class="kw">raise</span> <span class="cls">ValueError</span>(<span class="str">'must be alphanumeric only'</span>)
+        <span class="kw">return</span> v.<span class="fn">lower</span>()    <span class="cmt"># normalise in place — return the value</span>
+
+    @<span class="fn">field_validator</span>(<span class="str">'hire_date'</span>)
+    @<span class="fn">classmethod</span>
+    <span class="kw">def</span> <span class="fn">not_future</span>(cls, v: date) -> date:
+        <span class="kw">if</span> v > date.<span class="fn">today</span>():
+            <span class="kw">raise</span> <span class="cls">ValueError</span>(<span class="str">'cannot be in the future'</span>)
+        <span class="kw">return</span> v
+
+    <span class="cmt"># One validator for multiple fields:</span>
+    @<span class="fn">field_validator</span>(<span class="str">'username'</span>, <span class="str">'dept'</span>)
+    @<span class="fn">classmethod</span>
+    <span class="kw">def</span> <span class="fn">strip_ws</span>(cls, v: str) -> str:
+        <span class="kw">return</span> v.<span class="fn">strip</span>()</pre>
+<h4>model_dump — serialisation control</h4>
+<pre class="cb">u = <span class="fn">User</span>(id=<span class="num">1</span>, name=<span class="str">"Alice"</span>, password=<span class="str">"secret"</span>, email=<span class="kw">None</span>)
+
+u.<span class="fn">model_dump</span>()                    <span class="cmt"># → full dict including None values</span>
+u.<span class="fn">model_dump</span>(exclude={<span class="str">'password'</span>})  <span class="cmt"># → drop sensitive fields</span>
+u.<span class="fn">model_dump</span>(exclude_none=<span class="kw">True</span>)     <span class="cmt"># → drop fields whose value is None</span>
+u.<span class="fn">model_dump</span>(include={<span class="str">'id'</span>, <span class="str">'name'</span>}) <span class="cmt"># → whitelist specific fields</span>
+u.<span class="fn">model_dump_json</span>(exclude={<span class="str">'password'</span>})  <span class="cmt"># → JSON string directly</span>
+
+<span class="cmt"># Aliases: JSON key differs from Python attribute name</span>
+<span class="kw">class</span> <span class="cls">Resp</span>(<span class="cls">BaseModel</span>):
+    user_id: int = <span class="fn">Field</span>(alias=<span class="str">'userId'</span>)
+
+r = <span class="fn">Resp</span>(userId=<span class="num">5</span>)
+r.<span class="fn">model_dump</span>()               <span class="cmt"># {'user_id': 5}  ← Python name</span>
+r.<span class="fn">model_dump</span>(by_alias=<span class="kw">True</span>)  <span class="cmt"># {'userId': 5}   ← JSON alias</span></pre>`},
+
+  {icon:"🧪",title:"Testing with pytest",tag:"Quality",tagClass:"tag-test",content:`
+<p>pytest is the standard testing framework for Python. Write tests that give you confidence to refactor.</p>
+<h4>Basic test structure</h4>
+<pre class="cb"><span class="cmt"># test_pipeline.py</span>
+<span class="kw">import</span> pytest
+<span class="kw">from</span> myapp.pipeline <span class="kw">import</span> calculate_fee, transform_row
+
+<span class="kw">def</span> <span class="fn">test_calculate_fee_normal</span>():
+    assert <span class="fn">calculate_fee</span>(<span class="num">100</span>) == <span class="num">10.0</span>
+
+<span class="kw">def</span> <span class="fn">test_calculate_fee_zero</span>():
+    assert <span class="fn">calculate_fee</span>(<span class="num">0</span>) == <span class="num">0.0</span>
+
+<span class="kw">def</span> <span class="fn">test_calculate_fee_negative</span>():
+    <span class="kw">with</span> pytest.<span class="fn">raises</span>(<span class="cls">ValueError</span>, match=<span class="str">"positive"</span>):
+        <span class="fn">calculate_fee</span>(-<span class="num">50</span>)</pre>
+<h4>Parametrize — run one test with many inputs</h4>
+<pre class="cb">@pytest.mark.<span class="fn">parametrize</span>(<span class="str">"inp,expected"</span>, [
+    (<span class="num">100</span>, <span class="num">10.0</span>),
+    (<span class="num">0</span>, <span class="num">0.0</span>),
+    (<span class="num">1000</span>, <span class="num">100.0</span>),
+])
+<span class="kw">def</span> <span class="fn">test_fee</span>(inp, expected):
+    assert <span class="fn">calculate_fee</span>(inp) == expected</pre>
+<h4>Fixtures — reusable setup/teardown</h4>
+<pre class="cb">@pytest.<span class="fn">fixture</span>(scope=<span class="str">'session'</span>)  <span class="cmt"># shared across all tests</span>
+<span class="kw">def</span> <span class="fn">db</span>():
+    engine = <span class="fn">create_test_engine</span>()
+    <span class="fn">create_tables</span>(engine)
+    <span class="kw">yield</span> engine                  <span class="cmt"># test runs here</span>
+    engine.<span class="fn">dispose</span>()              <span class="cmt"># teardown
+
+@pytest.fixture
+def sample_df():
+    return pd.DataFrame({'id': [1,2], 'amount': [100, 200]})</span></pre>
+<h4>Mocking with unittest.mock</h4>
+<pre class="cb"><span class="kw">from</span> unittest.mock <span class="kw">import</span> patch, <span class="cls">MagicMock</span>
+
+<span class="kw">def</span> <span class="fn">test_api_call</span>():
+    <span class="kw">with</span> <span class="fn">patch</span>(<span class="str">'myapp.client.requests.get'</span>) <span class="kw">as</span> mock_get:
+        mock_get.<span class="fn">return_value</span>.<span class="fn">json</span>.<span class="fn">return_value</span> = {<span class="str">'data'</span>: [<span class="num">1</span>,<span class="num">2</span>]}
+        mock_get.<span class="fn">return_value</span>.status_code = <span class="num">200</span>
+        result = <span class="fn">fetch_data</span>()
+    assert result == [<span class="num">1</span>, <span class="num">2</span>]</pre>
+<h4>Running tests</h4>
+<pre class="cb">pytest                     <span class="cmt"># run all tests</span>
+pytest -v                  <span class="cmt"># verbose output</span>
+pytest -k "test_fee"       <span class="cmt"># filter by name</span>
+pytest --cov=myapp         <span class="cmt"># with coverage</span></pre>
+<h4>MagicMock — spec and side_effect</h4>
+<p><code>MagicMock</code> auto-generates mocks for any attribute access or method call. Use <code>spec=MyClass</code> to restrict it to the real class's interface — calling a non-existent method raises <code>AttributeError</code>, catching typos at test time.</p>
+<pre class="cb"><span class="kw">from</span> unittest.mock <span class="kw">import</span> MagicMock
+
+mock = <span class="fn">MagicMock</span>()
+mock.<span class="fn">get_user</span>.<span class="fn">return_value</span> = {<span class="str">'id'</span>: <span class="num">1</span>, <span class="str">'name'</span>: <span class="str">'Alice'</span>}
+
+<span class="cmt"># Raise an exception on call:</span>
+mock.<span class="fn">fetch</span>.side_effect = <span class="cls">ConnectionError</span>(<span class="str">"network down"</span>)
+
+<span class="cmt"># Multiple sequential return values:</span>
+mock.<span class="fn">read</span>.side_effect = [<span class="str">b'chunk1'</span>, <span class="str">b'chunk2'</span>, <span class="str">b''</span>]
+
+<span class="cmt"># spec — prevents accessing non-existent attributes (catches typos)</span>
+<span class="kw">from</span> myapp.services <span class="kw">import</span> UserService
+mock_svc = <span class="fn">MagicMock</span>(spec=<span class="cls">UserService</span>)
+mock_svc.<span class="fn">nonexistent_method</span>()  <span class="cmt"># ← AttributeError raised at test time</span></pre>
+<h4>assert_called_once_with vs assert_called_with</h4>
+<p><code>assert_called_with()</code> only checks the <strong>last call</strong> — it passes even if the mock was called 100 times. Always prefer <code>assert_called_once_with()</code> for critical operations (DB writes, emails) to verify exactly one call.</p>
+<pre class="cb">m = <span class="fn">MagicMock</span>()
+m(<span class="str">'first'</span>)
+m(<span class="str">'second'</span>)                        <span class="cmt"># ← this is the last call</span>
+m.<span class="fn">assert_called_with</span>(<span class="str">'second'</span>)     <span class="cmt"># ✅ passes (last call matches)</span>
+m.<span class="fn">assert_called_once_with</span>(<span class="str">'second'</span>) <span class="cmt"># ❌ FAILS — called twice!</span>
+
+<span class="cmt"># Full family of call assertions:</span>
+m.<span class="fn">assert_called</span>()                     <span class="cmt"># was called at all</span>
+m.<span class="fn">assert_called_once</span>()                 <span class="cmt"># called exactly once</span>
+m.<span class="fn">assert_called_with</span>(args)             <span class="cmt"># last call args only</span>
+m.<span class="fn">assert_called_once_with</span>(args)        <span class="cmt"># once AND specific args</span>
+m.<span class="fn">assert_not_called</span>()                  <span class="cmt"># never called</span>
+<span class="bi">print</span>(m.call_count)                    <span class="cmt"># number of times called</span>
+<span class="bi">print</span>(m.call_args_list)                <span class="cmt"># full list of every call</span></pre>
+<h4>Fixture scope — choosing the right level</h4>
+<pre class="cb"><span class="cmt"># scope='function' (default) — fresh per test → safest, slowest</span>
+@pytest.<span class="fn">fixture</span>
+<span class="kw">def</span> <span class="fn">db_conn</span>():
+    conn = <span class="fn">create_test_db</span>()
+    <span class="kw">yield</span> conn
+    conn.<span class="fn">rollback</span>()    <span class="cmt"># undo all writes after each test</span>
+    conn.<span class="fn">close</span>()
+
+<span class="cmt"># scope='session' — shared across all tests → fast, but mutations carry over!</span>
+@pytest.<span class="fn">fixture</span>(scope=<span class="str">'session'</span>)
+<span class="kw">def</span> <span class="fn">db_engine</span>():
+    engine = <span class="fn">create_engine</span>(TEST_DB_URL)
+    <span class="kw">yield</span> engine
+    engine.<span class="fn">dispose</span>()   <span class="cmt"># once after all tests</span>
+
+<span class="cmt"># Fixtures compose — a fixture can depend on other fixtures:</span>
+@pytest.<span class="fn">fixture</span>
+<span class="kw">def</span> <span class="fn">test_user</span>(db_conn):  <span class="cmt"># receives db_conn fixture by name</span>
+    user = <span class="cls">User</span>(name=<span class="str">'Alice'</span>)
+    db_conn.<span class="fn">add</span>(user)
+    <span class="kw">yield</span> user            <span class="cmt"># rollback from db_conn handles cleanup</span></pre>`},
+
+  {icon:"⚙️",title:"Env Variables & Config Management",tag:"Config",tagClass:"tag-config",content:`
+<p>Never hardcode secrets. Use environment variables for all config that changes between environments.</p>
+<h4>Environment variables</h4>
+<pre class="cb"><span class="kw">import</span> os
+
+<span class="cmt"># Required — fails loudly if missing</span>
+db_host = os.environ[<span class="str">'DB_HOST'</span>]
+
+<span class="cmt"># Optional with default</span>
+port = <span class="bi">int</span>(os.<span class="fn">getenv</span>(<span class="str">'PORT'</span>, <span class="str">'8080'</span>))
+debug = os.<span class="fn">getenv</span>(<span class="str">'DEBUG'</span>, <span class="str">'false'</span>).<span class="fn">lower</span>() == <span class="str">'true'</span></pre>
+<h4>.env file with python-dotenv</h4>
+<pre class="cb"><span class="cmt"># .env file (add to .gitignore!)</span>
+<span class="cmt"># DB_HOST=localhost</span>
+<span class="cmt"># DB_PASSWORD=secret</span>
+
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="fn">load_dotenv</span>()                  <span class="cmt"># loads .env into os.environ</span>
+<span class="fn">load_dotenv</span>(<span class="str">'.env.production'</span>)  <span class="cmt"># load a specific env file</span></pre>
+<h4>pydantic-settings (recommended)</h4>
+<pre class="cb"><span class="kw">from</span> pydantic_settings <span class="kw">import</span> BaseSettings
+
+<span class="kw">class</span> <span class="cls">Config</span>(<span class="cls">BaseSettings</span>):
+    db_host: str
+    db_port: int = <span class="num">5432</span>
+    api_key: str
+    batch_size: int = <span class="num">1000</span>
+    model_config = {<span class="str">'env_file'</span>: <span class="str">'.env'</span>}
+
+config = <span class="fn">Config</span>()  <span class="cmt"># validated, typed, one source of truth</span></pre>
+<h4>Secrets management in production</h4>
+<ul>
+  <li><strong>AWS Secrets Manager</strong> — boto3.client('secretsmanager').get_secret_value()</li>
+  <li><strong>HashiCorp Vault</strong> — hvac library</li>
+  <li><strong>GCP Secret Manager</strong> — google-cloud-secret-manager</li>
+  <li><strong>GitHub/GitLab CI Secrets</strong> — injected as env vars at runtime</li>
+</ul>
+<h4>.gitignore essentials</h4>
+<pre class="cb">.env
+.env.*
+*.pem
+*_key.json
+secrets/
+config/local.py</pre>`},
+
+  {icon:"⏰",title:"Scheduling: Python & Cron Basics",tag:"Orchestration",tagClass:"tag-sched",content:`
+<p>Scheduled execution is at the core of every data pipeline. Know cron basics and Python scheduling libraries.</p>
+<h4>Cron syntax</h4>
+<pre class="cb"><span class="cmt"># ┌─── minute (0–59)</span>
+<span class="cmt"># │ ┌─── hour (0–23)</span>
+<span class="cmt"># │ │ ┌─── day of month (1–31)</span>
+<span class="cmt"># │ │ │ ┌─── month (1–12)</span>
+<span class="cmt"># │ │ │ │ ┌─── day of week (0=Sun, 7=Sun)</span>
+<span class="cmt"># │ │ │ │ │</span>
+  <span class="num">0</span> <span class="num">6</span> * * <span class="num">1</span>-<span class="num">5</span>  <span class="cmt"># 6 AM Mon–Fri</span>
+  <span class="num">0</span> <span class="num">0</span> * * *    <span class="cmt"># midnight daily</span>
+  <span class="num">*/</span><span class="num">15</span> * * * * <span class="cmt"># every 15 minutes</span>
+  <span class="num">0</span> <span class="num">0</span> <span class="num">1</span> * *   <span class="cmt"># first of every month</span></pre>
+<h4>crontab commands</h4>
+<pre class="cb">crontab -e          <span class="cmt"># edit your crontab</span>
+crontab -l          <span class="cmt"># list all cron jobs</span>
+crontab -r          <span class="cmt"># remove all cron jobs (careful!)</span>
+
+<span class="cmt"># With logging</span>
+<span class="num">0</span> <span class="num">6</span> * * * /usr/bin/python3 /opt/pipeline.py >> /var/log/pipeline.log <span class="num">2</span>&><span class="num">1</span></pre>
+<h4>APScheduler — in-process Python scheduler</h4>
+<pre class="cb"><span class="kw">from</span> apscheduler.schedulers.blocking <span class="kw">import</span> <span class="cls">BlockingScheduler</span>
+
+scheduler = <span class="fn">BlockingScheduler</span>()
+
+@scheduler.scheduled_job(<span class="str">'cron'</span>, hour=<span class="num">6</span>, day_of_week=<span class="str">'mon-fri'</span>)
+<span class="kw">def</span> <span class="fn">daily_etl</span>():
+    <span class="fn">run_pipeline</span>()
+
+@scheduler.scheduled_job(<span class="str">'interval'</span>, minutes=<span class="num">15</span>)
+<span class="kw">def</span> <span class="fn">heartbeat</span>():
+    <span class="fn">check_health</span>()
+
+scheduler.<span class="fn">start</span>()</pre>
+<h4>Overlap prevention (file lock)</h4>
+<pre class="cb"><span class="kw">import</span> fcntl, sys
+
+lock = <span class="bi">open</span>(<span class="str">'/tmp/pipeline.lock'</span>, <span class="str">'w'</span>)
+<span class="kw">try</span>:
+    fcntl.<span class="fn">flock</span>(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+<span class="kw">except</span> <span class="cls">IOError</span>:
+    sys.<span class="fn">exit</span>(<span class="str">'Already running'</span>)</pre>
+<h4>When to upgrade from cron</h4>
+<ul>
+  <li>Need retries on failure → Apache Airflow, Prefect, Dagster</li>
+  <li>Need job dependencies (A runs after B) → orchestrators</li>
+  <li>Need monitoring dashboard → orchestrators</li>
+  <li>Need backfill (re-run historical dates) → orchestrators</li>
+  <li>Simple, single-machine, no dependencies → cron is fine</li>
+</ul>`}
+];
+
+let current = 0;
+let score = 0;
+let correct = 0;
+let streak = 0;
+let answered = false;
+const catScores = {};
+const catTotals = {};
+QUESTIONS.forEach(q => { catTotals[q.cat] = (catTotals[q.cat]||0) + 1; catScores[q.cat] = catScores[q.cat]||0; });
+
+function catClass(cat) {
+  const m = {
+    'File I/O':'cat-fileio','CSV':'cat-csv','JSON':'cat-json','Parquet':'cat-parquet',
+    'Pandas':'cat-pandas','DB / psycopg':'cat-db','APIs':'cat-api',
+    'Error Handling':'cat-errors','Pydantic':'cat-pydantic','Testing':'cat-testing',
+    'Config':'cat-config','Scheduling':'cat-sched'
+  };
+  return m[cat]||'cat-fileio';
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  answered = false;
+  document.getElementById('qnum').textContent = `Question ${current+1} of ${QUESTIONS.length}`;
+  const badge = document.getElementById('qbadge');
+  badge.textContent = q.cat;
+  badge.className = `cbadge ${catClass(q.cat)}`;
+  document.getElementById('qtxt').textContent = q.q;
+  const codeEl = document.getElementById('qcode');
+  if (q.code) {
+    codeEl.innerHTML = syntaxHL(q.code);
+    codeEl.style.display = 'block';
+  } else {
+    codeEl.style.display = 'none';
+  }
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span class="ol">${letters[i]}</span><span>${escapeHTML(opt)}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    optsEl.appendChild(btn);
+  });
+  document.getElementById('fb').style.display = 'none';
+  document.getElementById('fb').className = 'fb';
+  document.getElementById('tip').style.display = 'none';
+  document.getElementById('nxtbtn').style.display = 'none';
+  document.getElementById('qcard').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+  updateProgress();
+}
+
+function escapeHTML(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function syntaxHL(code) {
+  const keywords = ['import','from','as','def','class','return','with','for','in','if','elif','else','while','try','except','finally','raise','yield','pass','break','continue','and','or','not','is','lambda','True','False','None','self','cls','await','async'];
+  const builtins = ['print','open','len','range','int','float','str','list','dict','tuple','set','bool','type','isinstance','super','round','any','all','zip','enumerate','map','filter','sorted','reversed'];
+  const decorators = ['@pytest','@scheduler','@classmethod','@staticmethod','@property','@field_validator'];
+
+  let h = escapeHTML(code);
+  // comments
+  h = h.replace(/#[^\n]*/g, m => `<span class="cmt">${m}</span>`);
+  // strings (single, double, f-strings)
+  h = h.replace(/(f?)("""[\s\S]*?"""|'''[\s\S]*?'''|"[^"\n]*"|'[^'\n]*')/g, (m, fp, s) => `<span class="str">${fp}${s}</span>`);
+  // decorators
+  decorators.forEach(d => {
+    const esc = d.replace('@','@');
+    h = h.replace(new RegExp(esc + '[a-zA-Z_.]*', 'g'), m => `<span class="dec">${m}</span>`);
+  });
+  // keywords
+  keywords.forEach(kw => {
+    h = h.replace(new RegExp(`\\b(${kw})\\b`, 'g'), '<span class="kw">$1</span>');
+  });
+  // builtins
+  builtins.forEach(bi => {
+    h = h.replace(new RegExp(`\\b(${bi})\\b`, 'g'), '<span class="bi">$1</span>');
+  });
+  // class names (CamelCase)
+  h = h.replace(/\b([A-Z][a-zA-Z0-9]+)\b/g, '<span class="cls">$1</span>');
+  // function calls
+  h = h.replace(/\b([a-z_][a-zA-Z0-9_]*)(\s*\()/g, '<span class="fn">$1</span>$2');
+  // numbers
+  h = h.replace(/\b(\d[\d_]*\.?\d*)\b/g, '<span class="num">$1</span>');
+  return h;
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = QUESTIONS[current];
+  const btns = document.querySelectorAll('.opt');
+  btns.forEach(b => b.disabled = true);
+  const isCorrect = idx === q.ans;
+  if (isCorrect) {
+    btns[idx].classList.add('correct');
+    score += 10;
+    correct++;
+    streak++;
+    catScores[q.cat] = (catScores[q.cat]||0) + 1;
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[q.ans].classList.add('revealed');
+    streak = 0;
+  }
+  document.getElementById('scoreVal').textContent = score;
+  document.getElementById('correctVal').textContent = correct;
+  document.getElementById('streakVal').textContent = streak;
+  const fb = document.getElementById('fb');
+  fb.className = `fb ${isCorrect?'ok':'bad'}`;
+  fb.innerHTML = `<strong>${isCorrect?'✓ Correct!':'✗ Incorrect'}</strong> — ${escapeHTML(q.exp)}`;
+  fb.style.display = 'block';
+  const tip = document.getElementById('tip');
+  document.getElementById('tipTxt').textContent = q.tip;
+  tip.style.display = 'block';
+  document.getElementById('nxtbtn').style.display = 'inline-block';
+  document.getElementById('nxtbtn').textContent = current < QUESTIONS.length - 1 ? 'Next Question →' : 'See Results →';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= QUESTIONS.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+function updateProgress() {
+  const pct = Math.round((current / QUESTIONS.length) * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progTxt').textContent = `${current} / ${QUESTIONS.length}`;
+}
+
+function showResults() {
+  document.getElementById('qcard').style.display = 'none';
+  const res = document.getElementById('results');
+  res.style.display = 'block';
+  const pct = Math.round((correct / QUESTIONS.length) * 100);
+  document.getElementById('rScore').textContent = pct + '%';
+  let grade, msg;
+  if (pct >= 90) { grade = '🏆 Python Master'; msg = 'Outstanding! You have expert-level Python data engineering knowledge.'; }
+  else if (pct >= 75) { grade = '⭐ Advanced'; msg = 'Great work! You have strong Python DE skills. Review the Concepts tab for any gaps.'; }
+  else if (pct >= 60) { grade = '📈 Intermediate'; msg = 'Solid foundation! Focus on testing, Pydantic, and database patterns to level up.'; }
+  else if (pct >= 40) { grade = '🌱 Developing'; msg = 'Good start! Study the Concepts tab and practice file I/O, pandas, and error handling.'; }
+  else { grade = '📚 Beginner'; msg = 'Keep going! Start with file I/O and CSV basics, then progress to pandas and databases.'; }
+  document.getElementById('rGrade').textContent = grade;
+  document.getElementById('rMsg').textContent = `${correct} of ${QUESTIONS.length} correct · ${msg}`;
+  const br = document.getElementById('rBreak');
+  br.innerHTML = '';
+  Object.keys(catTotals).forEach(cat => {
+    const c = catScores[cat]||0;
+    const t = catTotals[cat];
+    const div = document.createElement('div');
+    div.className = 'rbi';
+    div.innerHTML = `<div class="rbn">${escapeHTML(cat)}</div><div class="rbs" style="color:${c/t>=0.7?'var(--correct)':c/t>=0.4?'var(--accent-y)':'var(--wrong)'}">${c}/${t}</div>`;
+    br.appendChild(div);
+  });
+}
+
+function restartQuiz() {
+  current = 0; score = 0; correct = 0; streak = 0;
+  Object.keys(catScores).forEach(k => catScores[k] = 0);
+  document.getElementById('scoreVal').textContent = 0;
+  document.getElementById('correctVal').textContent = 0;
+  document.getElementById('streakVal').textContent = 0;
+  renderQuestion();
+}
+
+function showSection(s) {
+  document.getElementById('quiz').style.display = s==='quiz'?'block':'none';
+  document.getElementById('docs').style.display = s==='docs'?'block':'none';
+  document.querySelectorAll('.nb').forEach((b,i) => b.classList.toggle('on', (i===0&&s==='quiz')||(i===1&&s==='docs')));
+  if (s==='docs' && !document.getElementById('docContent').innerHTML.trim()) renderDocs();
+}
+
+function renderDocs() {
+  const el = document.getElementById('docContent');
+  el.innerHTML = DOCS.map((d,i) => `
+    <div class="dcard">
+      <div class="dh" onclick="toggleDoc(${i})">
+        <span class="di">${d.icon}</span>
+        <span class="dt">${d.title}</span>
+        <span class="dtag ${d.tagClass}">${d.tag}</span>
+        <span class="tog" id="tog${i}">▼</span>
+      </div>
+      <div class="db" id="db${i}">${d.content}</div>
+    </div>
+  `).join('');
+}
+
+function toggleDoc(i) {
+  const db = document.getElementById(`db${i}`);
+  const tog = document.getElementById(`tog${i}`);
+  const dh = db.previousElementSibling;
+  const isOpen = db.classList.contains('open');
+  db.classList.toggle('open', !isOpen);
+  tog.classList.toggle('open', !isOpen);
+  dh.classList.toggle('open', !isOpen);
+}
+
+renderQuestion();
+</script>
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Mastery — Data Engineer Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0c09;
+  --surface: #14150f;
+  --surface2: #1c1d15;
+  --surface3: #1c1d15;
+  --border: #2c2d22;
+  --border2: #1c1d15;
+  --accent: #d9c79a;
+  --accent-g: #86b86a;
+  --accent-o: #d98c5f;
+  --accent-r: #d9705f;
+  --accent-p: #b79adb;
+  --accent-y: #e0b84a;
+  --text: #e9e4d2;
+  --text2: #a8a48c;
+  --text3: #6c6a52;
+  --correct: #86b86a;
+  --wrong: #d9574a;
+  --tip: #d98c5f;
+  --mono: 'JetBrains Mono', monospace;
+  --display: 'Syne', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;font-size:14px;line-height:1.6;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(217,199,154,0.06),transparent);pointer-events:none;z-index:0;}
+
+/* ── LAYOUT ── */
+.page{max-width:860px;margin:0 auto;padding:0 20px 60px;position:relative;z-index:1;}
+
+/* ── HEADER ── */
+header{padding:28px 0 0;border-bottom:1px solid var(--border);}
+.hd{display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;flex-wrap:wrap;gap:12px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:38px;height:38px;background:linear-gradient(135deg,#d9c79a,#86b86a);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.brand-name{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(90deg,#d9c79a,#86b86a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.brand-sub{font-size:10px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;display:block;}
+nav{display:flex;gap:4px;}
+.nb{padding:8px 18px;background:transparent;border:1px solid var(--border);border-bottom:none;color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer;border-radius:6px 6px 0 0;transition:all .2s;text-transform:uppercase;}
+.nb:hover,.nb.on{background:var(--surface);color:var(--accent);border-color:var(--accent);}
+
+/* ── SCORE BAR ── */
+.sbar{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 20px;margin:24px 0 20px;flex-wrap:wrap;}
+.si{text-align:center;min-width:44px;}
+.sv{font-size:22px;font-weight:700;color:var(--accent);}
+.sl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;}
+.pc{flex:1;min-width:160px;}
+.pl{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}
+.pb{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.pf{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-g));border-radius:3px;transition:width .5s ease;width:0%;}
+
+/* ── CATEGORY BADGE ── */
+.cbadge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border:1px solid;border-radius:20px;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600;}
+.cat-join{color:#d9c79a;border-color:rgba(217,199,154,.3);background:rgba(217,199,154,.07);}
+.cat-group{color:#86b86a;border-color:rgba(134,184,106,.3);background:rgba(134,184,106,.07);}
+.cat-agg{color:#b79adb;border-color:rgba(188,140,255,.3);background:rgba(188,140,255,.07);}
+.cat-sub{color:#d98c5f;border-color:rgba(217,140,95,.3);background:rgba(217,140,95,.07);}
+.cat-cte{color:#e0b84a;border-color:rgba(224,184,74,.3);background:rgba(224,184,74,.07);}
+.cat-win{color:#d9c79a;border-color:rgba(217,199,154,.3);background:rgba(217,199,154,.07);}
+.cat-rank{color:#b79adb;border-color:rgba(188,140,255,.3);background:rgba(188,140,255,.07);}
+.cat-case{color:#d98c5f;border-color:rgba(217,140,95,.3);background:rgba(217,140,95,.07);}
+.cat-str{color:#86b86a;border-color:rgba(134,184,106,.3);background:rgba(134,184,106,.07);}
+.cat-date{color:#e0b84a;border-color:rgba(224,184,74,.3);background:rgba(224,184,74,.07);}
+.cat-roll{color:#d9c79a;border-color:rgba(217,199,154,.3);background:rgba(217,199,154,.07);}
+.cat-ntile{color:#b79adb;border-color:rgba(188,140,255,.3);background:rgba(188,140,255,.07);}
+
+/* ── QUESTION CARD ── */
+.qcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:14px;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.qnum{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;}
+.qtxt{font-size:15px;font-weight:500;color:var(--text);line-height:1.65;margin-bottom:16px;}
+
+/* ── CODE BLOCK ── */
+pre.cb{background:#070806;border:1px solid var(--border2);border-left:3px solid var(--accent);border-radius:8px;padding:14px 16px;font-size:12px;line-height:1.75;overflow-x:auto;margin:10px 0 18px;font-family:var(--mono);white-space:pre;}
+.kw{color:#d9705f;}.fn{color:#cdb8e6;}.kw2{color:#e8dbb4;}.str{color:#ede3c4;}.cmt{color:#a8a48c;font-style:italic;}.tbl{color:#a9d08a;}.num{color:#e8c868;}.op{color:#d9705f;}
+
+/* ── OPTIONS ── */
+.opts{display:grid;gap:8px;}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;cursor:pointer;text-align:left;font-family:var(--mono);font-size:13px;color:var(--text2);transition:all .18s;line-height:1.5;width:100%;}
+.opt:hover:not(:disabled){border-color:var(--accent);color:var(--text);background:rgba(217,199,154,.05);}
+.opt:disabled{cursor:not-allowed;}
+.ol{min-width:22px;height:22px;background:var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text3);flex-shrink:0;margin-top:1px;}
+.opt.correct{border-color:var(--correct);background:rgba(134,184,106,.08);color:var(--correct);}
+.opt.correct .ol{background:var(--correct);color:#000;}
+.opt.wrong{border-color:var(--wrong);background:rgba(217,87,74,.08);color:var(--wrong);}
+.opt.wrong .ol{background:var(--wrong);color:#fff;}
+.opt.revealed{border-color:rgba(134,184,106,.4);background:rgba(134,184,106,.05);color:var(--correct);}
+.opt.revealed .ol{background:rgba(134,184,106,.2);color:var(--correct);}
+
+/* ── FEEDBACK ── */
+.fb{margin-top:14px;padding:12px 16px;border-radius:9px;font-size:12.5px;line-height:1.65;display:none;animation:slideIn .28s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:translateY(0);}}
+.fb.ok{background:rgba(134,184,106,.08);border:1px solid rgba(134,184,106,.3);color:#a9d08a;}
+.fb.bad{background:rgba(217,87,74,.08);border:1px solid rgba(217,87,74,.3);color:#e8a095;}
+
+/* ── TIP ── */
+.tip{margin-top:10px;padding:12px 16px;background:rgba(217,140,95,.06);border:1px solid rgba(217,140,95,.25);border-radius:9px;font-size:12px;color:#d9a77c;line-height:1.7;display:none;}
+.tiplabel{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--tip);font-weight:700;margin-bottom:5px;}
+
+/* ── NEXT BUTTON ── */
+.nxtbtn{margin-top:18px;padding:10px 24px;background:linear-gradient(135deg,var(--accent),var(--accent-g));border:none;border-radius:7px;color:#000;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;display:none;transition:opacity .2s,transform .2s;}
+.nxtbtn:hover{opacity:.85;transform:translateY(-1px);}
+
+/* ── RESULTS ── */
+#results{display:none;text-align:center;padding:48px 24px;background:var(--surface);border:1px solid var(--border);border-radius:14px;}
+.rscore{font-size:70px;font-weight:800;font-family:var(--display);background:linear-gradient(135deg,var(--accent),var(--accent-g));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.rlabel{font-size:12px;color:var(--text3);margin-top:6px;text-transform:uppercase;letter-spacing:2px;}
+.rgrade{font-size:26px;font-family:var(--display);font-weight:700;color:var(--accent-g);margin:20px 0 6px;}
+.rmsg{color:var(--text2);font-size:13px;margin-bottom:28px;line-height:1.65;}
+.rbr{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin:20px 0;text-align:left;}
+.rbi{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;}
+.rbn{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+.rbs{font-size:17px;font-weight:700;color:var(--accent);}
+.rbtn{padding:12px 32px;background:linear-gradient(135deg,var(--accent),var(--accent-g));border:none;border-radius:7px;color:#000;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;}
+
+/* ── DOCS ── */
+#docs{display:none;padding-top:8px;}
+.dcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;}
+.dh{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid transparent;cursor:pointer;user-select:none;transition:background .2s;}
+.dh:hover{background:var(--surface2);}
+.dh.open{border-bottom-color:var(--border);}
+.di{font-size:18px;flex-shrink:0;}
+.dt{font-family:var(--display);font-size:15px;font-weight:700;color:var(--text);flex:1;}
+.dtag{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;padding:3px 10px;border-radius:12px;font-weight:700;}
+.tog{color:var(--text3);font-size:11px;transition:transform .3s;}
+.tog.open{transform:rotate(180deg);}
+.db{display:none;padding:18px 20px;}
+.db.open{display:block;}
+.db p{color:var(--text2);font-size:13px;line-height:1.8;margin-bottom:12px;}
+.db h4{font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 6px;font-weight:600;}
+.db ul{padding-left:18px;color:var(--text2);font-size:13px;line-height:1.8;margin-bottom:12px;}
+.db li{margin-bottom:2px;}
+.db pre.cb{margin:10px 0;}
+
+/* ── FILTER BAR ── */
+.fbar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px;}
+.fc{padding:5px 13px;background:var(--surface);border:1px solid var(--border);border-radius:20px;font-size:10px;color:var(--text3);cursor:pointer;font-family:var(--mono);transition:all .2s;text-transform:uppercase;letter-spacing:1px;}
+.fc:hover,.fc.on{background:rgba(217,199,154,.1);border-color:var(--accent);color:var(--accent);}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Lora&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/png;base64,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">
+<style>
+/* ── military design (from de_study_military_plan) ── */
+.mil-hero{display:flex;flex-direction:column;align-items:center;gap:.6rem;padding:1.6rem 2rem 1.2rem;background:#14150f;text-align:center;border-bottom:1px solid #2c2d22}
+.mil-logo{width:150px;height:auto;flex-shrink:0;filter:drop-shadow(0 4px 14px rgba(0,0,0,.55))}
+.mil-ttl{font:700 22px Syne,sans-serif;color:#e9e4d2}.mil-ttl span{color:#d9c79a}
+.mil-sub{font:12.5px 'JetBrains Mono',monospace;color:#6c6a52;letter-spacing:.08em}
+@media(max-width:640px){.mil-hero{padding:1.2rem 1rem .8rem}.mil-logo{width:110px}}
+header{padding-top:12px;border-bottom:1px solid var(--border)}.hd{justify-content:center;padding-bottom:0}.page{max-width:900px}body{font-family:var(--mono)}</style>
+</head>
+<body>
+<div class="page">
+<header class="mil-hero"><img class="mil-logo" src="data:image/png;base64,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" alt="SQL Mastery Data Engineer Quiz"><span class="mil-ttl">SQL Mastery <span>Data Engineer Quiz</span></span><span class="mil-sub">OPERATION · SQL · 35 QUESTIONS</span></header>
+<header>
+  <div class="hd">
+    <nav>
+      <button class="nb on" onclick="showSection('quiz')">🎯 Quiz</button>
+      <button class="nb" onclick="showSection('docs')">📚 Concepts</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ── QUIZ ── -->
+<div id="quiz">
+  <div class="sbar">
+    <div class="si"><div class="sv" id="scoreVal">0</div><div class="sl">Score</div></div>
+    <div class="si"><div class="sv" id="correctVal">0</div><div class="sl">Correct</div></div>
+    <div class="pc">
+      <div class="pl"><span>Progress</span><span id="progTxt">0 / 35</span></div>
+      <div class="pb"><div class="pf" id="progFill"></div></div>
+    </div>
+    <div class="si"><div class="sv" id="streakVal">0</div><div class="sl">Streak 🔥</div></div>
+  </div>
+
+  <div id="qarea">
+    <div class="qcard" id="qcard">
+      <div class="qnum" id="qnum">Question 1 of 35</div>
+      <div class="cbadge" id="qbadge"></div>
+      <div class="qtxt" id="qtxt"></div>
+      <pre class="cb" id="qcode" style="display:none"></pre>
+      <div class="opts" id="opts"></div>
+      <div class="fb" id="fb"></div>
+      <div class="tip" id="tip"><div class="tiplabel">💡 Pro Tip</div><div id="tipTxt"></div></div>
+      <button class="nxtbtn" id="nxtbtn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </div>
+
+  <div id="results">
+    <div class="rscore" id="rScore"></div>
+    <div class="rlabel">Final Score</div>
+    <div class="rgrade" id="rGrade"></div>
+    <div class="rmsg" id="rMsg"></div>
+    <div class="rbr" id="rBreak"></div>
+    <button class="rbtn" onclick="restartQuiz()">↺ Restart Quiz</button>
+  </div>
+</div>
+
+<!-- ── DOCS ── -->
+<div id="docs">
+  <div id="docContent"></div>
+</div>
+</main>
+</div>
+
+<script>
+const QUESTIONS = [
+  /* ── JOINs ── */
+  {cat:"JOIN",q:"What does an INNER JOIN return?",code:null,opts:["All rows from the left table, with NULLs for non-matching right rows","Only rows where there is a matching value in BOTH tables","All rows from both tables, with NULLs where there is no match","A Cartesian product of both tables"],ans:1,exp:"INNER JOIN returns only rows where the join condition is satisfied in both tables. Non-matching rows are excluded entirely from the result.",tip:"Think of INNER JOIN as the intersection of two sets — only rows that exist in both tables survive."},
+  {cat:"JOIN",q:"What is returned by a LEFT JOIN when there's no matching row in the right table?",code:"SELECT c.name, o.order_id\nFROM customers c\nLEFT JOIN orders o ON c.id = o.customer_id",opts:["The row is excluded from the result","An error is thrown","The left-table row is returned with NULL values for all right-table columns","The row is duplicated for every row in the right table"],ans:2,exp:"LEFT JOIN preserves ALL rows from the left table. When no matching row exists in the right table, those columns are filled with NULL.",tip:"LEFT JOIN = 'keep all left rows no matter what'. Perfect for finding customers with no orders: WHERE o.order_id IS NULL after a LEFT JOIN."},
+  {cat:"JOIN",q:"Which JOIN type returns all rows from both tables, filling NULLs where there is no match on either side?",code:null,opts:["LEFT JOIN","RIGHT JOIN","CROSS JOIN","FULL OUTER JOIN"],ans:3,exp:"FULL OUTER JOIN returns every row from both tables. Where there is no match, the missing side is NULL. It equals LEFT JOIN ∪ RIGHT JOIN.",tip:"FULL OUTER JOIN is useful for finding unmatched rows on either side. Filter WHERE left.id IS NULL OR right.id IS NULL to find rows with no counterpart."},
+  {cat:"JOIN",q:"What does a CROSS JOIN produce?",code:"SELECT s.size, c.color\nFROM sizes s\nCROSS JOIN colors c",opts:["Only matching rows from both tables","All rows from the left table only","The Cartesian product — every row from A paired with every row from B","Rows that exist in one table but not the other"],ans:2,exp:"A CROSS JOIN produces the Cartesian product. 5 sizes × 4 colors = 20 rows. There is no ON condition — every combination is returned.",tip:"Rare in production but useful for generating combinations (e.g., a calendar of all dates × all stores). Watch out — 1000 × 1000 = 1,000,000 rows!"},
+  {cat:"JOIN",q:"What does this self-join accomplish?",code:"SELECT e.name AS employee, m.name AS manager\nFROM employees e\nLEFT JOIN employees m ON e.manager_id = m.id",opts:["Joins a table to itself to express within-table relationships","Creates a backup copy of the table","Returns only employees without a manager","Generates a Cartesian product of the employees table"],ans:0,exp:"A self-join references the same table twice using aliases. Here it links each employee to their manager, where both are stored in the same table.",tip:"Self-joins are ideal for hierarchical data (employee→manager, category→parent). Always use aliases (e and m here) to distinguish the two roles of the same table."},
+  /* ── GROUP BY ── */
+  {cat:"GROUP BY",q:"Which query correctly counts the number of orders per customer?",code:null,opts:["SELECT customer_id, COUNT(*) FROM orders","SELECT customer_id, COUNT(*) FROM orders GROUP BY customer_id","SELECT customer_id, COUNT(*) FROM orders WHERE customer_id > 0","SELECT COUNT(*) FROM orders GROUP BY customer_id"],ans:1,exp:"Every non-aggregated column in SELECT must appear in GROUP BY. Option B groups by customer_id and counts rows per group — the others are invalid or missing the select column.",tip:"The rule: any column in SELECT not wrapped in an aggregate function (SUM, COUNT, AVG…) MUST be in GROUP BY. This is enforced strictly in most databases."},
+  {cat:"GROUP BY",q:"What is the fundamental difference between WHERE and HAVING?",code:"SELECT department, AVG(salary) AS avg_sal\nFROM employees\nWHERE status = 'active'\nGROUP BY department\nHAVING AVG(salary) > 60000",opts:["WHERE filters after aggregation; HAVING filters before","WHERE filters rows before aggregation; HAVING filters groups after aggregation","They are interchangeable — use either one","HAVING can only be used without GROUP BY"],ans:1,exp:"WHERE filters individual rows BEFORE grouping. HAVING filters the resulting groups AFTER GROUP BY and aggregation. You cannot use aggregate functions in WHERE.",tip:"Execution order: WHERE → GROUP BY → aggregation → HAVING → SELECT → ORDER BY → LIMIT. Understanding this order prevents many bugs."},
+  {cat:"GROUP BY",q:"What does GROUP BY ROLLUP(department, job_title) produce?",code:"SELECT department, job_title, SUM(salary)\nFROM employees\nGROUP BY ROLLUP(department, job_title)",opts:["Only the grand total salary across all rows","Only totals per department","Subtotals per (dept, job_title), subtotals per dept only, and a grand total","An error — ROLLUP is not valid SQL"],ans:2,exp:"ROLLUP generates a hierarchy of aggregations: the full group (dept+job), the subtotal at the first column (dept only), and the grand total (no grouping). NULLs mark the rolled-up rows.",tip:"ROLLUP(a,b,c) produces N+1 levels. CUBE produces all 2^N combinations. GROUPING SETS lets you specify exactly which combinations you want."},
+  /* ── AGGREGATION ── */
+  {cat:"Aggregation",q:"What is the difference between COUNT(*) and COUNT(column_name)?",code:null,opts:["COUNT(*) counts only distinct values; COUNT(col) counts all rows","COUNT(*) counts all rows including NULLs; COUNT(col) ignores NULL values","They are identical in all cases","COUNT(col) is always faster than COUNT(*)"],ans:1,exp:"COUNT(*) counts every row, including rows where columns are NULL. COUNT(column_name) counts only rows where that specific column is NOT NULL.",tip:"Use COUNT(*) for total row count. Use COUNT(col) to count non-null values in a specific column. Add DISTINCT inside: COUNT(DISTINCT customer_id) for unique counts."},
+  {cat:"Aggregation",q:"Given salaries: 50000, 60000, NULL, 80000 — what does AVG(salary) return?",code:"SELECT AVG(salary) FROM employees\n-- Salaries: 50000, 60000, NULL, 80000",opts:["47500 (treats NULL as 0, divides by 4)","63333 (ignores NULL, divides by 3 non-NULL rows)","NULL (NULL propagates through AVG)","Error: cannot compute AVG with NULLs"],ans:1,exp:"AVG ignores NULL values completely. It computes (50000 + 60000 + 80000) / 3 = 63333. NULLs are excluded from both the sum and the denominator count.",tip:"All aggregate functions (SUM, AVG, MIN, MAX, COUNT(col)) silently ignore NULLs. Only COUNT(*) is immune — it counts rows regardless. Use COALESCE before aggregating if you want NULLs treated as 0."},
+  {cat:"Aggregation",q:"What does this conditional aggregation query compute?",code:"SELECT department,\n  SUM(CASE WHEN gender = 'F' THEN salary ELSE 0 END) AS female_total,\n  SUM(CASE WHEN gender = 'M' THEN salary ELSE 0 END) AS male_total\nFROM employees\nGROUP BY department",opts:["Count of employees by gender per department","Total salary paid to female vs male employees, per department","Average salary by gender","Whether gender pay gaps exist"],ans:1,exp:"CASE inside an aggregate conditionally includes values. The first SUM adds salary only when gender='F', the second only when gender='M'. This is the conditional aggregation pattern.",tip:"Conditional aggregation (CASE inside SUM/COUNT) is how you pivot data in SQL without PIVOT syntax. It's a core data engineering pattern — compute multiple metrics in a single table scan."},
+  /* ── SUBQUERIES ── */
+  {cat:"Subqueries",q:"What does this query return?",code:"SELECT name, salary\nFROM employees\nWHERE salary > (\n  SELECT AVG(salary)\n  FROM employees\n)",opts:["Employees with salary exactly equal to the average","All employees and their salaries","Employees whose salary is above the overall company average","A syntax error — subqueries cannot appear in WHERE"],ans:2,exp:"The subquery computes one value: the overall average salary. The outer query filters to employees with salary greater than that average. This is a scalar subquery.",tip:"Scalar subqueries (returning exactly one row and one column) can appear anywhere a single value is expected: WHERE, SELECT, HAVING, even JOIN ON clauses."},
+  {cat:"Subqueries",q:"What makes a subquery 'correlated'?",code:"SELECT e.name FROM employees e\nWHERE salary > (\n  SELECT AVG(salary) FROM employees\n  WHERE department_id = e.department_id\n)",opts:["It returns multiple columns","It references a column from the outer query, re-executing for each outer row","It is placed in the FROM clause as a derived table","It uses a JOIN internally"],ans:1,exp:"A correlated subquery references a column from the outer query (e.department_id). It is re-evaluated for every row of the outer query, which can be slow on large datasets.",tip:"Correlated subqueries are powerful but O(n) expensive. They're often replaceable with a window function (AVG(salary) OVER (PARTITION BY department_id)) for far better performance."},
+  {cat:"Subqueries",q:"When should you prefer EXISTS over IN with a subquery?",code:"-- EXISTS version\nSELECT * FROM orders o\nWHERE EXISTS (\n  SELECT 1 FROM returns r WHERE r.order_id = o.id\n)\n\n-- IN version\nSELECT * FROM orders\nWHERE order_id IN (SELECT order_id FROM returns)",opts:["Always use IN — it is always faster","EXISTS is better for large subquery results and avoids NULL traps in NOT IN","They always produce identical results — prefer whichever reads better","EXISTS is only valid for numeric comparisons"],ans:1,exp:"EXISTS short-circuits on the first match (faster for large sets). More importantly: NOT IN returns no rows if the subquery returns ANY NULL value, which is a notorious bug source. NOT EXISTS handles NULLs correctly.",tip:"Critical rule: NEVER use NOT IN when the subquery column can contain NULLs — it returns zero rows silently. Always use NOT EXISTS or NOT IN with a WHERE col IS NOT NULL filter."},
+  /* ── CTEs ── */
+  {cat:"CTEs",q:"Which syntax correctly defines a CTE?",code:null,opts:["SELECT * INTO cte_name FROM orders","WITH cte_name AS (SELECT * FROM orders) SELECT * FROM cte_name","CREATE TEMP TABLE cte_name AS SELECT * FROM orders","DEFINE cte_name AS SELECT * FROM orders"],ans:1,exp:"CTEs use the WITH...AS syntax and are defined inline before the main SELECT. They exist only for the duration of that single query — unlike temp tables.",tip:"CTEs shine for readability: break a complex query into named steps. They can also be referenced multiple times in the same query, unlike derived tables in the FROM clause."},
+  {cat:"CTEs",q:"What is the purpose of a recursive CTE?",code:"WITH RECURSIVE org AS (\n  -- Anchor: top-level managers\n  SELECT id, name, manager_id, 1 AS lvl\n  FROM employees WHERE manager_id IS NULL\n  UNION ALL\n  -- Recursive: each employee's reports\n  SELECT e.id, e.name, e.manager_id, o.lvl + 1\n  FROM employees e\n  JOIN org o ON e.manager_id = o.id\n)\nSELECT * FROM org",opts:["Running the same query multiple times for caching","Traversing hierarchical or graph-like data such as org charts or trees","Defining CTEs with more than 5 columns","Replacing subqueries in the SELECT clause"],ans:1,exp:"Recursive CTEs reference themselves to traverse hierarchical structures. The anchor provides the starting rows; the recursive part joins back to the CTE to reach the next level.",tip:"Recursive CTEs need: (1) an anchor (base case), (2) UNION ALL, (3) a recursive step that joins to the CTE itself. Add a depth limit or cycle guard on real data to avoid infinite loops."},
+  {cat:"CTEs",q:"Can one query contain multiple CTEs referencing each other?",code:"WITH\n  monthly_rev AS (\n    SELECT DATE_TRUNC('month', order_date) AS month,\n           SUM(amount) AS revenue\n    FROM orders GROUP BY 1\n  ),\n  ranked AS (\n    SELECT *, RANK() OVER (ORDER BY revenue DESC) AS rk\n    FROM monthly_rev\n  )\nSELECT * FROM ranked WHERE rk <= 3",opts:["No — only one CTE per query is allowed","Yes — multiple CTEs are separated by commas under a single WITH keyword","Yes — each CTE requires its own WITH keyword","Only in stored procedures, not regular queries"],ans:1,exp:"Multiple CTEs share a single WITH clause, separated by commas. Each CTE can reference any CTE defined before it in the list. This creates a clean step-by-step transformation pipeline.",tip:"Think of multiple CTEs as a linear pipeline: CTE1 → CTE2 → CTE3 → final SELECT. This is the backbone of readable, maintainable SQL in data engineering."},
+  /* ── WINDOW FUNCTIONS ── */
+  {cat:"Window Functions",q:"What does PARTITION BY do inside a window function?",code:"SELECT name, department, salary,\n  AVG(salary) OVER (PARTITION BY department) AS dept_avg\nFROM employees",opts:["Filters rows like WHERE — removes rows from the result","Divides rows into independent groups; the function computes separately within each","Sorts the result set by department","Limits the number of rows per department"],ans:1,exp:"PARTITION BY divides the result set into independent windows. The window function computes separately within each partition. All rows are preserved — unlike GROUP BY which collapses them.",tip:"KEY difference: GROUP BY collapses N rows → 1 row per group. PARTITION BY keeps all N rows but adds a per-group calculation beside each row. You get the detail AND the aggregate."},
+  {cat:"Window Functions",q:"What is the key difference between ROW_NUMBER(), RANK(), and DENSE_RANK() when scores are tied?",code:"-- scores: 100, 90, 90, 80\n-- ROW_NUMBER:  1,  2,  3,  4  (always unique)\n-- RANK:        1,  2,  2,  4  (skips 3 after tie)\n-- DENSE_RANK:  1,  2,  2,  3  (no gap after tie)",opts:["ROW_NUMBER gives unique sequential numbers; RANK skips after ties; DENSE_RANK never skips","RANK gives unique numbers; ROW_NUMBER skips after ties; DENSE_RANK is the same as RANK","All three produce the same results","DENSE_RANK skips numbers; RANK does not"],ans:0,exp:"ROW_NUMBER: always unique, arbitrary tiebreaker. RANK: ties share a rank, the next rank jumps (1,2,2,4 — rank 3 is skipped). DENSE_RANK: ties share a rank, next rank is consecutive (1,2,2,3 — no gap).",tip:"Mnemonic: RANK = sports podium (two silver medalists means no bronze). DENSE_RANK = no gaps ever. ROW_NUMBER = arbitrarily breaks all ties. Use ROW_NUMBER for 'top-1 per group' to get exactly one row."},
+  {cat:"Window Functions",q:"What do LAG() and LEAD() functions provide?",code:"SELECT date, revenue,\n  LAG(revenue, 1)  OVER (ORDER BY date) AS prev_day,\n  LEAD(revenue, 1) OVER (ORDER BY date) AS next_day\nFROM daily_sales",opts:["LAG returns the minimum value; LEAD returns the maximum","LAG accesses a value from N rows before current; LEAD accesses N rows after","LAG and LEAD calculate running totals across all rows","They require PARTITION BY and cannot work with ORDER BY alone"],ans:1,exp:"LAG(col, n) returns the value from the row n positions before the current row. LEAD(col, n) returns the value from n rows after. Both require ORDER BY to define 'before' and 'after'.",tip:"LAG/LEAD eliminate self-joins for period-over-period analysis. revenue - LAG(revenue) OVER (ORDER BY date) gives day-over-day delta in one line. Add a default as the 3rd arg for the first/last row."},
+  {cat:"Window Functions",q:"What does OVER() with no arguments compute?",code:"SELECT name, salary,\n  SUM(salary) OVER ()     AS company_total,\n  SUM(salary) OVER (PARTITION BY dept) AS dept_total\nFROM employees",opts:["OVER() with no arguments is invalid syntax","OVER() treats the entire result set as one single partition","PARTITION BY is required; OVER() alone returns NULL","Both expressions above produce identical results"],ans:1,exp:"OVER() with no arguments treats all rows as a single partition. Every row gets the grand total. OVER(PARTITION BY dept) resets the window per department.",tip:"OVER() = grand total beside every row. OVER(PARTITION BY x) = group total beside every row. OVER(ORDER BY date) = running total. Combine them: OVER(PARTITION BY dept ORDER BY date) = running total per department."},
+  {cat:"Window Functions",q:"What does PERCENT_RANK() return for a row?",code:"SELECT name, score,\n  PERCENT_RANK() OVER (ORDER BY score) AS pct_rank\nFROM results\n-- Possible output: 0.0, 0.25, 0.5, 0.75, 1.0",opts:["The percentage of the max score this row achieves","The relative rank as a fraction between 0 and 1 (0 = lowest, 1 = highest)","The percentile bucket (like NTILE(100))","The cumulative fraction of rows seen so far"],ans:1,exp:"PERCENT_RANK = (rank - 1) / (total_rows - 1). The lowest-ranked row = 0.0, the highest = 1.0. It shows each row's relative standing in the ordered set.",tip:"PERCENT_RANK vs CUME_DIST: PERCENT_RANK = (rank-1)/(n-1) — excludes current row from denominator. CUME_DIST = rows_≤_current/n — the fraction of rows at or below this value. Both range [0,1]."},
+  /* ── ROW_NUMBER / RANK ── */
+  {cat:"ROW_NUMBER / RANK",q:"How do you get exactly the top-1 highest-paid employee per department?",code:"SELECT * FROM (\n  SELECT name, department, salary,\n    ROW_NUMBER() OVER (\n      PARTITION BY department\n      ORDER BY salary DESC\n    ) AS rn\n  FROM employees\n) t\nWHERE rn = 1",opts:["GROUP BY department and MAX(salary) — simpler and equivalent","Wrap ROW_NUMBER() in a subquery and filter WHERE rn = 1","Use RANK() instead — it's identical for this use case","Use DENSE_RANK() ≤ 1 for exactly the same result"],ans:1,exp:"ROW_NUMBER() assigns unique numbers per partition, so rn=1 always returns exactly one row per department. RANK() could return multiple rows if there's a salary tie at the top.",tip:"This is the 'top-N per group' pattern — essential in data engineering. Use ROW_NUMBER for strict N=1. Use RANK or DENSE_RANK when ties should be included. Use QUALIFY in Snowflake/BigQuery to skip the subquery."},
+  /* ── CASE ── */
+  {cat:"CASE",q:"What does this CASE expression return for salary = 45000?",code:"CASE\n  WHEN salary < 40000  THEN 'Junior'\n  WHEN salary BETWEEN 40000 AND 70000 THEN 'Mid'\n  WHEN salary > 70000  THEN 'Senior'\n  ELSE 'Unknown'\nEND AS level",opts:["'Junior'","'Mid'","'Senior'","'Unknown'"],ans:1,exp:"45000 fails the first condition (< 40000). It satisfies BETWEEN 40000 AND 70000, so 'Mid' is returned. CASE evaluates top-to-bottom and stops at the first TRUE condition.",tip:"CASE is short-circuit: once a condition matches, no further conditions are evaluated. Always include ELSE — without it, unmatched rows return NULL, which causes silent data quality bugs."},
+  {cat:"CASE",q:"What is the difference between a Simple CASE and a Searched CASE?",code:"-- Simple CASE: tests equality against one expression\nCASE status\n  WHEN 'A' THEN 'Active'\n  WHEN 'I' THEN 'Inactive'\nEND\n\n-- Searched CASE: each WHEN has its own condition\nCASE\n  WHEN age < 18  THEN 'Minor'\n  WHEN age >= 65 THEN 'Senior'\n  ELSE 'Adult'\nEND",opts:["Simple CASE uses =; Searched CASE can use any comparison operator or expression","They produce different SQL and one is faster than the other","Simple CASE is for numbers only; Searched CASE is for strings only","They are identical — just alternative syntax"],ans:0,exp:"Simple CASE compares one expression against literal values (equality only). Searched CASE evaluates arbitrary boolean expressions in each WHEN, allowing ranges, IS NULL, LIKE, and compound conditions.",tip:"Searched CASE is far more flexible — use it when you need anything beyond equality. But be careful about overlapping conditions: CASE picks the FIRST matching WHEN, so order matters."},
+  /* ── STRING FUNCTIONS ── */
+  {cat:"String Functions",q:"What does SUBSTRING('DataEngineer', 5, 8) return?",code:null,opts:["'Data'","'Engineer'","'Engi'","'tEngineer'"],ans:1,exp:"SUBSTRING(string, start, length) — starting at position 5 (which is 'E' — SQL strings are 1-indexed) and taking 8 characters gives 'Engineer'.",tip:"String positions in SQL are 1-indexed (position 1 = first character). SUBSTRING(str, 1, 4) = first 4 characters. PostgreSQL also supports Python-style slice: str[1:4]."},
+  {cat:"String Functions",q:"What does TRIM('  Hello World  ') return?",code:null,opts:["'  Hello World  ' (no change)","'Hello World' (leading and trailing spaces removed)","'HelloWorld' (all spaces removed)","Error — TRIM needs two arguments"],ans:1,exp:"TRIM() removes leading and trailing whitespace. It does NOT touch spaces inside the string. The middle space in 'Hello World' is preserved.",tip:"LTRIM removes only leading spaces. RTRIM only trailing. TRIM removes both. You can also TRIM specific characters: TRIM('_' FROM '__hello__') = 'hello'. Very useful for cleaning messy imported data."},
+  {cat:"String Functions",q:"Which expression correctly concatenates first_name, a space, and last_name in ANSI SQL?",code:null,opts:["first_name + ' ' + last_name","CONCAT(first_name, last_name)","first_name || ' ' || last_name","MERGE(first_name, ' ', last_name)"],ans:2,exp:"In ANSI SQL, || is the string concatenation operator. CONCAT() also works in most databases but requires the space as a separate argument: CONCAT(first_name, ' ', last_name).",tip:"Concatenation by dialect: PostgreSQL/Oracle/SQLite = ||. MySQL/SQL Server = CONCAT(). SQL Server also supports +. CONCAT() treats NULLs as empty strings in MySQL — behavior varies, so check your dialect."},
+  /* ── DATE FUNCTIONS ── */
+  {cat:"Date Functions",q:"What does DATE_TRUNC('month', '2024-07-15') return?",code:null,opts:["'2024-07-15' (no change)","'2024-07-01 00:00:00' (first day of the month)","'2024-07-31' (last day of the month)","'07' (just the month number)"],ans:1,exp:"DATE_TRUNC truncates a timestamp to the specified precision. 'month' truncates to the first moment of that month: 2024-07-01 00:00:00.",tip:"DATE_TRUNC is the workhorse of time-series aggregation. GROUP BY DATE_TRUNC('month', created_at) gives monthly buckets without separately extracting year and month."},
+  {cat:"Date Functions",q:"What does EXTRACT(DOW FROM '2024-07-15') return in PostgreSQL?",code:"-- DOW = Day Of Week\n-- PostgreSQL: 0 = Sunday, 6 = Saturday\nSELECT EXTRACT(DOW FROM DATE '2024-07-15')",opts:["15 (day of month)","7 (day of year)","1 (Monday — 2024-07-15 was a Monday)","7 (the week number)"],ans:2,exp:"2024-07-15 was a Monday. EXTRACT(DOW ...) returns the day of week as a number. In PostgreSQL: 0=Sunday, 1=Monday, …, 6=Saturday. So Monday = 1.",tip:"EXTRACT/DATE_PART supports: YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, DOW (day of week), DOY (day of year), QUARTER, EPOCH (Unix timestamp). In SQL Server use DATEPART(). In BigQuery use EXTRACT()."},
+  {cat:"Date Functions",q:"In PostgreSQL, how do you calculate the number of days between two date columns?",code:"SELECT order_date, ship_date,\n  ship_date - order_date AS days_to_ship\nFROM orders",opts:["DATEDIFF(ship_date, order_date)","ship_date - order_date returns an integer number of days","DATE_DIFF(ship_date, order_date)","DAYS_BETWEEN(order_date, ship_date)"],ans:1,exp:"In PostgreSQL, subtracting two date values directly returns an integer (number of days). DATEDIFF() is SQL Server / MySQL syntax and does not exist natively in PostgreSQL.",tip:"Date arithmetic by dialect: PostgreSQL = date2 - date1 (integer). SQL Server = DATEDIFF(day, d1, d2). MySQL = DATEDIFF(d2, d1). BigQuery = DATE_DIFF(d2, d1, DAY). Always check your dialect!"},
+  /* ── ROLLING SUM ── */
+  {cat:"Rolling Sum",q:"What does this query compute for each row?",code:"SELECT date, revenue,\n  SUM(revenue) OVER (\n    ORDER BY date\n    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\n  ) AS running_total\nFROM sales",opts:["Total revenue across the entire table — the same value on every row","Revenue for the current row only","A cumulative (running) sum from the very first row to the current row","The average revenue up to the current date"],ans:2,exp:"ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW defines a frame from the first row in the partition to the current row — the classic cumulative sum.",tip:"This is the most common window frame. UNBOUNDED PRECEDING = start of partition. CURRENT ROW = current row. UNBOUNDED FOLLOWING = end of partition. Omitting ROWS BETWEEN defaults to RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW (slightly different for ties)."},
+  {cat:"Rolling Sum",q:"What does ROWS BETWEEN 6 PRECEDING AND CURRENT ROW compute in this context?",code:"SELECT date, sales,\n  AVG(sales) OVER (\n    ORDER BY date\n    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW\n  ) AS rolling_7day_avg\nFROM daily_sales",opts:["Average of all sales in the table (grand average)","Average of the current row and the 6 rows immediately before it (up to 7 rows)","Average of the next 6 rows after the current row","Average grouped by week — one value per 7 rows"],ans:1,exp:"ROWS BETWEEN 6 PRECEDING AND CURRENT ROW includes the current row plus up to 6 rows before it — a maximum of 7 rows. This creates a 7-day rolling average.",tip:"ROWS counts physical rows. RANGE counts rows with the same ORDER BY value (logical). For time-series smoothing always use ROWS — it behaves predictably. Early rows at the start of the data will have smaller windows (less than 7 rows available)."},
+  /* ── NTILE ── */
+  {cat:"NTILE",q:"What does NTILE(4) OVER (ORDER BY salary DESC) do?",code:"SELECT name, salary,\n  NTILE(4) OVER (ORDER BY salary DESC) AS quartile\nFROM employees",opts:["Assigns each row a rank from 1 to 4 based on salary magnitude","Divides rows into 4 approximately equal-sized buckets (quartiles) labeled 1–4","Calculates the 4th percentile of salary for each row","Returns the top 4 employees by salary"],ans:1,exp:"NTILE(n) divides the ordered result into n approximately equal buckets and assigns each row its bucket number (1 to n). NTILE(4) = quartiles: bucket 1 has the highest salaries.",tip:"NTILE(4) = quartiles. NTILE(10) = deciles. NTILE(100) = percentiles. When rows don't divide evenly, earlier buckets get one extra row. Great for customer segmentation, cohort analysis, and AB test stratification."},
+  {cat:"NTILE",q:"With 10 rows and NTILE(3), how are the buckets distributed?",code:"-- 10 rows, 3 buckets\n-- 10 / 3 = 3 remainder 1\n-- Extra row goes to bucket 1",opts:["Buckets of 3, 3, 4","Buckets of 4, 3, 3","Buckets of 3, 4, 3","Error — 10 is not divisible by 3, NTILE requires even division"],ans:1,exp:"When rows don't divide evenly, NTILE distributes extra rows to the earliest buckets. 10 ÷ 3 = 3 remainder 1, so bucket 1 gets 4 rows; buckets 2 and 3 get 3 rows each.",tip:"NTILE never throws an error for non-divisible counts — it gracefully distributes. The only 'gotcha' is that bucket sizes are not guaranteed to be equal, which matters for truly equal-sized sampling."}
+];
+
+const DOCS = [
+  {icon:"🔗",title:"JOINs",tag:"Foundation",tagClass:"cat-join",content:`
+<p>JOINs combine rows from two or more tables based on a related column.</p>
+<h4>Types of JOINs</h4>
+<ul>
+  <li><strong>INNER JOIN</strong> — only rows with matches in both tables</li>
+  <li><strong>LEFT JOIN</strong> — all left rows + matching right rows (NULLs for no match)</li>
+  <li><strong>RIGHT JOIN</strong> — all right rows + matching left rows (NULLs for no match)</li>
+  <li><strong>FULL OUTER JOIN</strong> — all rows from both tables, NULLs where no match</li>
+  <li><strong>CROSS JOIN</strong> — Cartesian product (every A × every B)</li>
+  <li><strong>SELF JOIN</strong> — a table joined to itself (e.g. employee → manager)</li>
+</ul>
+<pre class="cb"><span class="kw">SELECT</span> c.name, o.amount
+<span class="kw">FROM</span> <span class="tbl">customers</span> c
+<span class="kw">LEFT JOIN</span> <span class="tbl">orders</span> o <span class="kw">ON</span> c.id = o.customer_id
+<span class="kw">WHERE</span> o.id <span class="kw">IS NULL</span> <span class="cmt">-- customers with NO orders</span></pre>
+<h4>Key rules</h4>
+<ul>
+  <li>INNER JOIN = intersection. LEFT/RIGHT JOIN = one side fully preserved.</li>
+  <li>FULL OUTER JOIN = union — use it to find unmatched rows on either side.</li>
+  <li>Avoid CROSS JOIN unless intentional — it explodes row counts.</li>
+  <li>Prefer NOT EXISTS over NOT IN when the subquery may return NULLs.</li>
+</ul>`},
+  {icon:"📊",title:"GROUP BY & HAVING",tag:"Aggregation",tagClass:"cat-group",content:`
+<p>GROUP BY collapses multiple rows into one per unique value (or combination of values) of the grouped columns.</p>
+<pre class="cb"><span class="kw">SELECT</span> department, <span class="fn">COUNT</span>(*) AS headcount, <span class="fn">AVG</span>(salary) AS avg_sal
+<span class="kw">FROM</span> <span class="tbl">employees</span>
+<span class="kw">WHERE</span> status = <span class="str">'active'</span>         <span class="cmt">-- filters rows BEFORE grouping</span>
+<span class="kw">GROUP BY</span> department
+<span class="kw">HAVING</span> <span class="fn">AVG</span>(salary) > <span class="num">60000</span>   <span class="cmt">-- filters GROUPS after aggregation</span>
+<span class="kw">ORDER BY</span> avg_sal <span class="kw">DESC</span></pre>
+<h4>Execution order (crucial)</h4>
+<ul>
+  <li>FROM → WHERE → GROUP BY → aggregate → HAVING → SELECT → ORDER BY → LIMIT</li>
+  <li>WHERE cannot reference aggregate results — use HAVING instead.</li>
+  <li>Every SELECT column not in an aggregate must be in GROUP BY.</li>
+</ul>
+<h4>Advanced: ROLLUP / CUBE / GROUPING SETS</h4>
+<ul>
+  <li><strong>ROLLUP(a,b)</strong> — subtotals at each level + grand total</li>
+  <li><strong>CUBE(a,b)</strong> — all 2^N grouping combinations</li>
+  <li><strong>GROUPING SETS((a,b),(a),())</strong> — explicit combinations</li>
+</ul>`},
+  {icon:"🔢",title:"Aggregation Functions",tag:"Aggregation",tagClass:"cat-agg",content:`
+<p>Aggregate functions collapse multiple rows into a single value. All of them (except COUNT(*)) ignore NULLs.</p>
+<h4>Core functions</h4>
+<ul>
+  <li><strong>COUNT(*)</strong> — count all rows (includes NULLs)</li>
+  <li><strong>COUNT(col)</strong> — count non-NULL values in column</li>
+  <li><strong>COUNT(DISTINCT col)</strong> — count unique non-NULL values</li>
+  <li><strong>SUM(col)</strong> — total of non-NULL values</li>
+  <li><strong>AVG(col)</strong> — average of non-NULL values</li>
+  <li><strong>MIN(col) / MAX(col)</strong> — smallest / largest non-NULL value</li>
+</ul>
+<h4>Conditional aggregation (pivot pattern)</h4>
+<pre class="cb"><span class="kw">SELECT</span> department,
+  <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> gender = <span class="str">'F'</span> <span class="kw">THEN</span> salary <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) AS female_payroll,
+  <span class="fn">COUNT</span>(<span class="kw">CASE WHEN</span> level = <span class="str">'Senior'</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">END</span>)   AS senior_count
+<span class="kw">FROM</span> <span class="tbl">employees</span>
+<span class="kw">GROUP BY</span> department</pre>
+<h4>NULL handling</h4>
+<ul>
+  <li>Use COALESCE(col, 0) before aggregating if you want NULLs treated as 0.</li>
+  <li>AVG(COALESCE(score, 0)) vs AVG(score) — different results on NULL-heavy columns.</li>
+</ul>`},
+  {icon:"🔍",title:"Subqueries",tag:"Intermediate",tagClass:"cat-sub",content:`
+<p>A subquery is a SELECT statement nested inside another SQL statement. It can appear in FROM, WHERE, SELECT, or HAVING.</p>
+<h4>Types</h4>
+<ul>
+  <li><strong>Scalar subquery</strong> — returns exactly 1 row × 1 column (used like a value)</li>
+  <li><strong>Row subquery</strong> — returns 1 row × multiple columns</li>
+  <li><strong>Table subquery (derived table)</strong> — returns a table, used in FROM</li>
+  <li><strong>Correlated subquery</strong> — references outer query; re-runs per outer row</li>
+</ul>
+<pre class="cb"><span class="cmt">-- Correlated: finds employees above their dept average</span>
+<span class="kw">SELECT</span> e.name, e.salary
+<span class="kw">FROM</span> <span class="tbl">employees</span> e
+<span class="kw">WHERE</span> e.salary > (
+  <span class="kw">SELECT</span> <span class="fn">AVG</span>(salary) <span class="kw">FROM</span> <span class="tbl">employees</span>
+  <span class="kw">WHERE</span> department_id = e.department_id
+)</pre>
+<h4>EXISTS vs IN</h4>
+<ul>
+  <li><strong>EXISTS</strong> — stops at the first match (efficient); safe with NULLs</li>
+  <li><strong>IN</strong> — checks membership in a list; NOT IN fails silently if subquery returns NULL</li>
+  <li>Rule: prefer NOT EXISTS over NOT IN whenever NULLs are possible</li>
+</ul>`},
+  {icon:"🏗️",title:"CTEs (Common Table Expressions)",tag:"Intermediate",tagClass:"cat-cte",content:`
+<p>CTEs create named, temporary result sets that exist only for the duration of a single query. They are defined with the WITH keyword before the main SELECT.</p>
+<pre class="cb"><span class="kw">WITH</span>
+  <span class="tbl">active_customers</span> <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> id, name <span class="kw">FROM</span> <span class="tbl">customers</span> <span class="kw">WHERE</span> status = <span class="str">'active'</span>
+  ),
+  <span class="tbl">order_totals</span> <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> customer_id, <span class="fn">SUM</span>(amount) AS total
+    <span class="kw">FROM</span> <span class="tbl">orders</span> <span class="kw">GROUP BY</span> customer_id
+  )
+<span class="kw">SELECT</span> ac.name, ot.total
+<span class="kw">FROM</span> <span class="tbl">active_customers</span> ac
+<span class="kw">JOIN</span> <span class="tbl">order_totals</span> ot <span class="kw">ON</span> ac.id = ot.customer_id</pre>
+<h4>Recursive CTEs</h4>
+<ul>
+  <li>Use RECURSIVE keyword (PostgreSQL, MySQL 8+, SQL Server uses WITH recursion natively)</li>
+  <li>Structure: anchor (base case) UNION ALL recursive step</li>
+  <li>Use cases: org hierarchies, Bill of Materials, path traversal, date series generation</li>
+</ul>
+<h4>CTE vs Subquery vs Temp Table</h4>
+<ul>
+  <li>CTE: readable, reusable in same query, no persistence</li>
+  <li>Subquery: inline, not reusable, harder to read when nested</li>
+  <li>Temp Table: persists in session, can be indexed, better for very large intermediate results</li>
+</ul>`},
+  {icon:"🪟",title:"Window Functions",tag:"Advanced",tagClass:"cat-win",content:`
+<p>Window functions compute a value for each row using a set of related rows (the "window") without collapsing the result like GROUP BY does.</p>
+<pre class="cb"><span class="fn">function_name</span>() <span class="kw">OVER</span> (
+  [<span class="kw">PARTITION BY</span> col1, col2]  <span class="cmt">-- optional: reset window per group</span>
+  [<span class="kw">ORDER BY</span> col3]             <span class="cmt">-- optional: ordering within partition</span>
+  [<span class="kw">ROWS BETWEEN</span> ... <span class="kw">AND</span> ...]  <span class="cmt">-- optional: frame specification</span>
+)</pre>
+<h4>Categories of window functions</h4>
+<ul>
+  <li><strong>Ranking:</strong> ROW_NUMBER, RANK, DENSE_RANK, NTILE, PERCENT_RANK, CUME_DIST</li>
+  <li><strong>Navigation:</strong> LAG, LEAD, FIRST_VALUE, LAST_VALUE, NTH_VALUE</li>
+  <li><strong>Aggregate:</strong> SUM, AVG, COUNT, MIN, MAX (same functions, window context)</li>
+</ul>
+<h4>Frame specification</h4>
+<ul>
+  <li>ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW → running total</li>
+  <li>ROWS BETWEEN 6 PRECEDING AND CURRENT ROW → 7-day rolling window</li>
+  <li>ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING → full partition</li>
+</ul>
+<h4>Key insight</h4>
+<p>Window functions are computed AFTER WHERE, GROUP BY, and HAVING — they see the final filtered rows. Use them in a subquery/CTE if you need to filter on their results.</p>`},
+  {icon:"🏆",title:"ROW_NUMBER, RANK & DENSE_RANK",tag:"Advanced",tagClass:"cat-rank",content:`
+<p>These three ranking functions assign numbers to rows within a partition, differing only in how they handle ties.</p>
+<pre class="cb"><span class="kw">SELECT</span> name, score,
+  <span class="fn">ROW_NUMBER</span>()  <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> score <span class="kw">DESC</span>) AS rn,
+  <span class="fn">RANK</span>()        <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> score <span class="kw">DESC</span>) AS rnk,
+  <span class="fn">DENSE_RANK</span>()  <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> score <span class="kw">DESC</span>) AS dr
+<span class="kw">FROM</span> <span class="tbl">leaderboard</span>
+<span class="cmt">-- score: 100, 90, 90, 80
+-- rn:    1,   2,  3,  4   always unique
+-- rnk:   1,   2,  2,  4   skips 3 after tie
+-- dr:    1,   2,  2,  3   no gap after tie</span></pre>
+<h4>Top-N per group pattern</h4>
+<pre class="cb"><span class="kw">SELECT</span> * <span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> *, <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (
+    <span class="kw">PARTITION BY</span> department <span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>
+  ) AS rn
+  <span class="kw">FROM</span> <span class="tbl">employees</span>
+) t <span class="kw">WHERE</span> rn <= <span class="num">3</span>  <span class="cmt">-- top 3 per dept</span></pre>
+<h4>When to use which</h4>
+<ul>
+  <li><strong>ROW_NUMBER</strong> — always unique; use for deduplication, pagination, top-N with no ties</li>
+  <li><strong>RANK</strong> — sports-style ranking; gaps after ties (1,2,2,4)</li>
+  <li><strong>DENSE_RANK</strong> — no gaps after ties (1,2,2,3); use for business rankings where ties should share a rank without creating gaps</li>
+</ul>`},
+  {icon:"🔀",title:"CASE Expressions",tag:"Foundation",tagClass:"cat-case",content:`
+<p>CASE is SQL's if-then-else. It returns a single value based on conditions and can be used anywhere a value expression is valid.</p>
+<h4>Simple CASE (equality test)</h4>
+<pre class="cb"><span class="kw">CASE</span> status
+  <span class="kw">WHEN</span> <span class="str">'A'</span> <span class="kw">THEN</span> <span class="str">'Active'</span>
+  <span class="kw">WHEN</span> <span class="str">'I'</span> <span class="kw">THEN</span> <span class="str">'Inactive'</span>
+  <span class="kw">ELSE</span> <span class="str">'Unknown'</span>
+<span class="kw">END</span></pre>
+<h4>Searched CASE (arbitrary conditions)</h4>
+<pre class="cb"><span class="kw">CASE</span>
+  <span class="kw">WHEN</span> salary < <span class="num">40000</span>              <span class="kw">THEN</span> <span class="str">'Junior'</span>
+  <span class="kw">WHEN</span> salary <span class="kw">BETWEEN</span> <span class="num">40000</span> <span class="kw">AND</span> <span class="num">70000</span> <span class="kw">THEN</span> <span class="str">'Mid'</span>
+  <span class="kw">WHEN</span> salary > <span class="num">70000</span>              <span class="kw">THEN</span> <span class="str">'Senior'</span>
+  <span class="kw">ELSE</span> <span class="str">'Unknown'</span>
+<span class="kw">END</span></pre>
+<h4>CASE inside aggregates (conditional aggregation)</h4>
+<pre class="cb"><span class="fn">COUNT</span>(<span class="kw">CASE WHEN</span> status = <span class="str">'active'</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">END</span>)     AS active_count
+<span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> region = <span class="str">'EU'</span> <span class="kw">THEN</span> revenue <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) AS eu_revenue</pre>
+<h4>Rules</h4>
+<ul>
+  <li>CASE short-circuits: first matching WHEN wins, rest are skipped</li>
+  <li>Without ELSE, unmatched rows return NULL</li>
+  <li>All THEN values must be the same (or compatible) data type</li>
+</ul>`},
+  {icon:"🔤",title:"String Functions",tag:"Foundation",tagClass:"cat-str",content:`
+<p>String functions manipulate text data. Syntax varies slightly between database dialects.</p>
+<h4>Common string functions</h4>
+<pre class="cb"><span class="fn">UPPER</span>(name)                   <span class="cmt">-- 'alice' → 'ALICE'</span>
+<span class="fn">LOWER</span>(name)                   <span class="cmt">-- 'ALICE' → 'alice'</span>
+<span class="fn">LENGTH</span>(name)                  <span class="cmt">-- character count</span>
+<span class="fn">TRIM</span>(name)                    <span class="cmt">-- remove leading/trailing spaces</span>
+<span class="fn">LTRIM</span>(name) / <span class="fn">RTRIM</span>(name)     <span class="cmt">-- left or right only</span>
+<span class="fn">SUBSTRING</span>(name, <span class="num">1</span>, <span class="num">3</span>)         <span class="cmt">-- extract 3 chars from pos 1</span>
+<span class="fn">REPLACE</span>(name, <span class="str">'a'</span>, <span class="str">'@'</span>)       <span class="cmt">-- replace all occurrences</span>
+<span class="fn">CONCAT</span>(first, <span class="str">' '</span>, last)      <span class="cmt">-- join strings</span>
+first <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> last           <span class="cmt">-- ANSI concatenation</span>
+<span class="fn">SPLIT_PART</span>(email, <span class="str">'@'</span>, <span class="num">1</span>)     <span class="cmt">-- 'user@x.com' → 'user' (PG)</span>
+<span class="fn">POSITION</span>(<span class="str">'@'</span> <span class="kw">IN</span> email)         <span class="cmt">-- find character position</span>
+<span class="fn">LPAD</span>(id::text, <span class="num">6</span>, <span class="str">'0'</span>)         <span class="cmt">-- left-pad to width 6</span></pre>
+<h4>Pattern matching</h4>
+<ul>
+  <li>LIKE 'A%' — starts with A; % = any sequence, _ = single char</li>
+  <li>ILIKE — case-insensitive LIKE (PostgreSQL)</li>
+  <li>REGEXP_LIKE / ~ — regex matching (database-specific)</li>
+</ul>`},
+  {icon:"📅",title:"Date & Time Functions",tag:"Foundation",tagClass:"cat-date",content:`
+<p>Date functions extract, truncate, and calculate with dates and timestamps. Syntax varies heavily by database.</p>
+<h4>Key functions (PostgreSQL focus)</h4>
+<pre class="cb"><span class="fn">CURRENT_DATE</span>                      <span class="cmt">-- today's date</span>
+<span class="fn">NOW</span>() / <span class="fn">CURRENT_TIMESTAMP</span>         <span class="cmt">-- current timestamp</span>
+<span class="fn">DATE_TRUNC</span>(<span class="str">'month'</span>, created_at)   <span class="cmt">-- first of month</span>
+<span class="fn">DATE_TRUNC</span>(<span class="str">'year'</span>, created_at)    <span class="cmt">-- first of year</span>
+<span class="fn">EXTRACT</span>(<span class="kw">YEAR FROM</span> d)              <span class="cmt">-- integer year</span>
+<span class="fn">EXTRACT</span>(<span class="kw">MONTH FROM</span> d)             <span class="cmt">-- 1-12</span>
+<span class="fn">EXTRACT</span>(<span class="kw">DOW FROM</span> d)               <span class="cmt">-- 0=Sun … 6=Sat</span>
+d + <span class="kw">INTERVAL</span> <span class="str">'7 days'</span>             <span class="cmt">-- add 7 days</span>
+end_date - start_date             <span class="cmt">-- integer days (PG)</span>
+<span class="fn">AGE</span>(timestamp1, timestamp2)       <span class="cmt">-- interval (PG)</span>
+<span class="fn">TO_CHAR</span>(d, <span class="str">'YYYY-MM'</span>)             <span class="cmt">-- format as string</span></pre>
+<h4>Dialect differences</h4>
+<ul>
+  <li><strong>PostgreSQL:</strong> date2 - date1 → integer; DATE_TRUNC; EXTRACT; interval arithmetic</li>
+  <li><strong>SQL Server:</strong> DATEDIFF(day, d1, d2); DATEPART(); DATEADD(day, n, d)</li>
+  <li><strong>MySQL:</strong> DATEDIFF(d2, d1); YEAR(d); MONTH(d); DATE_ADD(d, INTERVAL n DAY)</li>
+  <li><strong>BigQuery:</strong> DATE_DIFF(d2, d1, DAY); DATE_TRUNC(d, MONTH); EXTRACT()</li>
+</ul>`},
+  {icon:"📈",title:"Rolling Sums & Moving Averages",tag:"Advanced",tagClass:"cat-roll",content:`
+<p>Rolling (moving) aggregations are window functions with a frame clause that slides as each row is processed.</p>
+<h4>Cumulative / running total</h4>
+<pre class="cb"><span class="fn">SUM</span>(revenue) <span class="kw">OVER</span> (
+  <span class="kw">ORDER BY</span> date
+  <span class="kw">ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</span>
+) AS running_total</pre>
+<h4>7-day rolling average</h4>
+<pre class="cb"><span class="fn">AVG</span>(daily_sales) <span class="kw">OVER</span> (
+  <span class="kw">ORDER BY</span> date
+  <span class="kw">ROWS BETWEEN</span> <span class="num">6</span> <span class="kw">PRECEDING AND CURRENT ROW</span>
+) AS rolling_7day_avg</pre>
+<h4>Frame options</h4>
+<ul>
+  <li>UNBOUNDED PRECEDING — start of partition</li>
+  <li>N PRECEDING — N rows before current</li>
+  <li>CURRENT ROW — current row</li>
+  <li>N FOLLOWING — N rows after current</li>
+  <li>UNBOUNDED FOLLOWING — end of partition</li>
+</ul>
+<h4>ROWS vs RANGE</h4>
+<ul>
+  <li><strong>ROWS</strong> — counts physical rows; precise and predictable; use for time-series</li>
+  <li><strong>RANGE</strong> — counts rows with the same ORDER BY value (logical offset); can include unexpected rows on duplicate dates</li>
+</ul>
+<p>ROWS is almost always what you want for rolling calculations on time-series data.</p>`},
+  {icon:"🎲",title:"NTILE, PERCENT_RANK & CUME_DIST",tag:"Advanced",tagClass:"cat-ntile",content:`
+<p>Distribution functions divide rows into buckets or report relative position as a fraction.</p>
+<h4>NTILE(n) — divide into N equal buckets</h4>
+<pre class="cb"><span class="fn">NTILE</span>(<span class="num">4</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> revenue <span class="kw">DESC</span>) AS quartile
+<span class="cmt">-- Q1 = top 25%, Q4 = bottom 25%</span>
+<span class="cmt">-- Extra rows go to earlier buckets</span></pre>
+<h4>PERCENT_RANK — relative rank as fraction</h4>
+<pre class="cb"><span class="fn">PERCENT_RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> score)
+<span class="cmt">-- Formula: (rank - 1) / (total_rows - 1)</span>
+<span class="cmt">-- Range: 0.0 (lowest) to 1.0 (highest)</span></pre>
+<h4>CUME_DIST — cumulative distribution</h4>
+<pre class="cb"><span class="fn">CUME_DIST</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> score)
+<span class="cmt">-- Formula: rows_with_value_≤_current / total_rows</span>
+<span class="cmt">-- Range: > 0.0 to 1.0</span></pre>
+<h4>Comparison</h4>
+<ul>
+  <li><strong>NTILE(n)</strong> — discrete bucket assignment (1 to n); great for segmentation</li>
+  <li><strong>PERCENT_RANK</strong> — continuous 0–1 scale; 0 = lowest, 1 = highest</li>
+  <li><strong>CUME_DIST</strong> — fraction of rows at or below current; always > 0</li>
+  <li>NTILE(100) approximates percentiles but PERCENT_RANK gives the exact relative rank</li>
+</ul>`}
+];
+
+let current = 0;
+let score = 0;
+let correct = 0;
+let streak = 0;
+let answered = false;
+const catScores = {};
+const catTotals = {};
+QUESTIONS.forEach(q => { catTotals[q.cat] = (catTotals[q.cat]||0) + 1; catScores[q.cat] = catScores[q.cat]||0; });
+
+function catClass(cat) {
+  const m = {JOIN:'cat-join','GROUP BY':'cat-group',Aggregation:'cat-agg',Subqueries:'cat-sub',CTEs:'cat-cte','Window Functions':'cat-win','ROW_NUMBER / RANK':'cat-rank',CASE:'cat-case','String Functions':'cat-str','Date Functions':'cat-date','Rolling Sum':'cat-roll',NTILE:'cat-ntile'};
+  return m[cat]||'cat-join';
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  answered = false;
+  document.getElementById('qnum').textContent = `Question ${current+1} of ${QUESTIONS.length}`;
+  const badge = document.getElementById('qbadge');
+  badge.textContent = q.cat;
+  badge.className = `cbadge ${catClass(q.cat)}`;
+  document.getElementById('qtxt').textContent = q.q;
+  const codeEl = document.getElementById('qcode');
+  if (q.code) {
+    codeEl.innerHTML = syntaxHL(q.code);
+    codeEl.style.display = 'block';
+  } else {
+    codeEl.style.display = 'none';
+  }
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span class="ol">${letters[i]}</span><span>${escapeHTML(opt)}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    optsEl.appendChild(btn);
+  });
+  document.getElementById('fb').style.display = 'none';
+  document.getElementById('fb').className = 'fb';
+  document.getElementById('tip').style.display = 'none';
+  document.getElementById('nxtbtn').style.display = 'none';
+  document.getElementById('qcard').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+  updateProgress();
+}
+
+function escapeHTML(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function syntaxHL(code) {
+  const keywords = ['SELECT','FROM','WHERE','JOIN','LEFT','RIGHT','INNER','OUTER','FULL','CROSS','ON','GROUP BY','ORDER BY','HAVING','WITH','AS','UNION ALL','UNION','PARTITION BY','OVER','ROWS BETWEEN','RANGE BETWEEN','UNBOUNDED PRECEDING','UNBOUNDED FOLLOWING','CURRENT ROW','PRECEDING','FOLLOWING','CASE','WHEN','THEN','ELSE','END','AND','OR','NOT','IN','EXISTS','IS NULL','IS NOT NULL','NULL','DISTINCT','LIMIT','BY','INTO','INSERT','UPDATE','DELETE','CREATE','DROP','ALTER','RECURSIVE','INTERVAL','BETWEEN','LIKE','DATE','YEAR FROM','MONTH FROM','DOW FROM'];
+  const fns = ['COUNT','SUM','AVG','MIN','MAX','ROW_NUMBER','RANK','DENSE_RANK','NTILE','PERCENT_RANK','CUME_DIST','LAG','LEAD','FIRST_VALUE','LAST_VALUE','DATE_TRUNC','DATE_PART','EXTRACT','DATEDIFF','DATE_ADD','CURRENT_DATE','NOW','CURRENT_TIMESTAMP','SUBSTRING','UPPER','LOWER','TRIM','LTRIM','RTRIM','LENGTH','CONCAT','REPLACE','COALESCE','NULLIF','CAST','TO_CHAR','AGE','LPAD','RPAD','SPLIT_PART','POSITION','REGEXP_LIKE'];
+  let h = escapeHTML(code);
+  h = h.replace(/--[^\n]*/g, m => `<span class="cmt">${m}</span>`);
+  keywords.forEach(kw => {
+    h = h.replace(new RegExp(`\\b(${kw})\\b`, 'g'), '<span class="kw">$1</span>');
+  });
+  fns.forEach(fn => {
+    h = h.replace(new RegExp(`\\b(${fn})\\b`, 'g'), '<span class="fn">$1</span>');
+  });
+  h = h.replace(/'[^']*'/g, m => `<span class="str">${m}</span>`);
+  h = h.replace(/\b(\d+)\b/g, '<span class="num">$1</span>');
+  return h;
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = QUESTIONS[current];
+  const btns = document.querySelectorAll('.opt');
+  btns.forEach(b => b.disabled = true);
+  const isCorrect = idx === q.ans;
+  if (isCorrect) {
+    btns[idx].classList.add('correct');
+    score += 10;
+    correct++;
+    streak++;
+    catScores[q.cat] = (catScores[q.cat]||0) + 1;
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[q.ans].classList.add('revealed');
+    streak = 0;
+  }
+  document.getElementById('scoreVal').textContent = score;
+  document.getElementById('correctVal').textContent = correct;
+  document.getElementById('streakVal').textContent = streak;
+  const fb = document.getElementById('fb');
+  fb.className = `fb ${isCorrect?'ok':'bad'}`;
+  fb.innerHTML = `<strong>${isCorrect?'✓ Correct!':'✗ Incorrect'}</strong> — ${escapeHTML(q.exp)}`;
+  fb.style.display = 'block';
+  const tip = document.getElementById('tip');
+  document.getElementById('tipTxt').textContent = q.tip;
+  tip.style.display = 'block';
+  document.getElementById('nxtbtn').style.display = 'inline-block';
+  document.getElementById('nxtbtn').textContent = current < QUESTIONS.length - 1 ? 'Next Question →' : 'See Results →';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= QUESTIONS.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+function updateProgress() {
+  const pct = Math.round((current / QUESTIONS.length) * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progTxt').textContent = `${current} / ${QUESTIONS.length}`;
+}
+
+function showResults() {
+  document.getElementById('qcard').style.display = 'none';
+  const res = document.getElementById('results');
+  res.style.display = 'block';
+  const pct = Math.round((correct / QUESTIONS.length) * 100);
+  document.getElementById('rScore').textContent = pct + '%';
+  let grade, msg;
+  if (pct >= 90) { grade = '🏆 SQL Master'; msg = 'Outstanding! You have expert-level SQL knowledge for data engineering.'; }
+  else if (pct >= 75) { grade = '⭐ Advanced'; msg = 'Great work! You have strong SQL skills. Review the Concepts tab for any gaps.'; }
+  else if (pct >= 60) { grade = '📈 Intermediate'; msg = 'Solid foundation! Focus on window functions and advanced topics to level up.'; }
+  else if (pct >= 40) { grade = '🌱 Developing'; msg = 'Good start! Study the Concepts tab and practice CTEs, window functions, and subqueries.'; }
+  else { grade = '📚 Beginner'; msg = 'Keep going! Start with JOINs and GROUP BY basics, then progress to window functions.'; }
+  document.getElementById('rGrade').textContent = grade;
+  document.getElementById('rMsg').textContent = `${correct} of ${QUESTIONS.length} correct · ${msg}`;
+  const br = document.getElementById('rBreak');
+  br.innerHTML = '';
+  Object.keys(catTotals).forEach(cat => {
+    const c = catScores[cat]||0;
+    const t = catTotals[cat];
+    const div = document.createElement('div');
+    div.className = 'rbi';
+    div.innerHTML = `<div class="rbn">${escapeHTML(cat)}</div><div class="rbs" style="color:${c/t>=0.7?'var(--correct)':c/t>=0.4?'var(--accent-y)':'var(--wrong)'}">${c}/${t}</div>`;
+    br.appendChild(div);
+  });
+}
+
+function restartQuiz() {
+  current = 0; score = 0; correct = 0; streak = 0;
+  Object.keys(catScores).forEach(k => catScores[k] = 0);
+  document.getElementById('scoreVal').textContent = 0;
+  document.getElementById('correctVal').textContent = 0;
+  document.getElementById('streakVal').textContent = 0;
+  renderQuestion();
+}
+
+function showSection(s) {
+  document.getElementById('quiz').style.display = s==='quiz'?'block':'none';
+  document.getElementById('docs').style.display = s==='docs'?'block':'none';
+  document.querySelectorAll('.nb').forEach((b,i) => b.classList.toggle('on', (i===0&&s==='quiz')||(i===1&&s==='docs')));
+  if (s==='docs' && !document.getElementById('docContent').innerHTML.trim()) renderDocs();
+}
+
+function renderDocs() {
+  const el = document.getElementById('docContent');
+  el.innerHTML = DOCS.map((d,i) => `
+    <div class="dcard">
+      <div class="dh" onclick="toggleDoc(${i})">
+        <span class="di">${d.icon}</span>
+        <span class="dt">${d.title}</span>
+        <span class="dtag ${d.tagClass}">${d.tag}</span>
+        <span class="tog" id="tog${i}">▼</span>
+      </div>
+      <div class="db" id="db${i}">${d.content}</div>
+    </div>
+  `).join('');
+}
+
+function toggleDoc(i) {
+  const db = document.getElementById(`db${i}`);
+  const tog = document.getElementById(`tog${i}`);
+  const dh = db.previousElementSibling;
+  const isOpen = db.classList.contains('open');
+  db.classList.toggle('open', !isOpen);
+  tog.classList.toggle('open', !isOpen);
+  dh.classList.toggle('open', !isOpen);
+}
+
+renderQuestion();
+</script>
+</body>
+</html>
